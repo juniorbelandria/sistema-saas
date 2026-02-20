@@ -2,6 +2,9 @@
 [build]
   command = "npm run build"
   publish = ".next"
+  
+[build.environment]
+  NODE_VERSION = "18"
 
 # Configuración del plugin de Next.js
 [[plugins]]
@@ -16,8 +19,9 @@
     X-XSS-Protection = "1; mode=block"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Redirecciones
+# Redirecciones para Next.js
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  force = false

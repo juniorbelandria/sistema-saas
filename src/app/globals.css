@@ -1,0 +1,344 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   DARK MODE TRANSITIONS
+   ============================================ */
+
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN SYSTEM - MOBILE FIRST
+   ============================================ */
+
+@layer base {
+  /* Fluid Typography System usando clamp() */
+  :root {
+    /* Base font size - 16px */
+    --font-size-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);      /* 12px - 14px */
+    --font-size-sm: clamp(0.875rem, 0.825rem + 0.25vw, 1rem);       /* 14px - 16px */
+    --font-size-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);      /* 16px - 18px */
+    --font-size-lg: clamp(1.125rem, 1.05rem + 0.375vw, 1.25rem);    /* 18px - 20px */
+    --font-size-xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);        /* 20px - 24px */
+    --font-size-2xl: clamp(1.5rem, 1.35rem + 0.75vw, 1.875rem);     /* 24px - 30px */
+    --font-size-3xl: clamp(1.875rem, 1.65rem + 1.125vw, 2.25rem);   /* 30px - 36px */
+    --font-size-4xl: clamp(2.25rem, 1.95rem + 1.5vw, 3rem);         /* 36px - 48px */
+    --font-size-5xl: clamp(3rem, 2.55rem + 2.25vw, 4rem);           /* 48px - 64px */
+    
+    /* Spacing System */
+    --spacing-xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem);          /* 4px - 8px */
+    --spacing-sm: clamp(0.5rem, 0.4rem + 0.5vw, 0.75rem);           /* 8px - 12px */
+    --spacing-md: clamp(0.75rem, 0.6rem + 0.75vw, 1rem);            /* 12px - 16px */
+    --spacing-lg: clamp(1rem, 0.8rem + 1vw, 1.5rem);                /* 16px - 24px */
+    --spacing-xl: clamp(1.5rem, 1.2rem + 1.5vw, 2rem);              /* 24px - 32px */
+    --spacing-2xl: clamp(2rem, 1.6rem + 2vw, 3rem);                 /* 32px - 48px */
+    --spacing-3xl: clamp(3rem, 2.4rem + 3vw, 4rem);                 /* 48px - 64px */
+  }
+
+  /* Aplicar tipografía fluida a elementos HTML */
+  html {
+    font-size: 100%; /* 16px base */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+  }
+
+  h1 {
+    font-size: var(--font-size-4xl);
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  h2 {
+    font-size: var(--font-size-3xl);
+    line-height: 1.3;
+    font-weight: 700;
+  }
+
+  h3 {
+    font-size: var(--font-size-2xl);
+    line-height: 1.4;
+    font-weight: 600;
+  }
+
+  h4 {
+    font-size: var(--font-size-xl);
+    line-height: 1.4;
+    font-weight: 600;
+  }
+
+  h5 {
+    font-size: var(--font-size-lg);
+    line-height: 1.5;
+    font-weight: 600;
+  }
+
+  h6 {
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    font-weight: 600;
+  }
+
+  p {
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+  }
+
+  small {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* ============================================
+   CUSTOM UTILITY CLASSES
+   ============================================ */
+
+@layer utilities {
+  /* Fluid Typography Utilities */
+  .text-fluid-xs { font-size: var(--font-size-xs); }
+  .text-fluid-sm { font-size: var(--font-size-sm); }
+  .text-fluid-base { font-size: var(--font-size-base); }
+  .text-fluid-lg { font-size: var(--font-size-lg); }
+  .text-fluid-xl { font-size: var(--font-size-xl); }
+  .text-fluid-2xl { font-size: var(--font-size-2xl); }
+  .text-fluid-3xl { font-size: var(--font-size-3xl); }
+  .text-fluid-4xl { font-size: var(--font-size-4xl); }
+  .text-fluid-5xl { font-size: var(--font-size-5xl); }
+
+  /* Fluid Spacing Utilities */
+  .gap-fluid-xs { gap: var(--spacing-xs); }
+  .gap-fluid-sm { gap: var(--spacing-sm); }
+  .gap-fluid-md { gap: var(--spacing-md); }
+  .gap-fluid-lg { gap: var(--spacing-lg); }
+  .gap-fluid-xl { gap: var(--spacing-xl); }
+  .gap-fluid-2xl { gap: var(--spacing-2xl); }
+  .gap-fluid-3xl { gap: var(--spacing-3xl); }
+
+  .p-fluid-xs { padding: var(--spacing-xs); }
+  .p-fluid-sm { padding: var(--spacing-sm); }
+  .p-fluid-md { padding: var(--spacing-md); }
+  .p-fluid-lg { padding: var(--spacing-lg); }
+  .p-fluid-xl { padding: var(--spacing-xl); }
+  .p-fluid-2xl { padding: var(--spacing-2xl); }
+  .p-fluid-3xl { padding: var(--spacing-3xl); }
+
+  /* Container Utilities */
+  .container-fluid {
+    width: 100%;
+    padding-right: var(--spacing-md);
+    padding-left: var(--spacing-md);
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+/* ============================================
+   FORM STYLES - HERO UI COMPONENTS
+   ============================================ */
+
+@layer components {
+  /* Labels de formularios en negrita y color negro */
+  label,
+  [data-slot="label"],
+  .heroui-label,
+  input + label,
+  textarea + label,
+  select + label {
+    font-weight: 700 !important;
+    color: hsl(var(--heroui-foreground)) !important;
+  }
+
+  /* Iconos dentro de los inputs en color negro */
+  [data-slot="inner-wrapper"] svg,
+  [data-slot="input-wrapper"] svg {
+    color: hsl(var(--heroui-foreground)) !important;
+  }
+
+  /* Logo blanco en modo oscuro */
+  .dark img[alt="Sistema POS"] {
+    filter: brightness(0) invert(1);
+  }
+
+  /* Quitar outline interno de los inputs */
+  input:focus,
+  textarea:focus,
+  select:focus,
+  [data-slot="input"]:focus,
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Quitar outline del input wrapper en Hero UI */
+  [data-slot="input-wrapper"]:focus-within {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  /* ============================================
+     MODAL BACKDROP BLUR EFFECT
+     Efecto profesional de desenfoque cuando se abre un modal
+     ============================================ */
+  
+  /* Backdrop del modal con blur */
+  [data-slot="backdrop"],
+  .heroui-modal-backdrop,
+  [role="dialog"] ~ div[class*="backdrop"],
+  div[class*="backdrop"][class*="fixed"] {
+    backdrop-filter: blur(8px) saturate(180%);
+    -webkit-backdrop-filter: blur(8px) saturate(180%);
+    background-color: rgba(0, 0, 0, 0.4) !important;
+    transition: backdrop-filter 0.3s ease, background-color 0.3s ease;
+  }
+
+  /* Backdrop en modo oscuro */
+  .dark [data-slot="backdrop"],
+  .dark .heroui-modal-backdrop,
+  .dark [role="dialog"] ~ div[class*="backdrop"],
+  .dark div[class*="backdrop"][class*="fixed"] {
+    background-color: rgba(0, 0, 0, 0.6) !important;
+  }
+
+  /* Animación suave del modal */
+  [role="dialog"],
+  .heroui-modal {
+    animation: modalFadeIn 0.3s ease-out;
+  }
+
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+}
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS - MOBILE FIRST
+   ============================================ */
+
+/* Extra Small devices (320px - 479px) - Small phones */
+@media (min-width: 320px) {
+  .container-fluid {
+    max-width: 100%;
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+}
+
+/* Small devices (480px - 639px) - Large phones */
+@media (min-width: 480px) {
+  .container-fluid {
+    max-width: 100%;
+    padding-right: 1.25rem;
+    padding-left: 1.25rem;
+  }
+}
+
+/* Medium Small devices (640px - 767px) - Small tablets */
+@media (min-width: 640px) {
+  .container-fluid {
+    max-width: 640px;
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+  }
+}
+
+/* Medium devices (768px - 1023px) - Tablets */
+@media (min-width: 768px) {
+  .container-fluid {
+    max-width: 768px;
+    padding-right: 2rem;
+    padding-left: 2rem;
+  }
+}
+
+/* Large devices (1024px - 1279px) - Small desktops */
+@media (min-width: 1024px) {
+  .container-fluid {
+    max-width: 1024px;
+    padding-right: 2.5rem;
+    padding-left: 2.5rem;
+  }
+}
+
+/* Extra Large devices (1280px - 1535px) - Desktops */
+@media (min-width: 1280px) {
+  .container-fluid {
+    max-width: 1280px;
+    padding-right: 3rem;
+    padding-left: 3rem;
+  }
+}
+
+/* 2XL devices (1536px - 1919px) - Large desktops */
+@media (min-width: 1536px) {
+  .container-fluid {
+    max-width: 1536px;
+  }
+}
+
+/* 3XL devices (1920px+) - Ultra-wide monitors */
+@media (min-width: 1920px) {
+  .container-fluid {
+    max-width: 1920px;
+  }
+}
+
+/* ============================================
+   ORIENTATION QUERIES
+   ============================================ */
+
+/* Landscape mode adjustments */
+@media (orientation: landscape) and (max-height: 600px) {
+  :root {
+    --spacing-lg: 1rem;
+    --spacing-xl: 1.25rem;
+  }
+}
+
+/* ============================================
+   HIGH DPI DISPLAYS
+   ============================================ */
+
+@media (-webkit-min-device-pixel-ratio: 2),
+       (min-resolution: 192dpi) {
+  /* Optimizations for retina displays */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+  
+  h1 { font-size: 24pt; }
+  h2 { font-size: 20pt; }
+  h3 { font-size: 18pt; }
+}

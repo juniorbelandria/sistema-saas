@@ -1,0 +1,23 @@
+# Configuración de Netlify para Next.js
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# Configuración del plugin de Next.js
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Headers de seguridad
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Redirecciones
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

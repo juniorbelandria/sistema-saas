@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Input, Select, SelectItem, Checkbox, Card, CardBody, Chip, Divider } from '@heroui/react';
+import { Button, Input, Select, SelectItem, Checkbox, Card, CardBody, Chip, Divider, Avatar } from '@heroui/react';
 import { 
   ArrowRight, ArrowLeft, Check, User, Building2, FileText, 
   Mail, Lock, Phone, MapPin, Globe, DollarSign, FileCheck, CheckCircle2 
@@ -10,12 +10,15 @@ import Image from 'next/image';
 import ThemeToggle from '@/components/ThemeToggle';
 
 const PAISES = [
-  { codigo: 'VE', nombre: 'Venezuela 🇻🇪', moneda: 'VES', simbolo: 'Bs.', impuesto: 'IVA', tasa: 16 },
-  { codigo: 'MX', nombre: 'México 🇲🇽', moneda: 'MXN', simbolo: '$', impuesto: 'IVA', tasa: 16 },
-  { codigo: 'CO', nombre: 'Colombia 🇨🇴', moneda: 'COP', simbolo: '$', impuesto: 'IVA', tasa: 19 },
-  { codigo: 'US', nombre: 'Estados Unidos 🇺🇸', moneda: 'USD', simbolo: '$', impuesto: 'Sales Tax', tasa: 0 },
-  { codigo: 'PE', nombre: 'Perú 🇵🇪', moneda: 'PEN', simbolo: 'S/', impuesto: 'IGV', tasa: 18 },
-  { codigo: 'AR', nombre: 'Argentina 🇦🇷', moneda: 'ARS', simbolo: '$', impuesto: 'IVA', tasa: 21 },
+  { codigo: 've', nombre: 'Venezuela', moneda: 'VES', simbolo: 'Bs.', impuesto: 'IVA', tasa: 16 },
+  { codigo: 'mx', nombre: 'México', moneda: 'MXN', simbolo: '$', impuesto: 'IVA', tasa: 16 },
+  { codigo: 'co', nombre: 'Colombia', moneda: 'COP', simbolo: '$', impuesto: 'IVA', tasa: 19 },
+  { codigo: 'us', nombre: 'Estados Unidos', moneda: 'USD', simbolo: '$', impuesto: 'Sales Tax', tasa: 0 },
+  { codigo: 'pe', nombre: 'Perú', moneda: 'PEN', simbolo: 'S/', impuesto: 'IGV', tasa: 18 },
+  { codigo: 'ar', nombre: 'Argentina', moneda: 'ARS', simbolo: '$', impuesto: 'IVA', tasa: 21 },
+  { codigo: 'cl', nombre: 'Chile', moneda: 'CLP', simbolo: '$', impuesto: 'IVA', tasa: 19 },
+  { codigo: 'ec', nombre: 'Ecuador', moneda: 'USD', simbolo: '$', impuesto: 'IVA', tasa: 12 },
+  { codigo: 'es', nombre: 'España', moneda: 'EUR', simbolo: '€', impuesto: 'IVA', tasa: 21 },
 ];
 
 const TIPOS_NEGOCIO = [
@@ -389,7 +392,6 @@ export default function RegisterPage() {
                 placeholder="Selecciona tu país"
                 selectedKeys={paisSeleccionado ? [paisSeleccionado] : []}
                 onChange={(e) => setPaisSeleccionado(e.target.value)}
-                startContent={<Globe className="w-4 h-4 sm:w-5 sm:h-5" />}
                 variant="bordered"
                 size="lg"
                 isRequired
@@ -399,7 +401,17 @@ export default function RegisterPage() {
                 }}
               >
                 {PAISES.map((pais) => (
-                  <SelectItem key={pais.codigo} value={pais.codigo}>
+                  <SelectItem 
+                    key={pais.codigo} 
+                    value={pais.codigo}
+                    startContent={
+                      <Avatar 
+                        alt={pais.nombre} 
+                        className="w-6 h-6" 
+                        src={`https://flagcdn.com/${pais.codigo}.svg`} 
+                      />
+                    }
+                  >
                     {pais.nombre}
                   </SelectItem>
                 ))}

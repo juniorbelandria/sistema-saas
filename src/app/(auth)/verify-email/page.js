@@ -1,27 +1,68 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button, Input, Card, CardBody } from '@heroui/react';
-import { Mail, ArrowLeft, CheckCircle2, Shield, Clock } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Shield, Clock, Mail } from 'lucide-react';
 import Image from 'next/image';
 import ThemeToggle from '@/components/ThemeToggle';
+import DevNavigation from '@/components/DevNavigation';
 import Link from 'next/link';
 
 export default function VerifyEmailPage() {
-  const [codigo, setCodigo] = useState('');
+  const [codigo, setCodigo] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const inputRefs = useRef([]);
+
+  const handleChange = (index, value) => {
+    if (value.length > 1) {
+      value = value[0];
+    }
+
+    const newCodigo = [...codigo];
+    newCodigo[index] = value;
+    setCodigo(newCodigo);
+
+    // Auto-focus al siguiente input
+    if (value && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (index, e) => {
+    // Backspace: ir al anterior si está vacío
+    if (e.key === 'Backspace' && !codigo[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').slice(0, 6);
+    const newCodigo = pastedData.split('').concat(Array(6).fill('')).slice(0, 6);
+    setCodigo(newCodigo);
+    
+    // Focus en el último input con valor
+    const lastIndex = Math.min(pastedData.length, 5);
+    inputRefs.current[lastIndex]?.focus();
+  };
 
   const handleVerificar = async (e) => {
     e.preventDefault();
+    const codigoCompleto = codigo.join('');
+    
+    if (codigoCompleto.length !== 6) {
+      setError('Por favor ingresa los 6 dígitos');
+      return;
+    }
+
     setIsLoading(true);
     setError('');
     
     // TODO: Integrar con Supabase
     setTimeout(() => {
       setIsLoading(false);
-      // Simular éxito
-      console.log('Código verificado:', codigo);
+      console.log('Código verificado:', codigoCompleto);
     }, 1500);
   };
 
@@ -32,25 +73,10 @@ export default function VerifyEmailPage() {
 
   return (
     <div className="flex min-h-screen bg-background relative">
-      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-50">
+      {/* Theme Toggle y Dev Navigation */}
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 flex items-center gap-2">
+        <DevNavigation />
         <ThemeToggle />
-      </div>
-
-      {/* DEV: Links de Navegación Rápida */}
-      <div className="absolute top-4 left-4 z-50 bg-content1 border border-divider rounded-lg p-3 shadow-lg max-w-xs">
-        <p className="text-xs font-bold text-foreground mb-2">🔧 Navegación Dev</p>
-        <div className="space-y-1 text-xs">
-          <p className="font-semibold text-foreground/70 mt-2">Auth:</p>
-          <a href="/login" className="block text-primary hover:underline">→ Login</a>
-          <a href="/register" className="block text-primary hover:underline">→ Registro</a>
-          <a href="/verify-email" className="block text-primary hover:underline">→ Verificar Email</a>
-          <a href="/forgot-password" className="block text-primary hover:underline">→ Olvidé Contraseña</a>
-          <a href="/reset-password" className="block text-primary hover:underline">→ Reset Password</a>
-          
-          <p className="font-semibold text-foreground/70 mt-2">Dashboards:</p>
-          <a href="/admin/dashboard" className="block text-success hover:underline">→ Admin Dashboard</a>
-          <a href="/superadmin/dashboard" className="block text-warning hover:underline">→ Super Admin Dashboard</a>
-        </div>
       </div>
 
       {/* Columna Izquierda - Branding */}
@@ -156,25 +182,30 @@ export default function VerifyEmailPage() {
           </div>
 
           <form onSubmit={handleVerificar} className="space-y-5">
-            <Input
-              type="text"
-              label="Código de Verificación"
-              placeholder="123456"
-              value={codigo}
-              onValueChange={setCodigo}
-              variant="bordered"
-              size="lg"
-              isRequired
-              maxLength={6}
-              classNames={{
-                label: "text-foreground font-bold",
-                input: "text-foreground text-center text-2xl tracking-widest",
-                inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
-              }}
-            />
+            {/* Inputs de código separados */}
+            <div className="flex justify-center gap-2">
+              {codigo.map((digit, index) => (
+                <Input
+                  key={index}
+                  ref={(el) => (inputRefs.current[index] = el)}
+                  type="text"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  onPaste={index === 0 ? handlePaste : undefined}
+                  variant="bordered"
+                  size="lg"
+                  classNames={{
+                    input: "text-center text-2xl font-bold",
+                    inputWrapper: "w-12 h-14 sm:w-14 sm:h-16 border-2 data-[focus=true]:border-primary"
+                  }}
+                />
+              ))}
+            </div>
 
             {error && (
-              <p className="text-xs text-danger">{error}</p>
+              <p className="text-xs text-danger text-center">{error}</p>
             )}
 
             <Button

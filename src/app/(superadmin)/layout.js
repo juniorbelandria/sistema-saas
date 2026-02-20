@@ -4,6 +4,7 @@ import { Globe, Store, Users, Shield, CreditCard, ScrollText, BookOpen } from 'l
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import ThemeToggle from '@/components/ThemeToggle';
+import DevNavigation from '@/components/DevNavigation';
 
 const menuItems = [
   { icon: Globe, label: 'Dashboard Global', href: '/superadmin/dashboard' },
@@ -20,22 +21,6 @@ export default function SuperAdminLayout({ children }) {
 
   return (
     <div className="flex min-h-screen bg-background relative">
-      {/* DEV: Links de Navegación Rápida */}
-      <div className="absolute top-20 right-4 z-50 bg-content1 border border-divider rounded-lg p-3 shadow-lg max-w-xs">
-        <p className="text-xs font-bold text-foreground mb-2">🔧 Navegación Dev</p>
-        <div className="space-y-1 text-xs">
-          <p className="font-semibold text-foreground/70 mt-2">Auth:</p>
-          <a href="/login" className="block text-primary hover:underline">→ Login</a>
-          <a href="/register" className="block text-primary hover:underline">→ Registro</a>
-          <a href="/verify-email" className="block text-primary hover:underline">→ Verificar Email</a>
-          <a href="/forgot-password" className="block text-primary hover:underline">→ Olvidé Contraseña</a>
-          <a href="/reset-password" className="block text-primary hover:underline">→ Reset Password</a>
-          
-          <p className="font-semibold text-foreground/70 mt-2">Dashboards:</p>
-          <a href="/admin/dashboard" className="block text-success hover:underline">→ Admin Dashboard</a>
-          <a href="/superadmin/dashboard" className="block text-warning hover:underline">→ Super Admin Dashboard</a>
-        </div>
-      </div>
 
       {/* Sidebar */}
       <aside className="w-64 bg-content1 border-r border-divider p-4 hidden md:block">
@@ -80,6 +65,7 @@ export default function SuperAdminLayout({ children }) {
           </div>
           
           <div className="flex items-center gap-4">
+            <DevNavigation />
             <ThemeToggle />
             <button className="text-sm text-foreground/70 hover:text-foreground">
               Cerrar sesión

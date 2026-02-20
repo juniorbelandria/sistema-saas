@@ -32,7 +32,7 @@ export default function SuperAdminLayout({ children }) {
           <a href="/reset-password" className="block text-primary hover:underline">→ Reset Password</a>
           
           <p className="font-semibold text-foreground/70 mt-2">Dashboards:</p>
-          <a href="/dashboard" className="block text-success hover:underline">→ Admin Dashboard</a>
+          <a href="/admin/dashboard" className="block text-success hover:underline">→ Admin Dashboard</a>
           <a href="/superadmin/dashboard" className="block text-warning hover:underline">→ Super Admin Dashboard</a>
         </div>
       </div>

@@ -6,19 +6,19 @@ import { usePathname } from 'next/navigation';
 import ThemeToggle from '@/components/ThemeToggle';
 
 const menuItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-  { icon: ShoppingCart, label: 'Nueva Venta', href: '/ventas/nueva' },
-  { icon: Receipt, label: 'Historial Ventas', href: '/ventas' },
-  { icon: Package, label: 'Productos', href: '/productos' },
-  { icon: Warehouse, label: 'Inventario', href: '/inventario' },
-  { icon: Users, label: 'Clientes', href: '/clientes' },
-  { icon: CreditCard, label: 'Fiados', href: '/fiados' },
-  { icon: Banknote, label: 'Caja', href: '/caja' },
-  { icon: TrendingDown, label: 'Gastos', href: '/gastos' },
-  { icon: Undo2, label: 'Devoluciones', href: '/devoluciones' },
-  { icon: BarChart2, label: 'Reportes', href: '/reportes' },
-  { icon: UserCheck, label: 'Equipo', href: '/equipo' },
-  { icon: Settings, label: 'Configuración', href: '/configuracion' },
+  { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' },
+  { icon: ShoppingCart, label: 'Nueva Venta', href: '/admin/ventas/nueva' },
+  { icon: Receipt, label: 'Historial Ventas', href: '/admin/ventas' },
+  { icon: Package, label: 'Productos', href: '/admin/productos' },
+  { icon: Warehouse, label: 'Inventario', href: '/admin/inventario' },
+  { icon: Users, label: 'Clientes', href: '/admin/clientes' },
+  { icon: CreditCard, label: 'Fiados', href: '/admin/fiados' },
+  { icon: Banknote, label: 'Caja', href: '/admin/caja' },
+  { icon: TrendingDown, label: 'Gastos', href: '/admin/gastos' },
+  { icon: Undo2, label: 'Devoluciones', href: '/admin/devoluciones' },
+  { icon: BarChart2, label: 'Reportes', href: '/admin/reportes' },
+  { icon: UserCheck, label: 'Equipo', href: '/admin/equipo' },
+  { icon: Settings, label: 'Configuración', href: '/admin/configuracion' },
 ];
 
 export default function AdminLayout({ children }) {
@@ -38,7 +38,7 @@ export default function AdminLayout({ children }) {
           <a href="/reset-password" className="block text-primary hover:underline">→ Reset Password</a>
           
           <p className="font-semibold text-foreground/70 mt-2">Dashboards:</p>
-          <a href="/dashboard" className="block text-success hover:underline">→ Admin Dashboard</a>
+          <a href="/admin/dashboard" className="block text-success hover:underline">→ Admin Dashboard</a>
           <a href="/superadmin/dashboard" className="block text-warning hover:underline">→ Super Admin Dashboard</a>
         </div>
       </div>

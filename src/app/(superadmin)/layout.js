@@ -73,12 +73,12 @@ export default function SuperAdminLayout({ children }) {
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
                   isActive
-                    ? 'bg-primary text-white shadow-md shadow-primary/30'
-                    : 'text-foreground/70 hover:bg-content2 hover:text-foreground'
+                    ? 'bg-primary shadow-md shadow-primary/30'
+                    : 'hover:bg-content2'
                 }`}
               >
-                <Icon className="w-[18px] h-[18px] flex-shrink-0" />
-                <span className="text-[13px] font-medium">{item.label}</span>
+                <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-white' : 'text-foreground'}`} />
+                <span className={`text-[13px] font-medium ${isActive ? 'text-white' : 'text-foreground'}`}>{item.label}</span>
               </Link>
             );
           })}

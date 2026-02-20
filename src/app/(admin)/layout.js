@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { LayoutDashboard, ShoppingCart, Package, Users, CreditCard, Banknote, TrendingDown, Undo2, BarChart2, UserCheck, Settings, Warehouse, Receipt, Menu, X, User, LogOut, Bell } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, Badge } from '@heroui/react';
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar } from '@heroui/react';
 import ThemeToggle from '@/components/ThemeToggle';
 import DevNavigation from '@/components/DevNavigation';
 import Image from 'next/image';
@@ -129,11 +129,59 @@ export default function AdminLayout({ children }) {
           <div className="flex items-center gap-3">
             <ThemeToggle />
             
-            <Badge content="3" color="danger" size="sm" className="hidden sm:flex">
-              <button className="p-2 hover:bg-content2 rounded-lg transition-colors">
-                <Bell className="w-5 h-5 text-foreground/70" />
-              </button>
-            </Badge>
+            <Dropdown placement="bottom-end">
+              <DropdownTrigger>
+                <button className="relative p-2 hover:bg-content2 rounded-xl transition-all">
+                  <Bell className="w-5 h-5 text-foreground/70" />
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full animate-pulse"></span>
+                  <span className="absolute -top-1 -right-1 bg-danger text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    3
+                  </span>
+                </button>
+              </DropdownTrigger>
+              <DropdownMenu 
+                aria-label="Notificaciones" 
+                variant="flat"
+                className="w-80"
+              >
+                <DropdownItem key="header" className="h-10 gap-2" isReadOnly>
+                  <p className="font-bold text-sm">Notificaciones</p>
+                </DropdownItem>
+                <DropdownItem key="notif1" className="h-auto py-3">
+                  <div className="flex gap-3">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-1.5 flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold">Stock bajo en productos</p>
+                      <p className="text-xs text-foreground/60">Coca Cola 2L tiene solo 3 unidades</p>
+                      <p className="text-xs text-foreground/40 mt-1">Hace 5 minutos</p>
+                    </div>
+                  </div>
+                </DropdownItem>
+                <DropdownItem key="notif2" className="h-auto py-3">
+                  <div className="flex gap-3">
+                    <div className="w-2 h-2 bg-warning rounded-full mt-1.5 flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold">Fiado vencido</p>
+                      <p className="text-xs text-foreground/60">Juan Pérez - $45.00 vencido hace 3 días</p>
+                      <p className="text-xs text-foreground/40 mt-1">Hace 2 horas</p>
+                    </div>
+                  </div>
+                </DropdownItem>
+                <DropdownItem key="notif3" className="h-auto py-3">
+                  <div className="flex gap-3">
+                    <div className="w-2 h-2 bg-success rounded-full mt-1.5 flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold">Nueva venta registrada</p>
+                      <p className="text-xs text-foreground/60">Venta #1234 por $125.50</p>
+                      <p className="text-xs text-foreground/40 mt-1">Hace 1 hora</p>
+                    </div>
+                  </div>
+                </DropdownItem>
+                <DropdownItem key="all" className="h-10" textValue="Ver todas">
+                  <p className="text-center text-sm text-primary font-semibold">Ver todas las notificaciones</p>
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
             
             <Dropdown placement="bottom-end">
               <DropdownTrigger>

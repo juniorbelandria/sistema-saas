@@ -35,10 +35,10 @@ export default function DevNavigation() {
           </DropdownItem>
         </DropdownSection>
         <DropdownSection title="Dashboards">
-          <DropdownItem key="admin" href="/admin/dashboard" color="success">
+          <DropdownItem key="admin" href="/admin/dashboard">
             Admin Dashboard
           </DropdownItem>
-          <DropdownItem key="superadmin" href="/superadmin/dashboard" color="warning">
+          <DropdownItem key="superadmin" href="/superadmin/dashboard">
             Super Admin Dashboard
           </DropdownItem>
         </DropdownSection>

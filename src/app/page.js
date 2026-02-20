@@ -207,12 +207,12 @@ export default function Home() {
                   Mantener sesión iniciada
                 </span>
               </Checkbox>
-              <button
-                type="button"
+              <a
+                href="/forgot-password"
                 className="text-xs sm:text-sm text-primary hover:text-primary/80 font-medium transition-colors"
               >
                 ¿Olvidaste tu contraseña?
-              </button>
+              </a>
             </div>
 
             <Button

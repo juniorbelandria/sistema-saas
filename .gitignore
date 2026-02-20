@@ -67,3 +67,8 @@ logs
 .cache/
 .parcel-cache/
 .eslintcache
+
+# Archivos SQL y documentación de desarrollo
+*.sql
+GUIA_*.md
+$null

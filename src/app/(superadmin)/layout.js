@@ -40,7 +40,7 @@ export default function SuperAdminLayout({ children }) {
         flex flex-col
       `}>
         {/* Header del Sidebar */}
-        <div className="p-4 border-b border-divider">
+        <div className="p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">

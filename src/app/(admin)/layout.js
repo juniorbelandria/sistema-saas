@@ -47,7 +47,7 @@ export default function AdminLayout({ children }) {
         flex flex-col
       `}>
         {/* Header del Sidebar */}
-        <div className="p-4 border-b border-divider">
+        <div className="p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <div className="relative w-8 h-8">

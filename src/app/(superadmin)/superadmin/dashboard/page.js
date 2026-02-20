@@ -52,7 +52,7 @@ export default function SuperAdminDashboardPage() {
                     </div>
                   )}
                 </div>
-                <p className="text-2xl md:text-3xl font-bold text-foreground mb-1">{kpi.value}</p>
+                <p className="text-xl md:text-2xl font-bold text-foreground mb-1">{kpi.value}</p>
                 <p className="text-xs md:text-sm text-foreground/60 font-medium">{kpi.label}</p>
               </CardBody>
             </Card>

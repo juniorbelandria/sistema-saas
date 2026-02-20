@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardBody, CardHeader, Chip } from '@heroui/react';
-import { ShoppingCart, DollarSign, Wallet, AlertTriangle, Clock, TrendingUp, ArrowUpRight } from 'lucide-react';
+import { ShoppingCart, DollarSign, Wallet, AlertTriangle, Clock, ArrowUpRight } from 'lucide-react';
 
 export default function DashboardPage() {
   const kpis = [
@@ -44,7 +44,7 @@ export default function DashboardPage() {
                     <span className="text-xs font-bold">{kpi.trend}</span>
                   </div>
                 </div>
-                <p className="text-2xl md:text-3xl font-bold text-foreground mb-1">{kpi.value}</p>
+                <p className="text-xl md:text-2xl font-bold text-foreground mb-1">{kpi.value}</p>
                 <p className="text-xs md:text-sm text-foreground/60 font-medium">{kpi.label}</p>
               </CardBody>
             </Card>
@@ -110,24 +110,6 @@ export default function DashboardPage() {
           </CardBody>
         </Card>
       </div>
-
-      {/* Gráfico de Ventas */}
-      <Card className="shadow-md border-none">
-        <CardHeader className="px-4 md:px-5 pt-4 md:pt-5">
-          <div className="flex items-center justify-between w-full">
-            <h3 className="text-sm md:text-base font-bold">Ventas de la Semana</h3>
-            <Chip size="sm" variant="flat" color="primary">
-              <TrendingUp className="w-3 h-3 mr-1" />
-              +15%
-            </Chip>
-          </div>
-        </CardHeader>
-        <CardBody className="px-4 md:px-5 pb-4 md:pb-5">
-          <div className="h-48 md:h-64 lg:h-72 flex items-center justify-center bg-content2 rounded-xl">
-            <p className="text-sm text-foreground/60">Gráfico de ventas (Recharts)</p>
-          </div>
-        </CardBody>
-      </Card>
     </div>
   );
 }

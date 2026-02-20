@@ -33,27 +33,27 @@ export default function SuperAdminDashboardPage() {
   };
 
   return (
-    <div className="space-y-4 lg:space-y-6">
+    <div className="space-y-3 md:space-y-4 max-w-[1400px] mx-auto">
       {/* KPIs Globales */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3">
         {kpis.map((kpi) => {
           const Icon = kpi.icon;
           return (
-            <Card key={kpi.label} className="border border-divider shadow-sm hover:shadow-md transition-shadow">
-              <CardBody className="p-4 lg:p-5">
-                <div className="flex items-start justify-between mb-3">
-                  <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-${kpi.color}/10 flex items-center justify-center`}>
-                    <Icon className={`w-5 h-5 lg:w-6 lg:h-6 text-${kpi.color}`} />
+            <Card key={kpi.label} className="border border-divider/50 shadow-sm hover:shadow transition-all">
+              <CardBody className="p-3 md:p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg bg-${kpi.color}/10 flex items-center justify-center`}>
+                    <Icon className={`w-4 h-4 md:w-5 md:h-5 text-${kpi.color}`} />
                   </div>
                   {kpi.trend !== '0' && (
-                    <div className={`flex items-center gap-1 ${kpi.trend.startsWith('+') ? 'text-success' : 'text-danger'}`}>
-                      <ArrowUpRight className="w-3 h-3" />
-                      <span className="text-xs font-semibold">{kpi.trend}</span>
+                    <div className={`flex items-center gap-0.5 ${kpi.trend.startsWith('+') ? 'text-success' : 'text-danger'}`}>
+                      <ArrowUpRight className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                      <span className="text-[10px] md:text-xs font-semibold">{kpi.trend}</span>
                     </div>
                   )}
                 </div>
-                <p className="text-2xl lg:text-3xl font-bold text-foreground mb-1">{kpi.value}</p>
-                <p className="text-xs lg:text-sm text-foreground/60">{kpi.label}</p>
+                <p className="text-xl md:text-2xl font-bold text-foreground mb-0.5">{kpi.value}</p>
+                <p className="text-[10px] md:text-xs text-foreground/60">{kpi.label}</p>
               </CardBody>
             </Card>
           );
@@ -61,26 +61,26 @@ export default function SuperAdminDashboardPage() {
       </div>
 
       {/* Tabla de Negocios Recientes */}
-      <Card className="border border-divider shadow-sm">
-        <CardHeader className="px-4 lg:px-6 pt-4 lg:pt-6">
-          <h3 className="text-sm lg:text-base font-bold">Negocios Registrados Recientemente</h3>
+      <Card className="border border-divider/50 shadow-sm">
+        <CardHeader className="px-3 md:px-4 pt-3 md:pt-4">
+          <h3 className="text-xs md:text-sm font-bold">Negocios Registrados Recientemente</h3>
         </CardHeader>
-        <CardBody className="px-0 lg:px-6 pb-4 lg:pb-6">
+        <CardBody className="px-0 lg:px-4 pb-3 md:pb-4">
           {/* Vista móvil - Cards */}
-          <div className="lg:hidden space-y-3 px-4">
+          <div className="lg:hidden space-y-2 px-3">
             {negociosRecientes.map((negocio) => (
-              <Card key={negocio.id} className="border border-divider shadow-sm">
-                <CardBody className="p-3">
-                  <div className="flex items-start justify-between mb-2">
+              <Card key={negocio.id} className="border border-divider/50 shadow-sm">
+                <CardBody className="p-2.5">
+                  <div className="flex items-start justify-between mb-1.5">
                     <div>
-                      <p className="text-sm font-semibold">{negocio.nombre}</p>
-                      <p className="text-xs text-foreground/60">{negocio.tipo}</p>
+                      <p className="text-xs font-semibold">{negocio.nombre}</p>
+                      <p className="text-[10px] text-foreground/60">{negocio.tipo}</p>
                     </div>
-                    <Chip size="sm" variant="flat">{negocio.pais}</Chip>
+                    <Chip size="sm" variant="flat" className="text-[10px]">{negocio.pais}</Chip>
                   </div>
                   <div className="flex items-center justify-between">
-                    <p className="text-xs text-foreground/60 capitalize">{negocio.plan.replace('_', ' ')}</p>
-                    <Chip size="sm" color={getEstadoColor(negocio.estado)} variant="flat">
+                    <p className="text-[10px] text-foreground/60 capitalize">{negocio.plan.replace('_', ' ')}</p>
+                    <Chip size="sm" color={getEstadoColor(negocio.estado)} variant="flat" className="text-[10px]">
                       {negocio.estado.replace('_', ' ')}
                     </Chip>
                   </div>
@@ -91,31 +91,31 @@ export default function SuperAdminDashboardPage() {
 
           {/* Vista desktop - Tabla */}
           <div className="hidden lg:block">
-            <Table aria-label="Negocios recientes">
+            <Table aria-label="Negocios recientes" className="text-xs">
               <TableHeader>
-                <TableColumn>NEGOCIO</TableColumn>
-                <TableColumn>PAÍS</TableColumn>
-                <TableColumn>TIPO</TableColumn>
-                <TableColumn>PLAN</TableColumn>
-                <TableColumn>ESTADO</TableColumn>
+                <TableColumn className="text-[10px]">NEGOCIO</TableColumn>
+                <TableColumn className="text-[10px]">PAÍS</TableColumn>
+                <TableColumn className="text-[10px]">TIPO</TableColumn>
+                <TableColumn className="text-[10px]">PLAN</TableColumn>
+                <TableColumn className="text-[10px]">ESTADO</TableColumn>
               </TableHeader>
               <TableBody>
                 {negociosRecientes.map((negocio) => (
                   <TableRow key={negocio.id}>
                     <TableCell>
-                      <p className="text-sm font-semibold">{negocio.nombre}</p>
+                      <p className="text-xs font-semibold">{negocio.nombre}</p>
                     </TableCell>
                     <TableCell>
-                      <Chip size="sm" variant="flat">{negocio.pais}</Chip>
+                      <Chip size="sm" variant="flat" className="text-[10px]">{negocio.pais}</Chip>
                     </TableCell>
                     <TableCell>
-                      <p className="text-sm">{negocio.tipo}</p>
+                      <p className="text-xs">{negocio.tipo}</p>
                     </TableCell>
                     <TableCell>
-                      <p className="text-sm capitalize">{negocio.plan.replace('_', ' ')}</p>
+                      <p className="text-xs capitalize">{negocio.plan.replace('_', ' ')}</p>
                     </TableCell>
                     <TableCell>
-                      <Chip size="sm" color={getEstadoColor(negocio.estado)} variant="flat">
+                      <Chip size="sm" color={getEstadoColor(negocio.estado)} variant="flat" className="text-[10px]">
                         {negocio.estado.replace('_', ' ')}
                       </Chip>
                     </TableCell>
@@ -128,46 +128,46 @@ export default function SuperAdminDashboardPage() {
       </Card>
 
       {/* Alertas */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-        <Card className="border border-divider shadow-sm">
-          <CardHeader className="pb-2 px-4 lg:px-6 pt-4 lg:pt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 md:gap-3">
+        <Card className="border border-divider/50 shadow-sm">
+          <CardHeader className="pb-2 px-3 md:px-4 pt-3 md:pt-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-danger/10 flex items-center justify-center">
-                <AlertCircle className="w-4 h-4 text-danger" />
+              <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-danger/10 flex items-center justify-center">
+                <AlertCircle className="w-3.5 h-3.5 md:w-4 md:h-4 text-danger" />
               </div>
-              <h3 className="text-sm lg:text-base font-bold">Negocios Vencidos</h3>
+              <h3 className="text-xs md:text-sm font-bold">Negocios Vencidos</h3>
             </div>
           </CardHeader>
-          <CardBody className="px-4 lg:px-6 pb-4 lg:pb-6">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-content2 hover:bg-content3 transition-colors">
+          <CardBody className="px-3 md:px-4 pb-3 md:pb-4">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between p-2 md:p-2.5 rounded-lg bg-default-50 hover:bg-default-100 transition-colors">
                 <div>
-                  <p className="text-sm font-semibold">Panadería La Espiga</p>
-                  <p className="text-xs text-foreground/60">Vencido hace 5 días</p>
+                  <p className="text-xs md:text-sm font-semibold">Panadería La Espiga</p>
+                  <p className="text-[10px] md:text-xs text-foreground/60">Vencido hace 5 días</p>
                 </div>
-                <Chip size="sm" color="danger" variant="flat">Vencido</Chip>
+                <Chip size="sm" color="danger" variant="flat" className="text-[10px]">Vencido</Chip>
               </div>
             </div>
           </CardBody>
         </Card>
 
-        <Card className="border border-divider shadow-sm">
-          <CardHeader className="pb-2 px-4 lg:px-6 pt-4 lg:pt-6">
+        <Card className="border border-divider/50 shadow-sm">
+          <CardHeader className="pb-2 px-3 md:px-4 pt-3 md:pt-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-warning/10 flex items-center justify-center">
-                <Clock className="w-4 h-4 text-warning" />
+              <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-warning/10 flex items-center justify-center">
+                <Clock className="w-3.5 h-3.5 md:w-4 md:h-4 text-warning" />
               </div>
-              <h3 className="text-sm lg:text-base font-bold">Vencen Esta Semana</h3>
+              <h3 className="text-xs md:text-sm font-bold">Vencen Esta Semana</h3>
             </div>
           </CardHeader>
-          <CardBody className="px-4 lg:px-6 pb-4 lg:pb-6">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-content2 hover:bg-content3 transition-colors">
+          <CardBody className="px-3 md:px-4 pb-3 md:pb-4">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between p-2 md:p-2.5 rounded-lg bg-default-50 hover:bg-default-100 transition-colors">
                 <div>
-                  <p className="text-sm font-semibold">Ferretería El Martillo</p>
-                  <p className="text-xs text-foreground/60">Vence en 3 días</p>
+                  <p className="text-xs md:text-sm font-semibold">Ferretería El Martillo</p>
+                  <p className="text-[10px] md:text-xs text-foreground/60">Vence en 3 días</p>
                 </div>
-                <Chip size="sm" color="warning" variant="flat">Próximo</Chip>
+                <Chip size="sm" color="warning" variant="flat" className="text-[10px]">Próximo</Chip>
               </div>
             </div>
           </CardBody>

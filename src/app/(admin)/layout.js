@@ -74,7 +74,7 @@ export default function AdminLayout({ children }) {
         </div>
 
         {/* Navegación */}
-        <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+        <nav className="flex-1 overflow-y-auto p-2 space-y-0.5">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
@@ -84,14 +84,14 @@ export default function AdminLayout({ children }) {
                 key={item.href}
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${
                   isActive
-                    ? 'bg-primary text-white shadow-sm'
-                    : 'text-foreground/70 hover:bg-content2 hover:text-foreground'
+                    ? 'bg-default-100 text-foreground font-medium'
+                    : 'text-foreground/60 hover:bg-default-50 hover:text-foreground'
                 }`}
               >
-                <Icon className="w-5 h-5 flex-shrink-0" />
-                <span className="text-sm font-medium">{item.label}</span>
+                <Icon className="w-4 h-4 flex-shrink-0" />
+                <span className="text-xs">{item.label}</span>
               </Link>
             );
           })}
@@ -134,7 +134,7 @@ export default function AdminLayout({ children }) {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-4 lg:p-6 overflow-auto">
+        <main className="flex-1 p-3 md:p-4 lg:p-5 overflow-auto bg-default-50/30">
           {children}
         </main>
       </div>

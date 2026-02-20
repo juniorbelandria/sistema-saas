@@ -61,7 +61,7 @@ export default function SuperAdminLayout({ children }) {
         </div>
 
         {/* Navegación */}
-        <nav className="flex-1 overflow-y-auto p-2 space-y-0.5">
+        <nav className="flex-1 overflow-y-auto p-2.5 space-y-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
@@ -71,14 +71,14 @@ export default function SuperAdminLayout({ children }) {
                 key={item.href}
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
                   isActive
-                    ? 'bg-default-100 text-foreground font-medium'
-                    : 'text-foreground/60 hover:bg-default-50 hover:text-foreground'
+                    ? 'bg-primary text-white shadow-md shadow-primary/30'
+                    : 'text-foreground/70 hover:bg-content2 hover:text-foreground'
                 }`}
               >
-                <Icon className="w-4 h-4 flex-shrink-0" />
-                <span className="text-xs">{item.label}</span>
+                <Icon className="w-[18px] h-[18px] flex-shrink-0" />
+                <span className="text-[13px] font-medium">{item.label}</span>
               </Link>
             );
           })}
@@ -120,7 +120,7 @@ export default function SuperAdminLayout({ children }) {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-3 md:p-4 lg:p-5 overflow-auto bg-default-50/30">
+        <main className="flex-1 p-4 md:p-5 lg:p-6 overflow-auto bg-gradient-to-br from-background to-content1">
           {children}
         </main>
       </div>

@@ -214,6 +214,7 @@ export default function VerifyEmailPage() {
               color="primary"
               className="w-full font-semibold text-sm sm:text-base min-h-[52px]"
               isLoading={isLoading}
+              startContent={!isLoading && <CheckCircle2 className="w-5 h-5" />}
             >
               {isLoading ? 'Verificando...' : 'Verificar código'}
             </Button>

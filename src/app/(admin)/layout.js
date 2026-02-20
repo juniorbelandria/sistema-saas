@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { LayoutDashboard, ShoppingCart, Package, Users, CreditCard, Banknote, TrendingDown, Undo2, BarChart2, UserCheck, Settings, Warehouse, Receipt, Menu, X } from 'lucide-react';
+import { LayoutDashboard, ShoppingCart, Package, Users, CreditCard, Banknote, TrendingDown, Undo2, BarChart2, UserCheck, Settings, Warehouse, Receipt, Menu, X, User, LogOut, Bell } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, Badge } from '@heroui/react';
 import ThemeToggle from '@/components/ThemeToggle';
 import DevNavigation from '@/components/DevNavigation';
 import Image from 'next/image';
@@ -98,7 +99,8 @@ export default function AdminLayout({ children }) {
         </nav>
 
         {/* Footer del Sidebar */}
-        <div className="p-3">
+        <div className="p-3 space-y-2">
+          <DevNavigation />
           <div className="px-3 py-2 bg-content2 rounded-lg">
             <p className="text-xs font-semibold text-foreground mb-1">Mi Negocio</p>
             <p className="text-xs text-foreground/60">Plan: Prueba Gratis</p>
@@ -110,7 +112,7 @@ export default function AdminLayout({ children }) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 lg:ml-48">
         {/* Top Bar */}
-        <header className="sticky top-0 z-30 h-16 bg-content1/95 backdrop-blur-sm flex items-center justify-between px-4 lg:px-6">
+        <header className="sticky top-0 z-30 h-16 bg-content1/95 backdrop-blur-sm flex items-center justify-between px-4 lg:px-6 shadow-sm">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -124,12 +126,39 @@ export default function AdminLayout({ children }) {
             </div>
           </div>
           
-          <div className="flex items-center gap-2 lg:gap-4">
-            <DevNavigation />
+          <div className="flex items-center gap-3">
             <ThemeToggle />
-            <button className="text-xs lg:text-sm text-foreground/70 hover:text-foreground hidden sm:block">
-              Cerrar sesión
-            </button>
+            
+            <Badge content="3" color="danger" size="sm" className="hidden sm:flex">
+              <button className="p-2 hover:bg-content2 rounded-lg transition-colors">
+                <Bell className="w-5 h-5 text-foreground/70" />
+              </button>
+            </Badge>
+            
+            <Dropdown placement="bottom-end">
+              <DropdownTrigger>
+                <Avatar
+                  as="button"
+                  className="transition-transform hover:scale-105"
+                  size="sm"
+                  name="Admin"
+                  showFallback
+                  fallback={<User className="w-4 h-4" />}
+                />
+              </DropdownTrigger>
+              <DropdownMenu aria-label="User menu" variant="flat">
+                <DropdownItem key="profile" className="h-14 gap-2">
+                  <p className="font-semibold">Admin Usuario</p>
+                  <p className="text-xs text-foreground/60">admin@minegocio.com</p>
+                </DropdownItem>
+                <DropdownItem key="settings" startContent={<Settings className="w-4 h-4" />}>
+                  Configuración
+                </DropdownItem>
+                <DropdownItem key="logout" color="danger" startContent={<LogOut className="w-4 h-4" />}>
+                  Cerrar sesión
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </div>
         </header>
 

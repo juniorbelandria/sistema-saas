@@ -33,7 +33,7 @@ export default function DashboardPage() {
         {kpis.map((kpi) => {
           const Icon = kpi.icon;
           return (
-            <Card key={kpi.label} className="border-none shadow-sm hover:shadow-md transition-shadow">
+            <Card key={kpi.label} className="border border-divider shadow-sm hover:shadow-md transition-shadow">
               <CardBody className="p-4 lg:p-5">
                 <div className="flex items-start justify-between mb-3">
                   <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-${kpi.color}/10 flex items-center justify-center`}>
@@ -54,7 +54,7 @@ export default function DashboardPage() {
 
       {/* Alertas */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-        <Card className="shadow-sm">
+        <Card className="border border-divider shadow-sm">
           <CardHeader className="pb-2 px-4 lg:px-6 pt-4 lg:pt-6">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-danger/10 flex items-center justify-center">
@@ -82,7 +82,7 @@ export default function DashboardPage() {
           </CardBody>
         </Card>
 
-        <Card className="shadow-sm">
+        <Card className="border border-divider shadow-sm">
           <CardHeader className="pb-2 px-4 lg:px-6 pt-4 lg:pt-6">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-warning/10 flex items-center justify-center">
@@ -112,7 +112,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Gráfico de Ventas */}
-      <Card className="shadow-sm">
+      <Card className="border border-divider shadow-sm">
         <CardHeader className="px-4 lg:px-6 pt-4 lg:pt-6">
           <div className="flex items-center justify-between w-full">
             <h3 className="text-sm lg:text-base font-bold">Ventas de la Semana</h3>

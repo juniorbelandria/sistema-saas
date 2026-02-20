@@ -229,15 +229,12 @@ export default function VerifyEmailPage() {
                   <p className="text-xs font-bold text-foreground mb-1">
                     ¿No recibiste el código?
                   </p>
-                  <Button
-                    size="sm"
-                    variant="light"
-                    color="primary"
-                    onPress={handleReenviar}
-                    className="h-auto p-0 min-w-0"
+                  <button
+                    onClick={handleReenviar}
+                    className="text-xs text-primary hover:text-primary/80 font-medium transition-colors underline"
                   >
                     Reenviar código
-                  </Button>
+                  </button>
                 </div>
               </div>
             </CardBody>

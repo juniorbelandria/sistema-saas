@@ -25,7 +25,24 @@ export default function AdminLayout({ children }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background relative">
+      {/* DEV: Links de Navegación Rápida */}
+      <div className="absolute top-20 right-4 z-50 bg-content1 border border-divider rounded-lg p-3 shadow-lg max-w-xs">
+        <p className="text-xs font-bold text-foreground mb-2">🔧 Navegación Dev</p>
+        <div className="space-y-1 text-xs">
+          <p className="font-semibold text-foreground/70 mt-2">Auth:</p>
+          <a href="/login" className="block text-primary hover:underline">→ Login</a>
+          <a href="/register" className="block text-primary hover:underline">→ Registro</a>
+          <a href="/verify-email" className="block text-primary hover:underline">→ Verificar Email</a>
+          <a href="/forgot-password" className="block text-primary hover:underline">→ Olvidé Contraseña</a>
+          <a href="/reset-password" className="block text-primary hover:underline">→ Reset Password</a>
+          
+          <p className="font-semibold text-foreground/70 mt-2">Dashboards:</p>
+          <a href="/dashboard" className="block text-success hover:underline">→ Admin Dashboard</a>
+          <a href="/superadmin/dashboard" className="block text-warning hover:underline">→ Super Admin Dashboard</a>
+        </div>
+      </div>
+
       {/* Sidebar */}
       <aside className="w-64 bg-content1 border-r border-divider p-4 hidden md:block">
         <div className="mb-8">

@@ -100,14 +100,7 @@ export default function POSPage() {
                 className="w-20 sm:w-24"
                 classNames={{
                   trigger: "h-8 sm:h-9 min-h-[32px] sm:min-h-[36px] border-default-300",
-                  value: "text-xs sm:text-sm font-semibold",
-                  listboxWrapper: "max-h-[320px]",
-                  popoverContent: "p-0"
-                }}
-                listboxProps={{
-                  itemClasses: {
-                    base: "py-3 px-4 gap-3 data-[hover=true]:bg-default-100 rounded-none first:rounded-t-medium last:rounded-b-medium"
-                  }
+                  value: "text-xs sm:text-sm font-semibold"
                 }}
                 aria-label="Seleccionar moneda"
                 renderValue={() => (
@@ -121,13 +114,13 @@ export default function POSPage() {
                     key={pais.codigo} 
                     value={pais.codigo}
                     textValue={`${pais.moneda} ${pais.nombre}`}
+                    startContent={
+                      <span className="text-lg font-bold">{pais.simbolo}</span>
+                    }
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl font-bold min-w-[28px] text-center">{pais.simbolo}</span>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-sm font-bold">{pais.moneda}</span>
-                        <span className="text-xs text-foreground/50">{pais.nombre}</span>
-                      </div>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-sm font-bold">{pais.moneda}</span>
+                      <span className="text-xs text-foreground/60">{pais.nombre}</span>
                     </div>
                   </SelectItem>
                 ))}

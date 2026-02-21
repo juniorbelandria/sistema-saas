@@ -39,25 +39,25 @@ const CLIENTES = [
 
 const PRODUCTOS = [
   { id: 1, nombre: 'Coca Cola 600ml', codigo: '7501234567890', precio: 15.00, stock: 50, categoria: 'bebidas' },
-  { id: 2, nombre: 'Pan Integral Bimbo', codigo: '7501234567891', precio: 4.00, stock: 25, categoria: 'alimentos' },
-  { id: 3, nombre: 'Leche Entera Alpura 1L', codigo: '7501234567892', precio: 15.00, stock: 30, categoria: 'lacteos' },
-  { id: 4, nombre: 'Arroz Verde Valle 1kg', codigo: '7501234567893', precio: 15.00, stock: 40, categoria: 'alimentos' },
-  { id: 5, nombre: 'Aceite Vegetal Capullo', codigo: '7501234567894', precio: 15.00, stock: 20, categoria: 'alimentos' },
-  { id: 6, nombre: 'Yogurt Natural Danone', codigo: '7501234567895', precio: 8.00, stock: 35, categoria: 'lacteos' },
-  { id: 7, nombre: 'Huevos San Juan x12', codigo: '7501234567896', precio: 25.00, stock: 15, categoria: 'alimentos' },
-  { id: 8, nombre: 'Azúcar Estándar 1kg', codigo: '7501234567897', precio: 12.00, stock: 45, categoria: 'alimentos' },
-  { id: 9, nombre: 'Detergente Ariel 1kg', codigo: '7501234567898', precio: 28.00, stock: 18, categoria: 'limpieza' },
-  { id: 10, nombre: 'Jabón Zote 200g', codigo: '7501234567899', precio: 6.50, stock: 60, categoria: 'limpieza' },
-  { id: 11, nombre: 'Papel Higiénico Suave', codigo: '7501234567900', precio: 22.00, stock: 28, categoria: 'limpieza' },
-  { id: 12, nombre: 'Shampoo Pantene 400ml', codigo: '7501234567901', precio: 35.00, stock: 12, categoria: 'limpieza' },
-  { id: 13, nombre: 'Pasta Dental Colgate', codigo: '7501234567902', precio: 18.00, stock: 33, categoria: 'limpieza' },
-  { id: 14, nombre: 'Café Soluble Nescafé', codigo: '7501234567903', precio: 45.00, stock: 22, categoria: 'bebidas' },
-  { id: 15, nombre: 'Té Verde Lipton x25', codigo: '7501234567904', precio: 12.00, stock: 38, categoria: 'bebidas' },
-  { id: 16, nombre: 'Jugo Naranja Del Valle', codigo: '7501234567905', precio: 20.00, stock: 26, categoria: 'bebidas' },
-  { id: 17, nombre: 'Galletas Marías Gamesa', codigo: '7501234567906', precio: 8.50, stock: 42, categoria: 'alimentos' },
-  { id: 18, nombre: 'Atún Dolores Lata', codigo: '7501234567907', precio: 16.00, stock: 31, categoria: 'alimentos' },
-  { id: 19, nombre: 'Frijoles Negros La Costeña', codigo: '7501234567908', precio: 14.00, stock: 27, categoria: 'alimentos' },
-  { id: 20, nombre: 'Queso Panela Lala 400g', codigo: '7501234567909', precio: 32.00, stock: 19, categoria: 'lacteos' },
+  { id: 2, nombre: 'Pan Integral 500g', codigo: '7501234567891', precio: 4.00, stock: 25, categoria: 'alimentos' },
+  { id: 3, nombre: 'Leche Entera 1L', codigo: '7501234567892', precio: 15.00, stock: 3, categoria: 'lacteos' },
+  { id: 4, nombre: 'Arroz Blanco 1kg', codigo: '7501234567893', precio: 15.00, stock: 40, categoria: 'alimentos' },
+  { id: 5, nombre: 'Aceite Vegetal 1L', codigo: '7501234567894', precio: 15.00, stock: 20, categoria: 'alimentos' },
+  { id: 6, nombre: 'Yogurt Natural 150g', codigo: '7501234567895', precio: 8.00, stock: 35, categoria: 'lacteos' },
+  { id: 7, nombre: 'Huevos Blancos x12', codigo: '7501234567896', precio: 25.00, stock: 15, categoria: 'alimentos' },
+  { id: 8, nombre: 'Azúcar Blanca 1kg', codigo: '7501234567897', precio: 12.00, stock: 45, categoria: 'alimentos' },
+  { id: 9, nombre: 'Detergente Polvo 1kg', codigo: '7501234567898', precio: 28.00, stock: 2, categoria: 'limpieza' },
+  { id: 10, nombre: 'Jabón de Lavar 200g', codigo: '7501234567899', precio: 6.50, stock: 0, categoria: 'limpieza' },
+  { id: 11, nombre: 'Papel Higiénico x4', codigo: '7501234567900', precio: 22.00, stock: 28, categoria: 'limpieza' },
+  { id: 12, nombre: 'Shampoo Anticaspa 400ml', codigo: '7501234567901', precio: 35.00, stock: 12, categoria: 'limpieza' },
+  { id: 13, nombre: 'Pasta Dental Triple Acción', codigo: '7501234567902', precio: 18.00, stock: 33, categoria: 'limpieza' },
+  { id: 14, nombre: 'Café Instantáneo 200g', codigo: '7501234567903', precio: 45.00, stock: 22, categoria: 'bebidas' },
+  { id: 15, nombre: 'Té Verde x25 Sobres', codigo: '7501234567904', precio: 12.00, stock: 38, categoria: 'bebidas' },
+  { id: 16, nombre: 'Jugo de Naranja 1L', codigo: '7501234567905', precio: 20.00, stock: 26, categoria: 'bebidas' },
+  { id: 17, nombre: 'Galletas Marías 200g', codigo: '7501234567906', precio: 8.50, stock: 42, categoria: 'alimentos' },
+  { id: 18, nombre: 'Atún en Aceite 140g', codigo: '7501234567907', precio: 16.00, stock: 31, categoria: 'alimentos' },
+  { id: 19, nombre: 'Frijoles Negros 400g', codigo: '7501234567908', precio: 14.00, stock: 4, categoria: 'alimentos' },
+  { id: 20, nombre: 'Queso Fresco 400g', codigo: '7501234567909', precio: 32.00, stock: 19, categoria: 'lacteos' },
 ];
 
 export default function POSPage() {
@@ -82,9 +82,17 @@ export default function POSPage() {
   // Calcular total de items en carrito
   const itemsCarrito = Object.values(carrito).reduce((total, item) => total + item.cantidad, 0);
 
-  const productosFiltrados = categoriaSeleccionada === 'todos' 
-    ? PRODUCTOS 
-    : PRODUCTOS.filter(p => p.categoria === categoriaSeleccionada);
+  // Filtrar productos por categoría y búsqueda
+  const productosFiltrados = PRODUCTOS
+    .filter(p => categoriaSeleccionada === 'todos' || p.categoria === categoriaSeleccionada)
+    .filter(p => {
+      if (!busquedaProducto) return true;
+      const searchLower = busquedaProducto.toLowerCase();
+      return (
+        p.nombre.toLowerCase().includes(searchLower) ||
+        p.codigo.includes(busquedaProducto)
+      );
+    });
 
   const agregarAlCarrito = (producto) => {
     // Verificar si hay stock disponible

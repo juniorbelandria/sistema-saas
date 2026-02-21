@@ -119,7 +119,7 @@ export default function ProductCard({
 
         {/* Info Producto */}
         <div className="flex flex-col gap-0.5 mt-5">
-          <h3 className="text-xs font-bold truncate leading-tight uppercase text-foreground">
+          <h3 className="text-xs font-bold line-clamp-2 leading-tight uppercase text-foreground min-h-[32px]">
             {product.nombre}
           </h3>
           <p className="text-lg font-black text-primary">

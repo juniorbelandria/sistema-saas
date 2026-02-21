@@ -9,10 +9,13 @@ import { X, Camera, Keyboard } from 'lucide-react';
 export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess: onScanSuccessCallback }) {
   const scannerRef = useRef(null);
   const [isScanning, setIsScanning] = useState(false);
+  const [canScan, setCanScan] = useState(true); // Bandera para cooldown
   const [error, setError] = useState(null);
   const [manualCode, setManualCode] = useState('');
   const [selectedTab, setSelectedTab] = useState('camera');
+  const [scanSuccess, setScanSuccess] = useState(false); // Para efecto visual
   const html5QrCodeRef = useRef(null);
+  const lastScannedCodeRef = useRef(null);
 
   // Iniciar el escáner cuando el modal se abre y está en modo cámara
   useEffect(() => {
@@ -20,26 +23,39 @@ export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess: on
       startScanner();
     }
 
-    // Limpiar el escáner cuando el modal se cierra o cambia de tab
+    // Limpiar el escáner cuando el modal se cierra
     return () => {
-      stopScanner();
+      cleanupScanner();
     };
   }, [isOpen, selectedTab]);
 
   const onScanSuccess = (decodedText) => {
-    // Reproducir sonido de éxito (opcional)
+    // Si no puede escanear (cooldown activo), ignorar
+    if (!canScan) return;
+
+    // Activar efecto visual
+    setScanSuccess(true);
+    setTimeout(() => setScanSuccess(false), 300);
+
+    // Vibración táctil
     if (typeof window !== 'undefined' && window.navigator.vibrate) {
-      window.navigator.vibrate(200); // Vibración táctil
+      window.navigator.vibrate(100);
     }
 
-    // Detener el escáner
-    stopScanner();
+    // Desactivar escaneo temporalmente (cooldown)
+    setCanScan(false);
 
     // Pasar el código al componente padre
     onScanSuccessCallback(decodedText);
 
-    // Cerrar el modal
-    onClose();
+    // Guardar el último código escaneado
+    lastScannedCodeRef.current = decodedText;
+
+    // Reactivar escaneo después del cooldown (2 segundos)
+    setTimeout(() => {
+      setCanScan(true);
+      lastScannedCodeRef.current = null;
+    }, 2000);
   };
 
   const onScanError = (errorMessage) => {
@@ -47,12 +63,20 @@ export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess: on
   };
 
   const startScanner = async () => {
+    // Si ya hay una instancia activa, no crear otra
+    if (html5QrCodeRef.current && isScanning) {
+      return;
+    }
+
     try {
       setError(null);
       setIsScanning(true);
+      setCanScan(true);
 
-      // Crear instancia del escáner
-      html5QrCodeRef.current = new Html5Qrcode('barcode-scanner');
+      // Crear instancia del escáner solo si no existe
+      if (!html5QrCodeRef.current) {
+        html5QrCodeRef.current = new Html5Qrcode('barcode-scanner');
+      }
 
       // Configuración del escáner
       const config = {
@@ -64,7 +88,7 @@ export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess: on
         aspectRatio: 1.777778
       };
 
-      // Iniciar el escáner
+      // Iniciar el escáner (NO se detiene después de cada lectura)
       await html5QrCodeRef.current.start(
         { facingMode: 'environment' }, // Cámara trasera
         config,
@@ -75,19 +99,25 @@ export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess: on
       console.error('Error al iniciar el escáner:', err);
       setError('No se pudo acceder a la cámara. Por favor, verifica los permisos.');
       setIsScanning(false);
+      html5QrCodeRef.current = null;
     }
   };
 
-  const stopScanner = async () => {
-    if (html5QrCodeRef.current && isScanning) {
+  const cleanupScanner = async () => {
+    if (html5QrCodeRef.current) {
       try {
-        await html5QrCodeRef.current.stop();
+        const isCurrentlyScanning = html5QrCodeRef.current.getState() === 2; // 2 = SCANNING
+        if (isCurrentlyScanning) {
+          await html5QrCodeRef.current.stop();
+        }
         html5QrCodeRef.current.clear();
-        html5QrCodeRef.current = null;
       } catch (err) {
-        console.error('Error al detener el escáner:', err);
+        console.error('Error al limpiar el escáner:', err);
+      } finally {
+        html5QrCodeRef.current = null;
+        setIsScanning(false);
+        setCanScan(true);
       }
-      setIsScanning(false);
     }
   };
 
@@ -103,14 +133,19 @@ export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess: on
   };
 
   const handleClose = () => {
-    stopScanner();
+    cleanupScanner();
     setManualCode('');
+    setScanSuccess(false);
     onClose();
   };
 
-  const handleTabChange = (key) => {
+  const handleTabChange = async (key) => {
     if (key === 'manual') {
-      stopScanner();
+      // Detener escáner al cambiar a manual
+      await cleanupScanner();
+    } else if (key === 'camera' && !isScanning) {
+      // Reiniciar escáner al volver a cámara
+      startScanner();
     }
     setSelectedTab(key);
   };
@@ -133,6 +168,13 @@ export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess: on
             <Camera className="w-5 h-5 text-primary" />
             <span className="text-base sm:text-lg font-bold">Buscar Producto</span>
           </div>
+          {/* Indicador de estado */}
+          {isScanning && (
+            <div className="flex items-center gap-2 text-xs text-success">
+              <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
+              <span>Escáner activo</span>
+            </div>
+          )}
         </ModalHeader>
         
         <ModalBody className="py-2 sm:py-4">
@@ -168,18 +210,33 @@ export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess: on
                 ) : (
                   <div className="flex flex-col gap-3 sm:gap-4">
                     <p className="text-xs sm:text-sm text-center text-foreground/70">
-                      Coloca el código de barras dentro del marco
+                      {canScan ? 'Coloca el código de barras dentro del marco' : 'Procesando...'}
                     </p>
                     
-                    {/* Contenedor del escáner */}
+                    {/* Contenedor del escáner con efecto visual */}
                     <div 
                       id="barcode-scanner" 
                       ref={scannerRef}
-                      className="w-full aspect-video rounded-lg overflow-hidden shadow-lg border-2 border-primary/20"
+                      className={`w-full aspect-video rounded-lg overflow-hidden shadow-lg border-2 transition-all duration-300 ${
+                        scanSuccess 
+                          ? 'border-success shadow-success/50 scale-[1.02]' 
+                          : canScan 
+                            ? 'border-primary/20' 
+                            : 'border-warning/50'
+                      }`}
                     />
                     
+                    <div className="flex items-center justify-center gap-2">
+                      {!canScan && (
+                        <div className="flex items-center gap-2 text-xs text-warning">
+                          <div className="w-2 h-2 bg-warning rounded-full animate-pulse" />
+                          <span>Esperando para próximo escaneo...</span>
+                        </div>
+                      )}
+                    </div>
+                    
                     <p className="text-[10px] sm:text-xs text-center text-foreground/50">
-                      El escaneo se realizará automáticamente
+                      El escáner es continuo - puedes escanear múltiples productos
                     </p>
                   </div>
                 )}
@@ -240,7 +297,7 @@ export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess: on
             onPress={handleClose}
             size="sm"
           >
-            Cancelar
+            Cerrar
           </Button>
         </ModalFooter>
       </ModalContent>

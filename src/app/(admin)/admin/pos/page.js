@@ -488,14 +488,14 @@ export default function POSPage() {
                 tabList: "mx-auto flex-nowrap gap-1.5 sm:gap-2 bg-background p-1 shadow-sm",
                 cursor: "bg-primary shadow-sm",
                 tab: "h-8 sm:h-9 px-3 sm:px-4",
-                tabContent: "group-data-[selected=true]:text-white dark:group-data-[selected=true]:text-white group-data-[selected=false]:text-black dark:group-data-[selected=false]:text-white font-bold text-[11px] sm:text-xs"
+                tabContent: "font-bold text-[11px] sm:text-xs"
               }}
             >
               <Tab 
                 key="todos" 
                 title={
                   <div className="flex items-center gap-1.5">
-                    <Grid3x3 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black dark:text-white group-data-[selected=true]:text-white" />
+                    <Grid3x3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span className="hidden sm:inline">Todos</span>
                   </div>
                 } 
@@ -504,7 +504,7 @@ export default function POSPage() {
                 key="bebidas" 
                 title={
                   <div className="flex items-center gap-1.5">
-                    <Coffee className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black dark:text-white group-data-[selected=true]:text-white" />
+                    <Coffee className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span className="hidden sm:inline">Bebidas</span>
                   </div>
                 } 
@@ -513,7 +513,7 @@ export default function POSPage() {
                 key="alimentos" 
                 title={
                   <div className="flex items-center gap-1.5">
-                    <UtensilsCrossed className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black dark:text-white group-data-[selected=true]:text-white" />
+                    <UtensilsCrossed className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span className="hidden sm:inline">Alimentos</span>
                   </div>
                 } 
@@ -522,7 +522,7 @@ export default function POSPage() {
                 key="lacteos" 
                 title={
                   <div className="flex items-center gap-1.5">
-                    <Milk className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black dark:text-white group-data-[selected=true]:text-white" />
+                    <Milk className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span className="hidden sm:inline">Lácteos</span>
                   </div>
                 } 
@@ -531,7 +531,7 @@ export default function POSPage() {
                 key="limpieza" 
                 title={
                   <div className="flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black dark:text-white group-data-[selected=true]:text-white" />
+                    <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span className="hidden sm:inline">Limpieza</span>
                   </div>
                 } 

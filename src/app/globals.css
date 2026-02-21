@@ -344,27 +344,19 @@ html {
 }
 
 /* ============================================
-   CUSTOM TABS STYLING - POS
+   CUSTOM TABS STYLING - POS (Compatible con Dark Mode)
    ============================================ */
 
-/* Tabs no seleccionados: texto e iconos en negro bold */
+/* Tabs no seleccionados: texto e iconos adaptables al tema */
 [role="tablist"] [role="tab"]:not([data-selected="true"]) {
-  color: #000000 !important;
-  font-weight: 700 !important;
+  @apply text-default-600 font-bold;
 }
 
 [role="tablist"] [role="tab"]:not([data-selected="true"]) svg {
-  color: #000000 !important;
-  stroke: #000000 !important;
+  @apply text-default-600;
 }
 
 /* Tabs seleccionados: mantener el estilo de Hero UI */
 [role="tablist"] [role="tab"][data-selected="true"] {
-  color: white !important;
-  font-weight: 700 !important;
-}
-
-[role="tablist"] [role="tab"][data-selected="true"] svg {
-  color: white !important;
-  stroke: white !important;
+  @apply text-white font-bold;
 }

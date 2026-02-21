@@ -5,6 +5,7 @@ import { Select, SelectItem, Button, Badge, Input, Autocomplete, AutocompleteIte
 import { ShoppingCart, Search, ScanBarcode, Grid3x3, Coffee, Milk, Sparkles, UtensilsCrossed } from 'lucide-react';
 import Image from 'next/image';
 import ProductCard from '@/components/ProductCard';
+import BarcodeScannerModal from '@/components/BarcodeScannerModal';
 
 const PAISES = [
   { codigo: 've', nombre: 'Venezuela', moneda: 'VES', simbolo: 'Bs.', impuesto: 'IVA', tasa: 16 },
@@ -65,6 +66,7 @@ export default function POSPage() {
   const [busquedaProducto, setBusquedaProducto] = useState('');
   const [clienteSeleccionado, setClienteSeleccionado] = useState('1');
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('todos');
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
   
   // Estado del carrito: { productoId: { producto, cantidad } }
   const [carrito, setCarrito] = useState({});
@@ -127,6 +129,11 @@ export default function POSPage() {
       ...prev,
       [producto.id]: prev[producto.id] - 1
     }));
+  };
+
+  // Manejar el resultado del escáner
+  const handleScanSuccess = (decodedText) => {
+    setBusquedaProducto(decodedText);
   };
 
   return (
@@ -216,9 +223,16 @@ export default function POSPage() {
                 variant="bordered"
                 startContent={<Search className="w-4 h-4 text-default-400" />}
                 endContent={
-                  <button className="focus:outline-none" aria-label="Escanear código">
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    variant="light"
+                    onPress={() => setIsScannerOpen(true)}
+                    className="min-w-6 w-6 h-6"
+                    aria-label="Escanear código"
+                  >
                     <ScanBarcode className="w-4 h-4 text-default-400 hover:text-primary transition-colors" />
-                  </button>
+                  </Button>
                 }
                 classNames={{
                   input: "text-xs sm:text-sm",
@@ -350,6 +364,13 @@ export default function POSPage() {
           </div>
         </div>
       </main>
+
+      {/* Modal de Escáner de Códigos de Barras */}
+      <BarcodeScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScanSuccess={handleScanSuccess}
+      />
     </div>
   );
 }

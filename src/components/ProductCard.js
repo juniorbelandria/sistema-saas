@@ -1,6 +1,7 @@
-'use client';
+'use client'; // OBLIGATORIO
 
-import { Card, CardBody, Button, Tooltip, addToast } from '@heroui/react';
+import { Card, CardBody, Button, Tooltip, Chip } from '@heroui/react';
+import { addToast } from '@heroui/toast';
 import { Copy } from 'lucide-react';
 
 export default function ProductCard({ 
@@ -23,9 +24,9 @@ export default function ProductCard({
 
   // Color del badge de stock personalizado
   const getStockBadgeColor = () => {
-    if (isOutOfStock) return 'bg-danger text-danger-foreground';
-    if (isLowStock) return 'bg-warning text-warning-foreground';
-    return 'bg-success text-success-foreground';
+    if (isOutOfStock) return 'bg-danger';
+    if (isLowStock) return 'bg-warning';
+    return 'bg-success';
   };
 
   // Manejar el click en agregar al carrito
@@ -95,30 +96,33 @@ export default function ProductCard({
       shadow="sm"
       className={`w-full h-full border-1 border-divider ${cardBgClass} transition-all active:scale-95 relative`}
     >
-      <CardBody className="p-2 flex flex-col justify-between gap-1 overflow-visible relative">
+      <CardBody className="p-2 flex flex-col justify-between gap-1 relative overflow-visible">
         
-        {/* Badge de Stock personalizado - Superior central/derecha */}
-        <div className={`absolute -top-0 right-2 z-20 ${getStockBadgeColor()} px-2 py-0.5 rounded-b-xl shadow-sm`}>
-          <span className="text-[10px] font-bold uppercase">
-            Stock: {stockActual}
-          </span>
+        {/* Badge de Stock personalizado - DENTRO de la Card */}
+        <div className={`absolute top-0 right-2 px-2 py-0.5 rounded-b-lg text-[10px] font-bold text-white z-10 ${getStockBadgeColor()}`}>
+          STOCK: {stockActual}
         </div>
 
-        {/* Overlay de Agotado - Solo si stock = 0 */}
+        {/* Overlay de Agotado con Chip - Solo si stock = 0 */}
         {isOutOfStock && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-danger-100/40 backdrop-blur-[1px] pointer-events-none">
-            <div className="bg-danger-600 text-white text-xs font-black px-3 py-1.5 rounded-md shadow-lg rotate-[-12deg] uppercase opacity-90">
+            <Chip 
+              color="danger" 
+              variant="solid"
+              size="lg"
+              className="font-black uppercase rotate-[-12deg] shadow-lg"
+            >
               Agotado
-            </div>
+            </Chip>
           </div>
         )}
 
         {/* Info Producto */}
-        <div className="flex flex-col gap-0.5 mt-4">
-          <h3 className="text-[11px] sm:text-xs font-bold truncate leading-tight uppercase text-foreground">
+        <div className="flex flex-col gap-0.5 mt-5">
+          <h3 className="text-xs font-bold truncate leading-tight uppercase text-foreground">
             {product.nombre}
           </h3>
-          <p className="text-base sm:text-lg font-black text-primary">
+          <p className="text-lg font-black text-primary">
             {monedaActual?.simbolo}{product.precio.toFixed(2)}
           </p>
         </div>

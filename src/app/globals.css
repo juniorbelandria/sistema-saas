@@ -342,3 +342,29 @@ html {
   h2 { font-size: 20pt; }
   h3 { font-size: 18pt; }
 }
+
+/* ============================================
+   CUSTOM TABS STYLING - POS
+   ============================================ */
+
+/* Tabs no seleccionados: texto e iconos en negro bold */
+[role="tablist"] [role="tab"]:not([data-selected="true"]) {
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
+[role="tablist"] [role="tab"]:not([data-selected="true"]) svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+/* Tabs seleccionados: mantener el estilo de Hero UI */
+[role="tablist"] [role="tab"][data-selected="true"] {
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+[role="tablist"] [role="tab"][data-selected="true"] svg {
+  color: white !important;
+  stroke: white !important;
+}

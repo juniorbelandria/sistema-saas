@@ -130,7 +130,7 @@ export default function ProductCard({
         {/* Footer: Código y Botón de Copiar */}
         <div className="mt-2 pt-2 border-t border-divider/50 flex items-center justify-between gap-1">
           <div className="flex flex-col overflow-hidden flex-1">
-            <span className="text-[9px] uppercase text-default-500 font-bold">Código</span>
+            <span className="text-[9px] uppercase text-foreground font-black">Código</span>
             <span className="text-[10px] font-mono truncate text-foreground">{product.codigo}</span>
           </div>
 

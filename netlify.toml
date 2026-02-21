@@ -1,10 +1,15 @@
 # Configuración de Netlify para Next.js
 [build]
   command = "npm install --legacy-peer-deps && npm run build"
-  
+  publish = ".next"
+
 [build.environment]
   NODE_VERSION = "20"
   NPM_FLAGS = "--legacy-peer-deps"
+
+# Plugin de Next.js para Netlify
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
 
 # Headers de seguridad
 [[headers]]

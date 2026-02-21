@@ -20,9 +20,9 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
 
-  // 2. Optimización de salida para despliegues (Docker, Vercel, etc.)
-  // 'standalone' reduce drásticamente el tamaño de la imagen de despliegue
-  output: 'standalone',
+  // 2. Optimización de salida para Netlify
+  // Netlify necesita 'export' para sitios estáticos o sin 'output' para SSR
+  // output: 'standalone', // ❌ Esto es solo para Docker/Node.js servers
 
   experimental: {
     optimizePackageImports: [

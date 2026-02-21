@@ -139,25 +139,44 @@ export default function POSPage() {
     const productoEncontrado = PRODUCTOS.find(p => p.codigo === decodedText);
     
     if (productoEncontrado) {
-      // Producto encontrado - mostrar toast success
-      addToast({
-        title: 'Producto encontrado',
-        description: `${productoEncontrado.nombre} - ${monedaActual?.simbolo}${productoEncontrado.precio.toFixed(2)}`,
-        variant: 'solid',
-        color: 'success',
-      });
+      // Verificar si hay stock disponible
+      const stockDisponible = stockProductos[productoEncontrado.id];
       
-      // Actualizar el campo de búsqueda
-      setBusquedaProducto(decodedText);
-      
-      // Limpiar el campo después de 3 segundos
-      setTimeout(() => {
+      if (stockDisponible > 0) {
+        // Producto encontrado con stock - agregarlo al carrito
+        agregarAlCarrito(productoEncontrado);
+        
+        // Toast ya se muestra en agregarAlCarrito, pero agregamos uno específico para escaneo
+        addToast({
+          title: 'Producto escaneado',
+          description: `${productoEncontrado.nombre} agregado - ${monedaActual?.simbolo}${productoEncontrado.precio.toFixed(2)}`,
+          variant: 'solid',
+          color: 'success',
+        });
+        
+        // Actualizar el campo de búsqueda temporalmente
+        setBusquedaProducto(decodedText);
+        
+        // Limpiar el campo después de 2 segundos
+        setTimeout(() => {
+          setBusquedaProducto('');
+        }, 2000);
+      } else {
+        // Producto sin stock
+        addToast({
+          title: 'Producto agotado',
+          description: `${productoEncontrado.nombre} no tiene stock disponible`,
+          variant: 'solid',
+          color: 'danger',
+        });
+        
+        // Limpiar el campo inmediatamente
         setBusquedaProducto('');
-      }, 3000);
+      }
     } else {
-      // Producto no encontrado - mostrar toast danger
+      // Producto no encontrado en la base de datos
       addToast({
-        title: 'Producto no encontrado',
+        title: 'Producto no registrado',
         description: `No se encontró ningún producto con el código: ${decodedText}`,
         variant: 'solid',
         color: 'danger',

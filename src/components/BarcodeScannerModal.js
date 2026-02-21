@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Tabs, Tab } from '@heroui/react';
 import { addToast } from '@heroui/toast';
 import { Html5Qrcode } from 'html5-qrcode';
-import { X, Camera, Keyboard } from 'lucide-react';
+import { X, Camera, Keyboard, Search } from 'lucide-react';
 
 export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess: onScanSuccessCallback }) {
   const scannerRef = useRef(null);
@@ -106,17 +106,34 @@ export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess: on
   const cleanupScanner = async () => {
     if (html5QrCodeRef.current) {
       try {
-        const isCurrentlyScanning = html5QrCodeRef.current.getState() === 2; // 2 = SCANNING
-        if (isCurrentlyScanning) {
+        // Verificar si el escáner está en estado SCANNING (2)
+        const state = html5QrCodeRef.current.getState();
+        if (state === 2) { // 2 = Html5QrcodeScannerState.SCANNING
           await html5QrCodeRef.current.stop();
         }
-        html5QrCodeRef.current.clear();
+        
+        // Limpiar completamente la instancia
+        await html5QrCodeRef.current.clear();
+        
+        // Liberar recursos adicionales del video
+        const videoElement = document.getElementById('barcode-scanner');
+        if (videoElement) {
+          const videos = videoElement.getElementsByTagName('video');
+          for (let video of videos) {
+            if (video.srcObject) {
+              const tracks = video.srcObject.getTracks();
+              tracks.forEach(track => track.stop());
+              video.srcObject = null;
+            }
+          }
+        }
       } catch (err) {
         console.error('Error al limpiar el escáner:', err);
       } finally {
         html5QrCodeRef.current = null;
         setIsScanning(false);
         setCanScan(true);
+        setScanSuccess(false);
       }
     }
   };
@@ -282,6 +299,7 @@ export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess: on
                   onPress={handleManualSubmit}
                   isDisabled={!manualCode.trim()}
                   className="w-full font-semibold"
+                  startContent={<Search className="w-5 h-5" />}
                 >
                   Buscar Producto
                 </Button>

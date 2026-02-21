@@ -167,25 +167,24 @@ export default function POSPage() {
       [producto.id]: prev[producto.id] - 1
     }));
 
-    // Toast eléctrico - UN SOLO TOAST con ID único, duración 1200ms
-    const toastId = 'cart-action';
+    // Toast ultra-rápido - ID fijo para reemplazo instantáneo
     if (isNewItem) {
       addToast({
-        id: toastId,
-        title: 'Producto agregado',
+        id: 'pos-cart',
+        title: 'Agregado',
         description: `${producto.nombre}`,
         variant: 'solid',
         color: 'success',
-        duration: 1200
+        duration: 800
       });
     } else {
       addToast({
-        id: toastId,
-        title: 'Cantidad actualizada',
+        id: 'pos-cart',
+        title: 'Actualizado',
         description: `${itemExistente.cantidad + 1} unidades`,
         variant: 'solid',
         color: 'primary',
-        duration: 1200
+        duration: 800
       });
     }
   };
@@ -262,14 +261,14 @@ export default function POSPage() {
     // Cerrar modal
     setIsSuccessOpen(false);
     
-    // Mostrar toast eléctrico
+    // Toast ultra-rápido
     addToast({
-      id: 'new-sale',
-      title: 'Nueva venta iniciada',
-      description: `Venta #${saleData?.numeroVenta} completada`,
+      id: 'pos-sale',
+      title: 'Nueva venta',
+      description: `#${saleData?.numeroVenta} completada`,
       variant: 'solid',
       color: 'success',
-      duration: 1200
+      duration: 800
     });
 
     // Limpiar datos de venta
@@ -299,12 +298,12 @@ export default function POSPage() {
       } else {
         // Producto sin stock
         addToast({
-          id: 'scan-result',
-          title: 'Producto agotado',
+          id: 'pos-scan',
+          title: 'Sin stock',
           description: `${productoEncontrado.nombre}`,
           variant: 'solid',
           color: 'danger',
-          duration: 1200
+          duration: 800
         });
         
         // Limpiar el campo inmediatamente
@@ -313,12 +312,12 @@ export default function POSPage() {
     } else {
       // Producto no encontrado en la base de datos
       addToast({
-        id: 'scan-result',
+        id: 'pos-scan',
         title: 'No registrado',
         description: `Código: ${decodedText}`,
         variant: 'solid',
         color: 'danger',
-        duration: 1200
+        duration: 800
       });
       
       // Limpiar el campo inmediatamente

@@ -51,6 +51,32 @@ html {
   }
 }
 
+/* Forzar tamaño compacto en Toasts */
+[data-slot="toast"] {
+  max-width: 280px !important;
+  min-height: auto !important;
+  padding: 8px 12px !important;
+  transition-duration: 150ms !important;
+}
+
+[data-slot="toast"] [data-slot="title"] {
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  line-height: 1.3 !important;
+}
+
+[data-slot="toast"] [data-slot="description"] {
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+  margin-top: 2px !important;
+}
+
+[data-slot="toast"] svg {
+  width: 16px !important;
+  height: 16px !important;
+  flex-shrink: 0;
+}
+
 /* ============================================
    RESPONSIVE DESIGN SYSTEM - MOBILE FIRST
    ============================================ */

@@ -34,12 +34,12 @@ export default function ProductCard({
     // Validar si hay stock disponible
     if (isOutOfStock) {
       addToast({
-        id: 'no-stock',
-        title: 'Producto agotado',
-        description: 'Sin stock disponible',
+        id: 'pos-stock',
+        title: 'Sin stock',
+        description: 'No disponible',
         variant: 'solid',
         color: 'danger',
-        duration: 1200
+        duration: 800
       });
       return;
     }
@@ -57,21 +57,21 @@ export default function ProductCard({
     // Luego copiar al portapapeles
     navigator.clipboard.writeText(product.codigo).then(() => {
       addToast({
-        id: 'barcode-action',
-        title: 'Código copiado',
+        id: 'pos-copy',
+        title: 'Copiado',
         description: `${product.codigo}`,
         variant: 'solid',
         color: 'secondary',
-        duration: 1200
+        duration: 800
       });
     }).catch(() => {
       addToast({
-        id: 'barcode-error',
+        id: 'pos-copy',
         title: 'Error',
         description: 'No se pudo copiar',
         variant: 'solid',
         color: 'danger',
-        duration: 1200
+        duration: 800
       });
     });
   };

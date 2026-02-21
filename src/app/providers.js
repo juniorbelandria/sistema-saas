@@ -19,12 +19,14 @@ export function Providers({ children }) {
     <NextThemesProvider attribute="class" defaultTheme="light">
       <HeroUIProvider>
         <ToastProvider 
+          maxVisibleToasts={1}
           placement="top-right" 
-          duration={2000}
+          duration={800}
+          disableAnimation={false}
           classNames={{
-            toast: "text-sm py-2 px-3",
-            title: "text-sm font-semibold",
-            description: "text-xs"
+            toast: "text-sm py-2 px-3 max-w-[280px]",
+            title: "text-xs font-bold",
+            description: "text-[11px] leading-tight"
           }}
         />
         {children}

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Select, SelectItem, Button, Badge, Avatar } from '@heroui/react';
-import { ShoppingCart } from 'lucide-react';
+import { Select, SelectItem, Button, Badge, Input, Autocomplete, AutocompleteItem } from '@heroui/react';
+import { ShoppingCart, Search, ScanBarcode } from 'lucide-react';
 import Image from 'next/image';
 
 const PAISES = [
@@ -17,9 +17,19 @@ const PAISES = [
   { codigo: 'es', nombre: 'España', moneda: 'EUR', simbolo: '€', impuesto: 'IVA', tasa: 21 },
 ];
 
+const CLIENTES = [
+  { id: 1, nombre: 'Cliente General', email: 'general@pos.com', telefono: '' },
+  { id: 2, nombre: 'Juan Pérez', email: 'juan@email.com', telefono: '+58 412 1234567' },
+  { id: 3, nombre: 'María González', email: 'maria@email.com', telefono: '+58 424 7654321' },
+  { id: 4, nombre: 'Carlos Rodríguez', email: 'carlos@email.com', telefono: '+58 414 9876543' },
+  { id: 5, nombre: 'Ana Martínez', email: 'ana@email.com', telefono: '+58 426 5551234' },
+];
+
 export default function POSPage() {
   const [monedaSeleccionada, setMonedaSeleccionada] = useState(new Set(['us']));
-  const [itemsCarrito, setItemsCarrito] = useState(4);
+  const [itemsCarrito] = useState(4);
+  const [busquedaProducto, setBusquedaProducto] = useState('');
+  const [clienteSeleccionado, setClienteSeleccionado] = useState('1');
 
   const monedaActual = PAISES.find(p => p.codigo === Array.from(monedaSeleccionada)[0]);
 
@@ -55,18 +65,16 @@ export default function POSPage() {
                 onSelectionChange={setMonedaSeleccionada}
                 variant="bordered"
                 size="sm"
-                className="w-24 sm:w-28"
+                className="w-20 sm:w-24"
                 classNames={{
-                  trigger: "h-8 sm:h-9 min-h-[32px] sm:min-h-[36px]",
+                  trigger: "h-8 sm:h-9 min-h-[32px] sm:min-h-[36px] border-default-300",
                   value: "text-xs sm:text-sm font-semibold"
                 }}
                 aria-label="Seleccionar moneda"
                 renderValue={() => (
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs sm:text-sm font-semibold">
-                      {monedaActual?.moneda}
-                    </span>
-                  </div>
+                  <span className="text-xs sm:text-sm font-semibold">
+                    {monedaActual?.moneda}
+                  </span>
                 )}
               >
                 {PAISES.map((pais) => (
@@ -76,7 +84,7 @@ export default function POSPage() {
                     textValue={`${pais.moneda} ${pais.nombre}`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">{pais.simbolo}</span>
+                      <span className="text-base font-semibold">{pais.simbolo}</span>
                       <div className="flex flex-col">
                         <span className="text-sm font-semibold">{pais.moneda}</span>
                         <span className="text-xs text-foreground/60">{pais.nombre}</span>
@@ -86,7 +94,7 @@ export default function POSPage() {
                 ))}
               </Select>
 
-              {/* Botón Ver Carrito */}
+              {/* Botón Carrito */}
               <Badge 
                 content={itemsCarrito} 
                 color="primary" 
@@ -106,6 +114,70 @@ export default function POSPage() {
           </div>
         </div>
       </header>
+
+      {/* Barra de Búsqueda */}
+      <div className="bg-background border-b border-divider">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-3">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            {/* Input Búsqueda de Productos */}
+            <div className="flex-1">
+              <Input
+                value={busquedaProducto}
+                onValueChange={setBusquedaProducto}
+                placeholder="Buscar productos por nombre o código de barras..."
+                size="sm"
+                variant="bordered"
+                startContent={<Search className="w-4 h-4 text-default-400" />}
+                endContent={
+                  <button className="focus:outline-none" aria-label="Escanear código">
+                    <ScanBarcode className="w-4 h-4 text-default-400 hover:text-primary transition-colors" />
+                  </button>
+                }
+                classNames={{
+                  input: "text-xs sm:text-sm",
+                  inputWrapper: "h-9 sm:h-10 border-default-300"
+                }}
+              />
+            </div>
+
+            {/* Autocomplete Clientes */}
+            <div className="w-full sm:w-64 lg:w-72">
+              <Autocomplete
+                defaultSelectedKey="1"
+                selectedKey={clienteSeleccionado}
+                onSelectionChange={setClienteSeleccionado}
+                placeholder="Buscar cliente..."
+                size="sm"
+                variant="bordered"
+                classNames={{
+                  base: "w-full",
+                  listboxWrapper: "max-h-[200px]",
+                  selectorButton: "text-default-400"
+                }}
+                inputProps={{
+                  classNames: {
+                    input: "text-xs sm:text-sm",
+                    inputWrapper: "h-9 sm:h-10 border-default-300"
+                  }
+                }}
+              >
+                {CLIENTES.map((cliente) => (
+                  <AutocompleteItem 
+                    key={cliente.id} 
+                    value={cliente.id}
+                    textValue={cliente.nombre}
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold">{cliente.nombre}</span>
+                      <span className="text-xs text-foreground/60">{cliente.email}</span>
+                    </div>
+                  </AutocompleteItem>
+                ))}
+              </Autocomplete>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Contenido Principal */}
       <main className="container mx-auto px-3 sm:px-4 lg:px-6 py-4">

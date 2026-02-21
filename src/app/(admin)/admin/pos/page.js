@@ -225,9 +225,9 @@ export default function POSPage() {
           <Tabs 
             selectedKey={categoriaSeleccionada}
             onSelectionChange={setCategoriaSeleccionada}
-            variant="solid"
+            variant="bordered"
             color="primary"
-            radius="full"
+            radius="sm"
             size="sm"
             classNames={{
               tabList: "gap-2 bg-default-100 p-1",
@@ -293,7 +293,7 @@ export default function POSPage() {
               onPress={() => agregarAlCarrito(producto)}
               className="border border-divider hover:border-primary hover:shadow-md transition-all"
             >
-              <CardBody className="p-3 gap-2">
+              <CardBody className="p-3 gap-3">
                 {/* Nombre del Producto */}
                 <h3 className="text-xs font-bold text-foreground line-clamp-2 min-h-[32px] leading-tight">
                   {producto.nombre}
@@ -304,25 +304,25 @@ export default function POSPage() {
                   + {producto.codigo}
                 </p>
 
-                {/* Precio */}
-                <div className="mt-1">
-                  <p className="text-[9px] text-foreground/40 uppercase tracking-wider mb-0.5">Precio</p>
-                  <p className="text-lg font-bold text-foreground">
-                    {monedaActual?.simbolo}{producto.precio.toFixed(2)}
-                  </p>
-                </div>
-
-                {/* Stock */}
-                <div>
-                  <p className="text-[9px] text-foreground/40 uppercase tracking-wider mb-1">Stock</p>
-                  <Chip 
-                    size="sm" 
-                    variant="flat"
-                    radius="sm"
-                    className="h-5 bg-default-200 text-foreground"
-                  >
-                    <span className="text-xs font-bold">{producto.stock}</span>
-                  </Chip>
+                {/* Precio y Stock en la misma línea */}
+                <div className="flex items-end justify-between">
+                  <div>
+                    <p className="text-[9px] text-foreground/40 uppercase tracking-wider mb-1">Precio</p>
+                    <p className="text-base font-bold text-foreground">
+                      {monedaActual?.simbolo}{producto.precio.toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[9px] text-foreground/40 uppercase tracking-wider mb-1">Stock</p>
+                    <Chip 
+                      size="sm" 
+                      variant="flat"
+                      radius="sm"
+                      className="h-6 bg-default-200 text-foreground"
+                    >
+                      <span className="text-xs font-bold">{producto.stock}</span>
+                    </Chip>
+                  </div>
                 </div>
               </CardBody>
 
@@ -330,7 +330,7 @@ export default function POSPage() {
                 <Button
                   color="primary"
                   size="sm"
-                  className="w-full h-7 text-[11px] font-bold"
+                  className="w-full h-8 text-xs font-bold"
                   startContent={<ShoppingCart className="w-3 h-3" />}
                 >
                   Agregar

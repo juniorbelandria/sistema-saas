@@ -34,33 +34,18 @@ export default function ProductCard({
     // Validar si hay stock disponible
     if (isOutOfStock) {
       addToast({
+        id: 'no-stock',
         title: 'Producto agotado',
-        description: 'Producto agotado en el inventario',
+        description: 'Sin stock disponible',
         variant: 'solid',
         color: 'danger',
+        duration: 1000
       });
       return;
     }
 
-    // Si es la primera vez que se agrega (no existe en carrito)
-    if (cantidadEnCarrito === 0) {
-      addToast({
-        title: 'Producto agregado',
-        description: `${product.nombre} agregado al carrito`,
-        variant: 'solid',
-        color: 'success',
-      });
-    } else {
-      // Si ya existe en el carrito, mostrar toast info
-      addToast({
-        title: 'Cantidad actualizada',
-        description: `Cantidad actualizada: ${cantidadEnCarrito + 1} unidades`,
-        variant: 'solid',
-        color: 'primary',
-      });
-    }
-    
     // Llamar a la función del padre para manejar el estado global
+    // El toast se maneja en el componente padre
     onAddToCart(product);
   };
 
@@ -72,17 +57,21 @@ export default function ProductCard({
     // Luego copiar al portapapeles
     navigator.clipboard.writeText(product.codigo).then(() => {
       addToast({
-        title: 'Código copiado y buscado',
-        description: `Buscando producto: ${product.codigo}`,
+        id: 'barcode-action',
+        title: 'Código copiado',
+        description: `${product.codigo}`,
         variant: 'solid',
         color: 'secondary',
+        duration: 1000
       });
     }).catch(() => {
       addToast({
+        id: 'barcode-error',
         title: 'Error',
-        description: 'No se pudo copiar el código',
+        description: 'No se pudo copiar',
         variant: 'solid',
         color: 'danger',
+        duration: 1000
       });
     });
   };

@@ -137,9 +137,11 @@ export default function POSPage() {
       return;
     }
 
+    const itemExistente = carrito[producto.id];
+    const isNewItem = !itemExistente;
+
     // Actualizar carrito
     setCarrito(prev => {
-      const itemExistente = prev[producto.id];
       if (itemExistente) {
         return {
           ...prev,
@@ -165,16 +167,27 @@ export default function POSPage() {
       [producto.id]: prev[producto.id] - 1
     }));
 
-    // Toast optimizado - evitar spam usando ID único
-    const toastId = `product-${producto.id}`;
-    addToast({
-      id: toastId,
-      title: 'Producto agregado',
-      description: `${producto.nombre} - ${monedaActual?.simbolo}${producto.precio.toFixed(2)}`,
-      variant: 'solid',
-      color: 'success',
-      duration: 1500
-    });
+    // Toast optimizado - UN SOLO TOAST con ID único para reemplazar el anterior
+    const toastId = 'cart-action';
+    if (isNewItem) {
+      addToast({
+        id: toastId,
+        title: 'Producto agregado',
+        description: `${producto.nombre}`,
+        variant: 'solid',
+        color: 'success',
+        duration: 1000
+      });
+    } else {
+      addToast({
+        id: toastId,
+        title: 'Cantidad actualizada',
+        description: `${itemExistente.cantidad + 1} unidades`,
+        variant: 'solid',
+        color: 'primary',
+        duration: 1000
+      });
+    }
   };
 
   // Eliminar producto del carrito
@@ -252,11 +265,11 @@ export default function POSPage() {
     // Mostrar toast optimizado
     addToast({
       id: 'new-sale',
-      title: 'Sistema listo para nueva venta',
+      title: 'Nueva venta iniciada',
       description: `Venta #${saleData?.numeroVenta} completada`,
       variant: 'solid',
       color: 'success',
-      duration: 1500
+      duration: 1000
     });
 
     // Limpiar datos de venta
@@ -276,16 +289,6 @@ export default function POSPage() {
         // Producto encontrado con stock - agregarlo al carrito
         agregarAlCarrito(productoEncontrado);
         
-        // Toast optimizado para escaneo
-        addToast({
-          id: `scan-${productoEncontrado.id}`,
-          title: 'Producto escaneado',
-          description: `${productoEncontrado.nombre} agregado - ${monedaActual?.simbolo}${productoEncontrado.precio.toFixed(2)}`,
-          variant: 'solid',
-          color: 'success',
-          duration: 1500
-        });
-        
         // Actualizar el campo de búsqueda temporalmente
         setBusquedaProducto(decodedText);
         
@@ -296,12 +299,12 @@ export default function POSPage() {
       } else {
         // Producto sin stock
         addToast({
-          id: 'no-stock',
+          id: 'scan-result',
           title: 'Producto agotado',
-          description: `${productoEncontrado.nombre} no tiene stock disponible`,
+          description: `${productoEncontrado.nombre}`,
           variant: 'solid',
           color: 'danger',
-          duration: 1500
+          duration: 1000
         });
         
         // Limpiar el campo inmediatamente
@@ -310,12 +313,12 @@ export default function POSPage() {
     } else {
       // Producto no encontrado en la base de datos
       addToast({
-        id: 'not-found',
-        title: 'Producto no registrado',
-        description: `No se encontró ningún producto con el código: ${decodedText}`,
+        id: 'scan-result',
+        title: 'No registrado',
+        description: `Código: ${decodedText}`,
         variant: 'solid',
         color: 'danger',
-        duration: 1500
+        duration: 1000
       });
       
       // Limpiar el campo inmediatamente
@@ -471,7 +474,7 @@ export default function POSPage() {
       {/* Contenido Principal con Scroll */}
       <main className="flex-1 overflow-y-auto">
         <div className="container mx-auto px-2 sm:px-3 lg:px-4 py-3">
-          {/* Tabs de Categorías - Centrado en móvil */}
+          {/* Tabs de Categorías - Centrado en móvil con contraste mejorado */}
           <div className="w-full flex justify-center overflow-x-auto py-2 mb-3">
             <Tabs 
               selectedKey={categoriaSeleccionada}
@@ -485,14 +488,14 @@ export default function POSPage() {
                 tabList: "mx-auto flex-nowrap gap-1.5 sm:gap-2 bg-background p-1 shadow-sm",
                 cursor: "bg-primary shadow-sm",
                 tab: "h-8 sm:h-9 px-3 sm:px-4",
-                tabContent: "group-data-[selected=true]:text-white group-data-[selected=false]:text-foreground font-bold text-[11px] sm:text-xs"
+                tabContent: "group-data-[selected=true]:text-white dark:group-data-[selected=true]:text-white group-data-[selected=false]:text-black dark:group-data-[selected=false]:text-white font-bold text-[11px] sm:text-xs"
               }}
             >
               <Tab 
                 key="todos" 
                 title={
                   <div className="flex items-center gap-1.5">
-                    <Grid3x3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <Grid3x3 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black dark:text-white group-data-[selected=true]:text-white" />
                     <span className="hidden sm:inline">Todos</span>
                   </div>
                 } 
@@ -501,7 +504,7 @@ export default function POSPage() {
                 key="bebidas" 
                 title={
                   <div className="flex items-center gap-1.5">
-                    <Coffee className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <Coffee className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black dark:text-white group-data-[selected=true]:text-white" />
                     <span className="hidden sm:inline">Bebidas</span>
                   </div>
                 } 
@@ -510,7 +513,7 @@ export default function POSPage() {
                 key="alimentos" 
                 title={
                   <div className="flex items-center gap-1.5">
-                    <UtensilsCrossed className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <UtensilsCrossed className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black dark:text-white group-data-[selected=true]:text-white" />
                     <span className="hidden sm:inline">Alimentos</span>
                   </div>
                 } 
@@ -519,7 +522,7 @@ export default function POSPage() {
                 key="lacteos" 
                 title={
                   <div className="flex items-center gap-1.5">
-                    <Milk className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <Milk className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black dark:text-white group-data-[selected=true]:text-white" />
                     <span className="hidden sm:inline">Lácteos</span>
                   </div>
                 } 
@@ -528,7 +531,7 @@ export default function POSPage() {
                 key="limpieza" 
                 title={
                   <div className="flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black dark:text-white group-data-[selected=true]:text-white" />
                     <span className="hidden sm:inline">Limpieza</span>
                   </div>
                 } 

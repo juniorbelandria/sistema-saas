@@ -119,27 +119,32 @@ export default function PaymentModal({
 
               <Divider />
 
-              {/* Monto Recibido */}
+              {/* Monto Recibido - Diseño mejorado */}
               <div className="space-y-3">
-                <Input
-                  type="number"
-                  label="Monto Recibido"
-                  placeholder="0.00"
-                  value={amountReceived}
-                  onValueChange={setAmountReceived}
-                  variant="bordered"
-                  size="lg"
-                  color={hasError ? "danger" : "default"}
-                  isInvalid={hasError}
-                  startContent={
-                    <DollarSign className="w-5 h-5 text-default-400" />
-                  }
-                  classNames={{
-                    input: "text-xl font-bold",
-                    label: "text-sm font-semibold",
-                    inputWrapper: "h-14 border-2"
-                  }}
-                />
+                <label className="text-sm font-bold text-foreground/90 block">
+                  Monto Recibido
+                </label>
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
+                    <span className="text-2xl font-bold text-foreground/60">
+                      {monedaActual?.simbolo}
+                    </span>
+                  </div>
+                  <Input
+                    type="number"
+                    placeholder="0.00"
+                    value={amountReceived}
+                    onValueChange={setAmountReceived}
+                    variant="bordered"
+                    size="lg"
+                    color={hasError ? "danger" : "default"}
+                    isInvalid={hasError}
+                    classNames={{
+                      input: "text-3xl font-bold pl-12 text-center",
+                      inputWrapper: "h-16 border-2"
+                    }}
+                  />
+                </div>
 
                 {/* Mensaje de Validación */}
                 {amountReceived && (

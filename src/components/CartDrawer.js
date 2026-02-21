@@ -137,9 +137,9 @@ export default function CartDrawer({
               {/* Sección de Totales y Pago - Siempre al fondo */}
               <div className="flex-shrink-0 border-t-2 border-divider bg-gradient-to-b from-content1 to-content2/50">
                 <div className="px-4 py-4 space-y-4">
-                  {/* IVA Input - Mejorado */}
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-foreground/80 whitespace-nowrap">
+                  {/* IVA Input - Compacto y alineado a la derecha */}
+                  <div className="flex items-center justify-end gap-2">
+                    <span className="text-xs font-semibold text-foreground/80">
                       {monedaActual?.impuesto || 'IVA'}:
                     </span>
                     <Input
@@ -151,17 +151,17 @@ export default function CartDrawer({
                       min="0"
                       max="100"
                       step="0.1"
-                      endContent={<span className="text-xs text-foreground/60">%</span>}
+                      endContent={<span className="text-xs text-foreground/60 font-semibold">%</span>}
                       classNames={{
-                        base: "flex-1",
-                        input: "text-sm font-semibold text-center",
-                        inputWrapper: "h-9 border-default-300"
+                        base: "max-w-[100px]",
+                        input: "text-sm font-bold text-center",
+                        inputWrapper: "h-8 border-default-300"
                       }}
                     />
                   </div>
 
                   {/* Resumen de Totales - Card elegante */}
-                  <Card shadow="sm" className="bg-content2/50 border border-divider">
+                  <Card shadow="sm" className="bg-neutral-900 dark:bg-neutral-900 border border-divider">
                     <CardBody className="p-3 space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="text-foreground/70">Subtotal:</span>

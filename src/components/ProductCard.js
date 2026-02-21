@@ -68,17 +68,17 @@ export default function ProductCard({
   const handleCopyBarcode = (e) => {
     e.stopPropagation(); // Evitar que se active el click de la card
     
-    // Copiar al portapapeles
+    // Primero actualizar el buscador
+    setSearchTerm(product.codigo);
+    
+    // Luego copiar al portapapeles
     navigator.clipboard.writeText(product.codigo).then(() => {
       addToast({
-        title: 'Código copiado',
-        description: `Código ${product.codigo} copiado al portapapeles`,
+        title: 'Código copiado y buscado',
+        description: `Buscando producto: ${product.codigo}`,
         variant: 'solid',
         color: 'secondary',
       });
-      
-      // Actualizar el buscador global
-      setSearchTerm(product.codigo);
     }).catch(() => {
       addToast({
         title: 'Error',

@@ -210,6 +210,7 @@ export default function POSPage() {
               <Input
                 value={busquedaProducto}
                 onValueChange={setBusquedaProducto}
+                onChange={(e) => setBusquedaProducto(e.target.value)}
                 placeholder="Buscar productos por nombre o código de barras..."
                 size="sm"
                 variant="bordered"

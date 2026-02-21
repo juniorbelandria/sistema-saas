@@ -83,7 +83,6 @@ export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess: on
       }
       setIsScanning(false);
     }
-    }
   };
 
   const handleClose = () => {

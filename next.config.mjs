@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  
-  // 1. Forzar el uso del compilador SWC para minificación (es mucho más rápido que Terser)
-  swcMinify: true,
 
   images: {
     formats: ['image/avif', 'image/webp'],

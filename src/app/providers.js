@@ -18,7 +18,15 @@ export function Providers({ children }) {
   return (
     <NextThemesProvider attribute="class" defaultTheme="light">
       <HeroUIProvider>
-        <ToastProvider placement="top-right" />
+        <ToastProvider 
+          placement="top-right" 
+          duration={2000}
+          classNames={{
+            toast: "text-sm py-2 px-3",
+            title: "text-sm font-semibold",
+            description: "text-xs"
+          }}
+        />
         {children}
       </HeroUIProvider>
     </NextThemesProvider>

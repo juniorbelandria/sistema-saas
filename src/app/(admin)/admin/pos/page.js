@@ -259,9 +259,9 @@ export default function POSPage() {
 
       {/* Contenido Principal con Scroll */}
       <main className="flex-1 overflow-y-auto">
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4">
+        <div className="container mx-auto px-2 sm:px-3 lg:px-4 py-3">
           {/* Tabs de Categorías - Centrado en móvil */}
-          <div className="w-full flex justify-center overflow-x-auto py-2 mb-4">
+          <div className="w-full flex justify-center overflow-x-auto py-2 mb-3">
             <Tabs 
               selectedKey={categoriaSeleccionada}
               onSelectionChange={setCategoriaSeleccionada}
@@ -326,7 +326,7 @@ export default function POSPage() {
           </div>
 
           {/* Grid de Productos - Responsivo y compacto */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-2 sm:gap-2.5 pb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-1.5 sm:gap-2 pb-4">
             {productosFiltrados.map((producto) => (
               <ProductCard
                 key={producto.id}

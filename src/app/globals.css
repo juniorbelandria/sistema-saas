@@ -17,6 +17,41 @@ html {
 }
 
 /* ============================================
+   TOAST ANIMATIONS - HIGH PERFORMANCE
+   ============================================ */
+
+/* Toasts eléctricos con transiciones rápidas */
+[data-sonner-toast] {
+  animation: slideIn 150ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-sonner-toast][data-removed="true"] {
+  animation: slideOut 150ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* ============================================
    RESPONSIVE DESIGN SYSTEM - MOBILE FIRST
    ============================================ */
 
@@ -349,11 +384,11 @@ html {
 
 /* Tabs no seleccionados: texto e iconos adaptables al tema */
 [role="tablist"] [role="tab"]:not([data-selected="true"]) {
-  @apply text-default-600 font-bold;
+  @apply text-default-500 font-bold;
 }
 
 [role="tablist"] [role="tab"]:not([data-selected="true"]) svg {
-  @apply text-default-600;
+  @apply text-default-500;
 }
 
 /* Tabs seleccionados: mantener el estilo de Hero UI */

@@ -84,13 +84,13 @@ ${productosLista}
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size="sm"
+      size="md"
       placement="center"
       backdrop="blur"
       hideCloseButton
       scrollBehavior="inside"
       classNames={{
-        base: "w-full mx-2 max-w-[340px] sm:max-w-[360px]",
+        base: "w-full mx-2 max-w-[340px] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[480px]",
         backdrop: "bg-black/80"
       }}
     >
@@ -120,13 +120,13 @@ ${productosLista}
             </ModalHeader>
 
             <ModalBody className="px-3 py-2">
-              {/* Ticket Digital */}
-              <Card shadow="none" className="bg-neutral-900 dark:bg-neutral-900 border border-divider">
+              {/* Ticket Digital - Papel blanco en Light, panel oscuro en Dark */}
+              <Card shadow="sm" className="bg-content2 border border-divider">
                 <CardBody className="p-2.5 space-y-1.5">
                   {/* Info de Venta */}
                   <div className="text-center space-y-0.5">
                     <p className="text-[9px] text-foreground/60">{fecha}</p>
-                    <p className="text-[10px] font-semibold">
+                    <p className="text-[10px] font-semibold text-foreground">
                       {cliente?.nombre || 'Cliente General'}
                     </p>
                     {cliente?.email && (
@@ -141,12 +141,12 @@ ${productosLista}
                     {items.map((item, index) => (
                       <div key={index} className="flex justify-between text-[11px] gap-2">
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">{item.producto.nombre}</p>
+                          <p className="font-medium truncate text-foreground">{item.producto.nombre}</p>
                           <p className="text-[9px] text-foreground/60">
                             {monedaActual?.simbolo}{item.producto.precio.toFixed(2)} × {item.cantidad}
                           </p>
                         </div>
-                        <p className="font-semibold whitespace-nowrap">
+                        <p className="font-semibold whitespace-nowrap text-foreground">
                           {monedaActual?.simbolo}{(item.producto.precio * item.cantidad).toFixed(2)}
                         </p>
                       </div>
@@ -159,7 +159,7 @@ ${productosLista}
                   <div className="space-y-0.5">
                     <div className="flex justify-between text-[11px]">
                       <span className="text-foreground/70">Subtotal:</span>
-                      <span className="font-semibold">
+                      <span className="font-semibold text-foreground">
                         {monedaActual?.simbolo}{subtotal.toFixed(2)}
                       </span>
                     </div>
@@ -167,13 +167,13 @@ ${productosLista}
                       <span className="text-foreground/70">
                         {monedaActual?.impuesto || 'IVA'}:
                       </span>
-                      <span className="font-semibold">
+                      <span className="font-semibold text-foreground">
                         {monedaActual?.simbolo}{iva.toFixed(2)}
                       </span>
                     </div>
                     <Divider className="my-0.5" />
                     <div className="flex justify-between">
-                      <span className="text-xs font-bold">Total:</span>
+                      <span className="text-xs font-bold text-foreground">Total:</span>
                       <span className="text-sm font-bold text-primary">
                         {monedaActual?.simbolo}{total.toFixed(2)}
                       </span>
@@ -186,11 +186,11 @@ ${productosLista}
                   <div className="space-y-0.5 text-[11px]">
                     <div className="flex justify-between">
                       <span className="text-foreground/70">Método:</span>
-                      <span className="font-semibold capitalize">{payment.method.replace('_', ' ')}</span>
+                      <span className="font-semibold capitalize text-foreground">{payment.method.replace('_', ' ')}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-foreground/70">Recibido:</span>
-                      <span className="font-semibold">
+                      <span className="font-semibold text-foreground">
                         {monedaActual?.simbolo}{payment.amountReceived.toFixed(2)}
                       </span>
                     </div>

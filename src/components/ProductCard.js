@@ -39,7 +39,7 @@ export default function ProductCard({
         description: 'Sin stock disponible',
         variant: 'solid',
         color: 'danger',
-        duration: 1000
+        duration: 1200
       });
       return;
     }
@@ -62,7 +62,7 @@ export default function ProductCard({
         description: `${product.codigo}`,
         variant: 'solid',
         color: 'secondary',
-        duration: 1000
+        duration: 1200
       });
     }).catch(() => {
       addToast({
@@ -71,7 +71,7 @@ export default function ProductCard({
         description: 'No se pudo copiar',
         variant: 'solid',
         color: 'danger',
-        duration: 1000
+        duration: 1200
       });
     });
   };

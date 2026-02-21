@@ -135,7 +135,7 @@ export default function CartDrawer({
               </div>
 
               {/* Sección de Totales y Pago - Siempre al fondo */}
-              <div className="flex-shrink-0 border-t-2 border-divider bg-gradient-to-b from-content1 to-content2/50">
+              <div className="flex-shrink-0 border-t-2 border-divider bg-content1">
                 <div className="px-4 py-4 space-y-4">
                   {/* IVA Input - Compacto y alineado a la derecha */}
                   <div className="flex items-center justify-end gap-2">
@@ -160,12 +160,12 @@ export default function CartDrawer({
                     />
                   </div>
 
-                  {/* Resumen de Totales - Card elegante */}
-                  <Card shadow="sm" className="bg-neutral-900 dark:bg-neutral-900 border border-divider">
+                  {/* Resumen de Totales - Card elegante con tema adaptable */}
+                  <Card shadow="sm" className="bg-content2 border border-divider">
                     <CardBody className="p-3 space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="text-foreground/70">Subtotal:</span>
-                        <span className="font-semibold">
+                        <span className="font-semibold text-foreground">
                           {monedaActual?.simbolo}{subtotal.toFixed(2)}
                         </span>
                       </div>
@@ -173,13 +173,13 @@ export default function CartDrawer({
                         <span className="text-foreground/70">
                           {monedaActual?.impuesto || 'IVA'} ({ivaPercentage}%):
                         </span>
-                        <span className="font-semibold">
+                        <span className="font-semibold text-foreground">
                           {monedaActual?.simbolo}{iva.toFixed(2)}
                         </span>
                       </div>
                       <Divider className="my-1" />
                       <div className="flex justify-between items-center">
-                        <span className="text-lg font-bold">Total:</span>
+                        <span className="text-lg font-bold text-foreground">Total:</span>
                         <span className="text-2xl font-bold text-primary">
                           {monedaActual?.simbolo}{total.toFixed(2)}
                         </span>

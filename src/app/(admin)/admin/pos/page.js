@@ -167,7 +167,7 @@ export default function POSPage() {
       [producto.id]: prev[producto.id] - 1
     }));
 
-    // Toast optimizado - UN SOLO TOAST con ID único para reemplazar el anterior
+    // Toast eléctrico - UN SOLO TOAST con ID único, duración 1200ms
     const toastId = 'cart-action';
     if (isNewItem) {
       addToast({
@@ -176,7 +176,7 @@ export default function POSPage() {
         description: `${producto.nombre}`,
         variant: 'solid',
         color: 'success',
-        duration: 1000
+        duration: 1200
       });
     } else {
       addToast({
@@ -185,7 +185,7 @@ export default function POSPage() {
         description: `${itemExistente.cantidad + 1} unidades`,
         variant: 'solid',
         color: 'primary',
-        duration: 1000
+        duration: 1200
       });
     }
   };
@@ -262,14 +262,14 @@ export default function POSPage() {
     // Cerrar modal
     setIsSuccessOpen(false);
     
-    // Mostrar toast optimizado
+    // Mostrar toast eléctrico
     addToast({
       id: 'new-sale',
       title: 'Nueva venta iniciada',
       description: `Venta #${saleData?.numeroVenta} completada`,
       variant: 'solid',
       color: 'success',
-      duration: 1000
+      duration: 1200
     });
 
     // Limpiar datos de venta
@@ -304,7 +304,7 @@ export default function POSPage() {
           description: `${productoEncontrado.nombre}`,
           variant: 'solid',
           color: 'danger',
-          duration: 1000
+          duration: 1200
         });
         
         // Limpiar el campo inmediatamente
@@ -318,7 +318,7 @@ export default function POSPage() {
         description: `Código: ${decodedText}`,
         variant: 'solid',
         color: 'danger',
-        duration: 1000
+        duration: 1200
       });
       
       // Limpiar el campo inmediatamente

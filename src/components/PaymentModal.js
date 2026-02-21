@@ -78,12 +78,12 @@ export default function PaymentModal({
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      size="md"
+      size="2xl"
       placement="center"
       backdrop="blur"
       scrollBehavior="inside"
       classNames={{
-        base: "w-full mx-3 max-w-full sm:max-w-[420px]",
+        base: "w-full mx-3 max-w-full sm:max-w-[420px] md:max-w-[520px] lg:max-w-[600px]",
         backdrop: "bg-black/70",
         body: "max-h-[90vh] overflow-y-auto"
       }}

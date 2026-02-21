@@ -21,7 +21,7 @@ export function Providers({ children }) {
         <ToastProvider 
           maxVisibleToasts={1}
           placement="top-right" 
-          duration={800}
+          duration={500}
           disableAnimation={false}
           classNames={{
             toast: "max-w-[250px] py-1.5 px-2.5",

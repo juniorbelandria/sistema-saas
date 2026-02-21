@@ -167,24 +167,24 @@ export default function POSPage() {
       [producto.id]: prev[producto.id] - 1
     }));
 
-    // Toast ultra-rápido - ID fijo para reemplazo instantáneo
+    // Toast instantáneo - ID único para reemplazo
     if (isNewItem) {
       addToast({
-        id: 'cart-toast',
+        id: 'pos-toast',
         title: 'Agregado',
         description: `${producto.nombre}`,
         variant: 'solid',
         color: 'success',
-        duration: 800
+        duration: 500
       });
     } else {
       addToast({
-        id: 'cart-toast',
+        id: 'pos-toast',
         title: 'Actualizado',
         description: `${itemExistente.cantidad + 1} unidades`,
         variant: 'solid',
         color: 'primary',
-        duration: 800
+        duration: 500
       });
     }
   };
@@ -261,14 +261,14 @@ export default function POSPage() {
     // Cerrar modal
     setIsSuccessOpen(false);
     
-    // Toast ultra-rápido
+    // Toast instantáneo
     addToast({
-      id: 'pos-sale',
+      id: 'pos-toast',
       title: 'Nueva venta',
       description: `#${saleData?.numeroVenta} completada`,
       variant: 'solid',
       color: 'success',
-      duration: 800
+      duration: 500
     });
 
     // Limpiar datos de venta
@@ -298,12 +298,12 @@ export default function POSPage() {
       } else {
         // Producto sin stock
         addToast({
-          id: 'pos-scan',
+          id: 'pos-toast',
           title: 'Sin stock',
           description: `${productoEncontrado.nombre}`,
           variant: 'solid',
           color: 'danger',
-          duration: 800
+          duration: 500
         });
         
         // Limpiar el campo inmediatamente
@@ -312,12 +312,12 @@ export default function POSPage() {
     } else {
       // Producto no encontrado en la base de datos
       addToast({
-        id: 'pos-scan',
+        id: 'pos-toast',
         title: 'No registrado',
         description: `Código: ${decodedText}`,
         variant: 'solid',
         color: 'danger',
-        duration: 800
+        duration: 500
       });
       
       // Limpiar el campo inmediatamente
@@ -351,32 +351,31 @@ export default function POSPage() {
 
             {/* Select de Moneda y Carrito */}
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* Select de Moneda - Ultra Compacto */}
+              {/* Select de Moneda - Ultra Compacto con w-fit */}
               <Select
                 selectedKeys={[monedaSeleccionada]}
                 onSelectionChange={(keys) => handleMonedaChange(Array.from(keys)[0])}
                 variant="flat"
                 size="sm"
-                className="w-[90px] sm:w-[110px]"
                 classNames={{
-                  base: "max-w-[110px]",
-                  trigger: "h-8 min-h-8 sm:h-9 sm:min-h-9 bg-default-100 hover:bg-default-200 border-none data-[hover=true]:bg-default-200",
-                  value: "text-xs font-bold text-foreground",
-                  popoverContent: "w-[200px] sm:w-[240px] p-0 bg-content1 rounded-xl shadow-lg border border-divider",
-                  listbox: "p-1"
+                  base: "w-fit",
+                  trigger: "h-8 min-h-8 w-fit bg-default-100 hover:bg-default-200 border-none data-[hover=true]:bg-default-200 px-2",
+                  value: "text-[11px] font-bold text-foreground",
+                  popoverContent: "w-[180px] p-0 bg-content1 rounded-lg shadow-lg border border-divider",
+                  listbox: "p-0.5"
                 }}
                 aria-label="Seleccionar moneda"
                 popoverProps={{
                   classNames: {
-                    content: "p-0 rounded-xl"
+                    content: "p-0 rounded-lg"
                   }
                 }}
                 renderValue={() => (
                   <div className="flex items-center gap-1">
-                    <span className="text-xs sm:text-sm font-bold text-primary">
+                    <span className="text-[11px] font-bold text-primary">
                       {monedaActual?.simbolo}
                     </span>
-                    <span className="text-xs font-bold text-foreground">
+                    <span className="text-[11px] font-bold text-foreground">
                       {monedaActual?.moneda}
                     </span>
                   </div>
@@ -386,21 +385,20 @@ export default function POSPage() {
                   <SelectItem 
                     key={pais.codigo}
                     textValue={pais.moneda}
-                    className="text-xs py-1"
                     classNames={{
-                      base: "rounded-lg data-[hover=true]:bg-default-100 data-[selectable=true]:focus:bg-default-100 py-2",
-                      title: "font-bold text-xs"
+                      base: "rounded-md data-[hover=true]:bg-default-100 data-[selectable=true]:focus:bg-default-100 py-1.5 px-2",
+                      title: "font-bold text-[11px]"
                     }}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-primary min-w-[28px]">
+                      <span className="text-xs font-bold text-primary min-w-[24px]">
                         {pais.simbolo}
                       </span>
-                      <div className="flex flex-col">
-                        <span className="text-xs font-bold text-foreground">
+                      <div className="flex flex-col gap-0">
+                        <span className="text-[11px] font-bold text-foreground leading-tight">
                           {pais.moneda}
                         </span>
-                        <span className="text-[10px] text-foreground/60">
+                        <span className="text-[9px] text-foreground/60 leading-tight">
                           {pais.nombre}
                         </span>
                       </div>

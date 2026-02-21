@@ -57,7 +57,7 @@ export default function ProductCard({
     // Luego copiar al portapapeles
     navigator.clipboard.writeText(product.codigo).then(() => {
       addToast({
-        id: 'pos-copy',
+        id: 'copy-toast',
         title: 'Copiado',
         description: `${product.codigo}`,
         variant: 'solid',
@@ -66,7 +66,7 @@ export default function ProductCard({
       });
     }).catch(() => {
       addToast({
-        id: 'pos-copy',
+        id: 'copy-toast',
         title: 'Error',
         description: 'No se pudo copiar',
         variant: 'solid',

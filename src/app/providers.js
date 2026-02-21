@@ -24,9 +24,9 @@ export function Providers({ children }) {
           duration={800}
           disableAnimation={false}
           classNames={{
-            toast: "text-sm py-2 px-3 max-w-[280px]",
-            title: "text-xs font-bold",
-            description: "text-[11px] leading-tight"
+            toast: "max-w-[250px] py-1.5 px-2.5",
+            title: "text-[11px] font-extrabold",
+            description: "text-[10px] leading-tight"
           }}
         />
         {children}

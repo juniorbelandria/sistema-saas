@@ -170,7 +170,7 @@ export default function POSPage() {
     // Toast ultra-rápido - ID fijo para reemplazo instantáneo
     if (isNewItem) {
       addToast({
-        id: 'pos-cart',
+        id: 'cart-toast',
         title: 'Agregado',
         description: `${producto.nombre}`,
         variant: 'solid',
@@ -179,7 +179,7 @@ export default function POSPage() {
       });
     } else {
       addToast({
-        id: 'pos-cart',
+        id: 'cart-toast',
         title: 'Actualizado',
         description: `${itemExistente.cantidad + 1} unidades`,
         variant: 'solid',
@@ -351,17 +351,18 @@ export default function POSPage() {
 
             {/* Select de Moneda y Carrito */}
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* Select de Moneda - Diseño Elegante */}
+              {/* Select de Moneda - Ultra Compacto */}
               <Select
                 selectedKeys={[monedaSeleccionada]}
                 onSelectionChange={(keys) => handleMonedaChange(Array.from(keys)[0])}
                 variant="flat"
                 size="sm"
-                className="min-w-[100px] sm:min-w-[140px]"
+                className="w-[90px] sm:w-[110px]"
                 classNames={{
-                  trigger: "h-9 sm:h-10 bg-default-100 hover:bg-default-200 border-none data-[hover=true]:bg-default-200",
-                  value: "text-xs sm:text-sm font-bold text-foreground",
-                  popoverContent: "bg-content1 rounded-xl shadow-lg border border-divider",
+                  base: "max-w-[110px]",
+                  trigger: "h-8 min-h-8 sm:h-9 sm:min-h-9 bg-default-100 hover:bg-default-200 border-none data-[hover=true]:bg-default-200",
+                  value: "text-xs font-bold text-foreground",
+                  popoverContent: "w-[200px] sm:w-[240px] p-0 bg-content1 rounded-xl shadow-lg border border-divider",
                   listbox: "p-1"
                 }}
                 aria-label="Seleccionar moneda"
@@ -371,11 +372,11 @@ export default function POSPage() {
                   }
                 }}
                 renderValue={() => (
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm sm:text-base font-bold text-primary">
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs sm:text-sm font-bold text-primary">
                       {monedaActual?.simbolo}
                     </span>
-                    <span className="text-xs sm:text-sm font-bold text-foreground">
+                    <span className="text-xs font-bold text-foreground">
                       {monedaActual?.moneda}
                     </span>
                   </div>
@@ -385,20 +386,21 @@ export default function POSPage() {
                   <SelectItem 
                     key={pais.codigo}
                     textValue={pais.moneda}
+                    className="text-xs py-1"
                     classNames={{
-                      base: "rounded-lg data-[hover=true]:bg-default-100 data-[selectable=true]:focus:bg-default-100 py-2.5",
-                      title: "font-bold text-sm"
+                      base: "rounded-lg data-[hover=true]:bg-default-100 data-[selectable=true]:focus:bg-default-100 py-2",
+                      title: "font-bold text-xs"
                     }}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-base font-bold text-primary min-w-[32px]">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-primary min-w-[28px]">
                         {pais.simbolo}
                       </span>
                       <div className="flex flex-col">
-                        <span className="text-sm font-bold text-foreground">
+                        <span className="text-xs font-bold text-foreground">
                           {pais.moneda}
                         </span>
-                        <span className="text-xs text-foreground/60">
+                        <span className="text-[10px] text-foreground/60">
                           {pais.nombre}
                         </span>
                       </div>
@@ -417,7 +419,7 @@ export default function POSPage() {
                 <Button
                   color="primary"
                   size="sm"
-                  className="h-9 sm:h-10 px-2 sm:px-3"
+                  className="h-8 sm:h-9 px-2 sm:px-3"
                   startContent={<ShoppingCart className="w-4 h-4" />}
                   onPress={() => setIsCartOpen(true)}
                 >

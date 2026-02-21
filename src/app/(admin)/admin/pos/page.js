@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Badge, Input, Autocomplete, AutocompleteItem, Tabs, Tab, Card, CardBody, Chip } from '@heroui/react';
+import { Select, SelectItem, Button, Badge, Input, Autocomplete, AutocompleteItem, Tabs, Tab, Card, CardBody, Chip } from '@heroui/react';
 import { ShoppingCart, Search, ScanBarcode, Grid3x3, Coffee, Milk, Sparkles, UtensilsCrossed } from 'lucide-react';
 import Image from 'next/image';
 
@@ -9,11 +9,22 @@ const PAISES = [
   { codigo: 've', nombre: 'Venezuela', moneda: 'VES', simbolo: 'Bs.', impuesto: 'IVA', tasa: 16 },
   { codigo: 'mx', nombre: 'México', moneda: 'MXN', simbolo: '$', impuesto: 'IVA', tasa: 16 },
   { codigo: 'co', nombre: 'Colombia', moneda: 'COP', simbolo: '$', impuesto: 'IVA', tasa: 19 },
-  { codigo: 'us', nombre: 'Estados Unidos', moneda: 'USD', simbolo: '$', impuesto: 'Sales Tax', tasa: 0 },
-  { codigo: 'pe', nombre: 'Perú', moneda: 'PEN', simbolo: 'S/', impuesto: 'IGV', tasa: 18 },
   { codigo: 'ar', nombre: 'Argentina', moneda: 'ARS', simbolo: '$', impuesto: 'IVA', tasa: 21 },
   { codigo: 'cl', nombre: 'Chile', moneda: 'CLP', simbolo: '$', impuesto: 'IVA', tasa: 19 },
+  { codigo: 'pe', nombre: 'Perú', moneda: 'PEN', simbolo: 'S/', impuesto: 'IGV', tasa: 18 },
   { codigo: 'ec', nombre: 'Ecuador', moneda: 'USD', simbolo: '$', impuesto: 'IVA', tasa: 12 },
+  { codigo: 'bo', nombre: 'Bolivia', moneda: 'BOB', simbolo: 'Bs.', impuesto: 'IVA', tasa: 13 },
+  { codigo: 'py', nombre: 'Paraguay', moneda: 'PYG', simbolo: '₲', impuesto: 'IVA', tasa: 10 },
+  { codigo: 'uy', nombre: 'Uruguay', moneda: 'UYU', simbolo: '$', impuesto: 'IVA', tasa: 22 },
+  { codigo: 'br', nombre: 'Brasil', moneda: 'BRL', simbolo: 'R$', impuesto: 'ICMS', tasa: 18 },
+  { codigo: 'pa', nombre: 'Panamá', moneda: 'PAB', simbolo: 'B/.', impuesto: 'ITBMS', tasa: 7 },
+  { codigo: 'cr', nombre: 'Costa Rica', moneda: 'CRC', simbolo: '₡', impuesto: 'IVA', tasa: 13 },
+  { codigo: 'gt', nombre: 'Guatemala', moneda: 'GTQ', simbolo: 'Q', impuesto: 'IVA', tasa: 12 },
+  { codigo: 'hn', nombre: 'Honduras', moneda: 'HNL', simbolo: 'L', impuesto: 'ISV', tasa: 15 },
+  { codigo: 'sv', nombre: 'El Salvador', moneda: 'USD', simbolo: '$', impuesto: 'IVA', tasa: 13 },
+  { codigo: 'ni', nombre: 'Nicaragua', moneda: 'NIO', simbolo: 'C$', impuesto: 'IVA', tasa: 15 },
+  { codigo: 'do', nombre: 'Rep. Dominicana', moneda: 'DOP', simbolo: 'RD$', impuesto: 'ITBIS', tasa: 18 },
+  { codigo: 'us', nombre: 'Estados Unidos', moneda: 'USD', simbolo: '$', impuesto: 'Sales Tax', tasa: 0 },
   { codigo: 'es', nombre: 'España', moneda: 'EUR', simbolo: '€', impuesto: 'IVA', tasa: 21 },
 ];
 
@@ -49,13 +60,13 @@ const PRODUCTOS = [
 ];
 
 export default function POSPage() {
-  const [monedaSeleccionada, setMonedaSeleccionada] = useState(new Set(['us']));
+  const [monedaSeleccionada, setMonedaSeleccionada] = useState('us');
   const [itemsCarrito] = useState(4);
   const [busquedaProducto, setBusquedaProducto] = useState('');
   const [clienteSeleccionado, setClienteSeleccionado] = useState('1');
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('todos');
 
-  const monedaActual = PAISES.find(p => p.codigo === Array.from(monedaSeleccionada)[0]);
+  const monedaActual = PAISES.find(p => p.codigo === monedaSeleccionada);
 
   const productosFiltrados = categoriaSeleccionada === 'todos' 
     ? PRODUCTOS 
@@ -92,43 +103,29 @@ export default function POSPage() {
             {/* Select de Moneda y Carrito */}
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Select de Moneda */}
-              <Autocomplete
-                selectedKey={monedaSeleccionada ? Array.from(monedaSeleccionada)[0] : null}
-                onSelectionChange={(key) => setMonedaSeleccionada(new Set([key]))}
-                defaultItems={PAISES}
-                placeholder={monedaActual?.moneda || "USD"}
+              <Select
+                selectedKeys={[monedaSeleccionada]}
+                onSelectionChange={(keys) => setMonedaSeleccionada(Array.from(keys)[0])}
                 variant="bordered"
                 size="sm"
                 className="w-20 sm:w-24"
                 classNames={{
-                  base: "w-full",
-                  listboxWrapper: "max-h-[200px]",
-                  selectorButton: "text-default-400"
-                }}
-                inputProps={{
-                  classNames: {
-                    input: "text-xs sm:text-sm font-semibold",
-                    inputWrapper: "h-8 sm:h-9 min-h-[32px] sm:min-h-[36px] border-default-300"
-                  }
+                  trigger: "h-8 sm:h-9 min-h-[32px] sm:min-h-[36px] border-default-300",
+                  value: "text-xs sm:text-sm font-semibold"
                 }}
                 aria-label="Seleccionar moneda"
-              >
-                {(pais) => (
-                  <AutocompleteItem 
-                    key={pais.codigo} 
-                    value={pais.codigo}
-                    textValue={`${pais.moneda} ${pais.nombre}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-base font-bold">{pais.simbolo}</span>
-                      <div className="flex flex-col">
-                        <span className="text-xs font-bold">{pais.moneda}</span>
-                        <span className="text-[10px] text-foreground/50">{pais.nombre}</span>
-                      </div>
-                    </div>
-                  </AutocompleteItem>
+                renderValue={() => (
+                  <span className="text-xs sm:text-sm font-semibold">
+                    {monedaActual?.moneda}
+                  </span>
                 )}
-              </Autocomplete>
+              >
+                {PAISES.map((pais) => (
+                  <SelectItem key={pais.codigo}>
+                    {pais.moneda}
+                  </SelectItem>
+                ))}
+              </Select>
 
               {/* Botón Carrito */}
               <Badge 
@@ -231,7 +228,7 @@ export default function POSPage() {
                 tabList: "gap-1.5 sm:gap-2 bg-background p-1 shadow-sm",
                 cursor: "bg-primary shadow-sm",
                 tab: "h-8 sm:h-9 px-3 sm:px-4",
-                tabContent: "group-data-[selected=true]:text-white group-data-[selected=false]:text-foreground group-data-[selected=false]:font-bold text-[11px] sm:text-xs"
+                tabContent: "group-data-[selected=true]:text-white group-data-[selected=false]:text-foreground font-bold text-[11px] sm:text-xs"
               }}
             >
               <Tab 

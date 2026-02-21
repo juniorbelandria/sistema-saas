@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Select, SelectItem, Button, Badge, Input, Autocomplete, AutocompleteItem } from '@heroui/react';
-import { ShoppingCart, Search, ScanBarcode } from 'lucide-react';
+import { Select, SelectItem, Button, Badge, Input, Autocomplete, AutocompleteItem, Tabs, Tab, Card, CardBody, CardFooter, Chip } from '@heroui/react';
+import { ShoppingCart, Search, ScanBarcode, Package } from 'lucide-react';
 import Image from 'next/image';
 
 const PAISES = [
@@ -25,13 +25,45 @@ const CLIENTES = [
   { id: 5, nombre: 'Ana Martínez', email: 'ana@email.com', telefono: '+58 426 5551234' },
 ];
 
+const PRODUCTOS = [
+  { id: 1, nombre: 'Coca Cola 600ml', codigo: '7501234567890', precio: 15.00, stock: 50, categoria: 'bebidas' },
+  { id: 2, nombre: 'Pan Integral Bimbo', codigo: '7501234567891', precio: 4.00, stock: 25, categoria: 'alimentos' },
+  { id: 3, nombre: 'Leche Entera Alpura 1L', codigo: '7501234567892', precio: 15.00, stock: 30, categoria: 'lacteos' },
+  { id: 4, nombre: 'Arroz Verde Valle 1kg', codigo: '7501234567893', precio: 15.00, stock: 40, categoria: 'alimentos' },
+  { id: 5, nombre: 'Aceite Vegetal Capullo', codigo: '7501234567894', precio: 15.00, stock: 20, categoria: 'alimentos' },
+  { id: 6, nombre: 'Yogurt Natural Danone', codigo: '7501234567895', precio: 8.00, stock: 35, categoria: 'lacteos' },
+  { id: 7, nombre: 'Huevos San Juan x12', codigo: '7501234567896', precio: 25.00, stock: 15, categoria: 'alimentos' },
+  { id: 8, nombre: 'Azúcar Estándar 1kg', codigo: '7501234567897', precio: 12.00, stock: 45, categoria: 'alimentos' },
+  { id: 9, nombre: 'Detergente Ariel 1kg', codigo: '7501234567898', precio: 28.00, stock: 18, categoria: 'limpieza' },
+  { id: 10, nombre: 'Jabón Zote 200g', codigo: '7501234567899', precio: 6.50, stock: 60, categoria: 'limpieza' },
+  { id: 11, nombre: 'Papel Higiénico Suave', codigo: '7501234567900', precio: 22.00, stock: 28, categoria: 'limpieza' },
+  { id: 12, nombre: 'Shampoo Pantene 400ml', codigo: '7501234567901', precio: 35.00, stock: 12, categoria: 'limpieza' },
+  { id: 13, nombre: 'Pasta Dental Colgate', codigo: '7501234567902', precio: 18.00, stock: 33, categoria: 'limpieza' },
+  { id: 14, nombre: 'Café Soluble Nescafé', codigo: '7501234567903', precio: 45.00, stock: 22, categoria: 'bebidas' },
+  { id: 15, nombre: 'Té Verde Lipton x25', codigo: '7501234567904', precio: 12.00, stock: 38, categoria: 'bebidas' },
+  { id: 16, nombre: 'Jugo Naranja Del Valle', codigo: '7501234567905', precio: 20.00, stock: 26, categoria: 'bebidas' },
+  { id: 17, nombre: 'Galletas Marías Gamesa', codigo: '7501234567906', precio: 8.50, stock: 42, categoria: 'alimentos' },
+  { id: 18, nombre: 'Atún Dolores Lata', codigo: '7501234567907', precio: 16.00, stock: 31, categoria: 'alimentos' },
+  { id: 19, nombre: 'Frijoles Negros La Costeña', codigo: '7501234567908', precio: 14.00, stock: 27, categoria: 'alimentos' },
+  { id: 20, nombre: 'Queso Panela Lala 400g', codigo: '7501234567909', precio: 32.00, stock: 19, categoria: 'lacteos' },
+];
+
 export default function POSPage() {
   const [monedaSeleccionada, setMonedaSeleccionada] = useState(new Set(['us']));
   const [itemsCarrito] = useState(4);
   const [busquedaProducto, setBusquedaProducto] = useState('');
   const [clienteSeleccionado, setClienteSeleccionado] = useState('1');
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('todos');
 
   const monedaActual = PAISES.find(p => p.codigo === Array.from(monedaSeleccionada)[0]);
+
+  const productosFiltrados = categoriaSeleccionada === 'todos' 
+    ? PRODUCTOS 
+    : PRODUCTOS.filter(p => p.categoria === categoriaSeleccionada);
+
+  const agregarAlCarrito = (producto) => {
+    console.log('Agregando al carrito:', producto);
+  };
 
   return (
     <div className="min-h-screen bg-default-100">
@@ -68,7 +100,14 @@ export default function POSPage() {
                 className="w-20 sm:w-24"
                 classNames={{
                   trigger: "h-8 sm:h-9 min-h-[32px] sm:min-h-[36px] border-default-300",
-                  value: "text-xs sm:text-sm font-semibold"
+                  value: "text-xs sm:text-sm font-semibold",
+                  listboxWrapper: "max-h-[300px]",
+                  popoverContent: "p-1"
+                }}
+                listboxProps={{
+                  itemClasses: {
+                    base: "py-2.5 px-3 gap-3"
+                  }
                 }}
                 aria-label="Seleccionar moneda"
                 renderValue={() => (
@@ -83,9 +122,9 @@ export default function POSPage() {
                     value={pais.codigo}
                     textValue={`${pais.moneda} ${pais.nombre}`}
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="text-base font-semibold">{pais.simbolo}</span>
-                      <div className="flex flex-col">
+                    <div className="flex items-center gap-3 py-1">
+                      <span className="text-lg font-semibold min-w-[24px]">{pais.simbolo}</span>
+                      <div className="flex flex-col gap-0.5">
                         <span className="text-sm font-semibold">{pais.moneda}</span>
                         <span className="text-xs text-foreground/60">{pais.nombre}</span>
                       </div>
@@ -181,7 +220,86 @@ export default function POSPage() {
 
       {/* Contenido Principal */}
       <main className="container mx-auto px-3 sm:px-4 lg:px-6 py-4">
-        {/* Aquí irá el contenido del POS */}
+        {/* Tabs de Categorías */}
+        <Tabs 
+          selectedKey={categoriaSeleccionada}
+          onSelectionChange={setCategoriaSeleccionada}
+          variant="underlined"
+          color="primary"
+          classNames={{
+            tabList: "gap-4 sm:gap-6 w-full relative rounded-none p-0 border-b border-divider",
+            cursor: "w-full bg-primary",
+            tab: "max-w-fit px-0 h-10 sm:h-12",
+            tabContent: "group-data-[selected=true]:text-primary text-xs sm:text-sm font-semibold"
+          }}
+        >
+          <Tab key="todos" title="Todos" />
+          <Tab key="bebidas" title="Bebidas" />
+          <Tab key="alimentos" title="Alimentos" />
+          <Tab key="lacteos" title="Lácteos" />
+          <Tab key="limpieza" title="Limpieza" />
+        </Tabs>
+
+        {/* Grid de Productos */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 mt-4">
+          {productosFiltrados.map((producto) => (
+            <Card 
+              key={producto.id}
+              isPressable
+              onPress={() => agregarAlCarrito(producto)}
+              className="border border-divider hover:border-primary transition-colors"
+            >
+              <CardBody className="p-3 sm:p-4">
+                {/* Icono de Producto */}
+                <div className="flex items-center justify-center w-full aspect-square bg-default-100 rounded-lg mb-3">
+                  <Package className="w-8 h-8 sm:w-10 sm:h-10 text-default-400" />
+                </div>
+
+                {/* Nombre del Producto */}
+                <h3 className="text-xs sm:text-sm font-semibold text-foreground line-clamp-2 mb-2 min-h-[32px] sm:min-h-[40px]">
+                  {producto.nombre}
+                </h3>
+
+                {/* Código */}
+                <p className="text-[10px] sm:text-xs text-primary font-mono mb-2">
+                  + {producto.codigo}
+                </p>
+
+                {/* Precio y Stock */}
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <p className="text-[10px] text-foreground/50 uppercase tracking-wide">Precio</p>
+                    <p className="text-sm sm:text-base font-bold text-foreground">
+                      {monedaActual?.simbolo}{producto.precio.toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] text-foreground/50 uppercase tracking-wide">Stock</p>
+                    <Chip 
+                      size="sm" 
+                      variant="flat"
+                      color={producto.stock > 20 ? "success" : producto.stock > 10 ? "warning" : "danger"}
+                      className="h-5"
+                    >
+                      <span className="text-xs font-semibold">{producto.stock}</span>
+                    </Chip>
+                  </div>
+                </div>
+              </CardBody>
+
+              <CardFooter className="pt-0 px-3 sm:px-4 pb-3 sm:pb-4">
+                <Button
+                  color="primary"
+                  size="sm"
+                  className="w-full h-8 text-xs font-semibold"
+                  startContent={<ShoppingCart className="w-3 h-3" />}
+                >
+                  Agregar
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
       </main>
     </div>
   );

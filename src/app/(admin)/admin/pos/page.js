@@ -7,6 +7,9 @@ import { ShoppingCart, Search, ScanBarcode, Grid3x3, Coffee, Milk, Sparkles, Ute
 import Image from 'next/image';
 import ProductCard from '@/components/ProductCard';
 import BarcodeScannerModal from '@/components/BarcodeScannerModal';
+import CartDrawer from '@/components/CartDrawer';
+import PaymentModal from '@/components/PaymentModal';
+import SuccessModal from '@/components/SuccessModal';
 
 const PAISES = [
   { codigo: 've', nombre: 'Venezuela', moneda: 'VES', simbolo: 'Bs.', impuesto: 'IVA', tasa: 16 },
@@ -81,10 +84,36 @@ export default function POSPage() {
     }, {})
   );
 
+  // Estados para los modales del flujo de pago
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const [isSuccessOpen, setIsSuccessOpen] = useState(false);
+  const [saleData, setSaleData] = useState(null);
+  const [ivaPercentage, setIvaPercentage] = useState(16);
+
   const monedaActual = PAISES.find(p => p.codigo === monedaSeleccionada);
+  const clienteActual = CLIENTES.find(c => c.id === parseInt(clienteSeleccionado));
+
+  // Actualizar IVA cuando cambia el país
+  const handleMonedaChange = (codigo) => {
+    setMonedaSeleccionada(codigo);
+    const pais = PAISES.find(p => p.codigo === codigo);
+    if (pais) {
+      setIvaPercentage(pais.tasa);
+    }
+  };
 
   // Calcular total de items en carrito
   const itemsCarrito = Object.values(carrito).reduce((total, item) => total + item.cantidad, 0);
+
+  // Calcular totales del carrito
+  const calcularTotales = () => {
+    const items = Object.values(carrito);
+    const subtotal = items.reduce((sum, item) => sum + (item.producto.precio * item.cantidad), 0);
+    const iva = subtotal * (ivaPercentage / 100);
+    const total = subtotal + iva;
+    return { subtotal, iva, total };
+  };
 
   // Filtrar productos por categoría y búsqueda
   const productosFiltrados = PRODUCTOS
@@ -131,6 +160,83 @@ export default function POSPage() {
       ...prev,
       [producto.id]: prev[producto.id] - 1
     }));
+  };
+
+  // Eliminar producto del carrito
+  const eliminarDelCarrito = (productoId) => {
+    const item = carrito[productoId];
+    if (!item) return;
+
+    // Restaurar stock
+    setStockProductos(prev => ({
+      ...prev,
+      [productoId]: prev[productoId] + item.cantidad
+    }));
+
+    // Eliminar del carrito
+    setCarrito(prev => {
+      const newCarrito = { ...prev };
+      delete newCarrito[productoId];
+      return newCarrito;
+    });
+  };
+
+  // Proceder al pago
+  const handleProceedToPayment = () => {
+    setIsCartOpen(false);
+    setTimeout(() => setIsPaymentOpen(true), 300);
+  };
+
+  // Confirmar pago
+  const handleConfirmPayment = (paymentInfo) => {
+    const { subtotal, iva, total } = calcularTotales();
+    
+    // Generar número de venta
+    const numeroVenta = `V${Date.now().toString().slice(-8)}`;
+    const fecha = new Date().toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    // Preparar datos de la venta
+    const ventaData = {
+      numeroVenta,
+      fecha,
+      items: Object.values(carrito),
+      subtotal,
+      iva,
+      total,
+      payment: paymentInfo,
+      monedaActual,
+      cliente: clienteActual
+    };
+
+    setSaleData(ventaData);
+    setIsPaymentOpen(false);
+    setTimeout(() => setIsSuccessOpen(true), 300);
+  };
+
+  // Nueva venta
+  const handleNewSale = () => {
+    // Vaciar carrito
+    setCarrito({});
+    
+    // Cerrar modal
+    setIsSuccessOpen(false);
+    
+    // Mostrar toast
+    addToast({
+      title: '¡Venta finalizada con éxito!',
+      description: `Venta #${saleData?.numeroVenta} completada`,
+      variant: 'solid',
+      color: 'success',
+    });
+
+    // Limpiar datos de venta
+    setSaleData(null);
   };
 
   // Manejar el resultado del escáner
@@ -216,7 +322,7 @@ export default function POSPage() {
               {/* Select de Moneda */}
               <Select
                 selectedKeys={[monedaSeleccionada]}
-                onSelectionChange={(keys) => setMonedaSeleccionada(Array.from(keys)[0])}
+                onSelectionChange={(keys) => handleMonedaChange(Array.from(keys)[0])}
                 variant="bordered"
                 size="sm"
                 className="w-20 sm:w-24"
@@ -250,6 +356,7 @@ export default function POSPage() {
                   size="sm"
                   className="h-8 sm:h-9 px-2 sm:px-3"
                   startContent={<ShoppingCart className="w-4 h-4" />}
+                  onPress={() => setIsCartOpen(true)}
                 >
                   <span className="hidden sm:inline text-xs">Carrito</span>
                 </Button>
@@ -421,6 +528,35 @@ export default function POSPage() {
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
         onScanSuccess={handleScanSuccess}
+      />
+
+      {/* Drawer del Carrito */}
+      <CartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        carrito={carrito}
+        onRemoveItem={eliminarDelCarrito}
+        monedaActual={monedaActual}
+        ivaPercentage={ivaPercentage}
+        onIvaChange={setIvaPercentage}
+        onProceedToPayment={handleProceedToPayment}
+      />
+
+      {/* Modal de Pago */}
+      <PaymentModal
+        isOpen={isPaymentOpen}
+        onClose={() => setIsPaymentOpen(false)}
+        total={calcularTotales().total}
+        monedaActual={monedaActual}
+        onConfirmPayment={handleConfirmPayment}
+      />
+
+      {/* Modal de Éxito */}
+      <SuccessModal
+        isOpen={isSuccessOpen}
+        onClose={() => setIsSuccessOpen(false)}
+        saleData={saleData}
+        onNewSale={handleNewSale}
       />
     </div>
   );

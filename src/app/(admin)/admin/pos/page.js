@@ -352,27 +352,58 @@ export default function POSPage() {
 
             {/* Select de Moneda y Carrito */}
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* Select de Moneda */}
+              {/* Select de Moneda - Diseño Elegante */}
               <Select
                 selectedKeys={[monedaSeleccionada]}
                 onSelectionChange={(keys) => handleMonedaChange(Array.from(keys)[0])}
-                variant="bordered"
+                variant="flat"
                 size="sm"
-                className="w-20 sm:w-24"
+                className="min-w-[100px] sm:min-w-[140px]"
                 classNames={{
-                  trigger: "h-8 sm:h-9 min-h-[32px] sm:min-h-[36px] border-default-300",
-                  value: "text-xs sm:text-sm font-semibold"
+                  trigger: "h-9 sm:h-10 bg-default-100 hover:bg-default-200 border-none data-[hover=true]:bg-default-200",
+                  value: "text-xs sm:text-sm font-bold text-foreground",
+                  popoverContent: "bg-content1 rounded-xl shadow-lg border border-divider",
+                  listbox: "p-1"
                 }}
                 aria-label="Seleccionar moneda"
+                popoverProps={{
+                  classNames: {
+                    content: "p-0 rounded-xl"
+                  }
+                }}
                 renderValue={() => (
-                  <span className="text-xs sm:text-sm font-semibold">
-                    {monedaActual?.moneda}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm sm:text-base font-bold text-primary">
+                      {monedaActual?.simbolo}
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-foreground">
+                      {monedaActual?.moneda}
+                    </span>
+                  </div>
                 )}
               >
                 {PAISES.map((pais) => (
-                  <SelectItem key={pais.codigo}>
-                    {pais.moneda}
+                  <SelectItem 
+                    key={pais.codigo}
+                    textValue={pais.moneda}
+                    classNames={{
+                      base: "rounded-lg data-[hover=true]:bg-default-100 data-[selectable=true]:focus:bg-default-100 py-2.5",
+                      title: "font-bold text-sm"
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-base font-bold text-primary min-w-[32px]">
+                        {pais.simbolo}
+                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-foreground">
+                          {pais.moneda}
+                        </span>
+                        <span className="text-xs text-foreground/60">
+                          {pais.nombre}
+                        </span>
+                      </div>
+                    </div>
                   </SelectItem>
                 ))}
               </Select>
@@ -387,7 +418,7 @@ export default function POSPage() {
                 <Button
                   color="primary"
                   size="sm"
-                  className="h-8 sm:h-9 px-2 sm:px-3"
+                  className="h-9 sm:h-10 px-2 sm:px-3"
                   startContent={<ShoppingCart className="w-4 h-4" />}
                   onPress={() => setIsCartOpen(true)}
                 >

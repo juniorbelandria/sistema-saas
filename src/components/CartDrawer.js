@@ -61,7 +61,7 @@ export default function CartDrawer({
       placement="right"
       size="full"
       classNames={{
-        base: "w-full sm:max-w-md",
+        base: "w-full sm:max-w-md md:max-w-lg lg:max-w-xl",
         backdrop: "bg-black/50"
       }}
     >

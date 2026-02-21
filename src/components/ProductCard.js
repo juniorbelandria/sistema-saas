@@ -65,9 +65,7 @@ export default function ProductCard({
   };
 
   // Copiar código de barras y actualizar búsqueda
-  const handleCopyBarcode = (e) => {
-    e.stopPropagation(); // Evitar que se active el click de la card
-    
+  const handleCopyBarcode = () => {
     // Primero actualizar el buscador
     setSearchTerm(product.codigo);
     
@@ -128,7 +126,7 @@ export default function ProductCard({
         </div>
 
         {/* Footer: Código y Botón de Copiar */}
-        <div className="mt-2 pt-2 border-t border-divider/50 flex items-center justify-between gap-1">
+        <div className="mt-2 pt-2 border-t border-divider/50 flex items-center justify-between gap-1" onClick={(e) => e.stopPropagation()}>
           <div className="flex flex-col overflow-hidden flex-1">
             <span className="text-[9px] uppercase text-foreground font-black">Código</span>
             <span className="text-[10px] font-mono truncate text-foreground">{product.codigo}</span>

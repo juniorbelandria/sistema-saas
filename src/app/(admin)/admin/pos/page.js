@@ -18,44 +18,44 @@ const PAISES = [
 ];
 
 export default function POSPage() {
-  const [monedaSeleccionada, setMonedaSeleccionada] = useState('ve');
+  const [monedaSeleccionada, setMonedaSeleccionada] = useState(new Set(['ve']));
   const [itemsCarrito, setItemsCarrito] = useState(4);
 
   return (
     <div className="min-h-screen bg-default-100">
       {/* Header */}
       <header className="bg-background border-b border-divider sticky top-0 z-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6">
+          <div className="flex items-center justify-between h-12 sm:h-14 gap-3">
             {/* Logo y Título */}
-            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              <div className="relative w-8 h-8 sm:w-10 sm:h-10">
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="relative w-7 h-7 sm:w-8 sm:h-8">
                 <Image
                   src="/assets/imagenes/logonegro.webp"
                   alt="Sistema POS"
-                  width={40}
-                  height={40}
+                  width={32}
+                  height={32}
                   className="object-contain"
                   priority
                   quality={85}
                 />
               </div>
-              <h1 className="text-sm sm:text-base lg:text-lg font-bold text-foreground">
+              <h1 className="text-sm sm:text-base font-bold text-foreground">
                 POS Venta
               </h1>
             </div>
 
             {/* Select de Moneda y Carrito */}
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3">
               {/* Select de Moneda */}
               <Select
-                selectedKeys={monedaSeleccionada ? [monedaSeleccionada] : []}
-                onChange={(e) => setMonedaSeleccionada(e.target.value)}
+                selectedKeys={monedaSeleccionada}
+                onSelectionChange={setMonedaSeleccionada}
                 variant="bordered"
                 size="sm"
-                className="w-32 sm:w-40 lg:w-48"
+                className="w-28 sm:w-36 lg:w-40"
                 classNames={{
-                  trigger: "h-9 sm:h-10 min-h-[36px] sm:min-h-[40px]",
+                  trigger: "h-8 sm:h-9 min-h-[32px] sm:min-h-[36px]",
                   value: "text-xs sm:text-sm"
                 }}
                 aria-label="Seleccionar moneda"
@@ -67,7 +67,7 @@ export default function POSPage() {
                     startContent={
                       <Avatar 
                         alt={pais.nombre} 
-                        className="w-5 h-5" 
+                        className="w-4 h-4" 
                         src={`https://flagcdn.com/${pais.codigo}.svg`} 
                       />
                     }
@@ -86,12 +86,11 @@ export default function POSPage() {
               >
                 <Button
                   color="primary"
-                  variant="flat"
                   size="sm"
-                  className="h-9 sm:h-10 px-3 sm:px-4"
-                  startContent={<ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />}
+                  className="h-8 sm:h-9 px-2 sm:px-3"
+                  startContent={<ShoppingCart className="w-4 h-4" />}
                 >
-                  <span className="hidden sm:inline text-xs sm:text-sm">Ver Carrito</span>
+                  <span className="hidden sm:inline text-xs">Ver Carrito</span>
                 </Button>
               </Badge>
             </div>
@@ -100,7 +99,7 @@ export default function POSPage() {
       </header>
 
       {/* Contenido Principal */}
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="container mx-auto px-3 sm:px-4 lg:px-6 py-4">
         {/* Aquí irá el contenido del POS */}
       </main>
     </div>

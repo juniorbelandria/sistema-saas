@@ -8,6 +8,7 @@ import Image from 'next/image';
 import ProductCard from '@/components/ProductCard';
 import BarcodeScannerModal from '@/components/BarcodeScannerModal';
 import CartDrawer from '@/components/CartDrawer';
+import PaymentModal from '@/components/PaymentModal';
 import SuccessModal from '@/components/SuccessModal';
 
 const PAISES = [
@@ -85,9 +86,11 @@ export default function POSPage() {
 
   // Estados para los modales del flujo de pago
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [saleData, setSaleData] = useState(null);
   const [ivaPercentage, setIvaPercentage] = useState(16);
+  const [paymentData, setPaymentData] = useState(null);
   
   // Ref para controlar toasts y evitar spam
   const lastToastId = useRef(null);
@@ -193,7 +196,13 @@ export default function POSPage() {
     });
   };
 
-  // Confirmar pago (ahora se llama directamente desde el Drawer)
+  // Abrir modal de pago
+  const handleOpenPaymentModal = (data) => {
+    setPaymentData(data);
+    setIsPaymentModalOpen(true);
+  };
+
+  // Confirmar pago desde el modal
   const handleConfirmPayment = (paymentInfo) => {
     const { subtotal, iva, total } = calcularTotales();
     
@@ -221,6 +230,7 @@ export default function POSPage() {
     };
 
     setSaleData(ventaData);
+    setIsPaymentModalOpen(false);
     setIsCartOpen(false);
     setTimeout(() => setIsSuccessOpen(true), 300);
   };
@@ -550,7 +560,7 @@ export default function POSPage() {
         onScanSuccess={handleScanSuccess}
       />
 
-      {/* Drawer del Carrito con Pago Integrado */}
+      {/* Drawer del Carrito */}
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
@@ -559,6 +569,15 @@ export default function POSPage() {
         monedaActual={monedaActual}
         ivaPercentage={ivaPercentage}
         onIvaChange={setIvaPercentage}
+        onOpenPaymentModal={handleOpenPaymentModal}
+      />
+
+      {/* Modal de Procesar Pago */}
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        total={calcularTotales().total}
+        monedaActual={monedaActual}
         onConfirmPayment={handleConfirmPayment}
       />
 

@@ -90,27 +90,27 @@ export default function PaymentModal({
       <ModalContent className="bg-content1">
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1 border-b border-divider pb-3">
-              <h2 className="text-base sm:text-lg font-bold">Procesar Pago</h2>
-              <p className="text-xs sm:text-sm text-foreground/60 font-normal">
-                Selecciona el método y confirma el monto
+            <ModalHeader className="flex flex-col gap-1 border-b-2 border-divider pb-3">
+              <h2 className="text-lg font-bold">Procesar Pago</h2>
+              <p className="text-sm text-foreground/60 font-normal">
+                Ingresa el monto recibido del cliente
               </p>
             </ModalHeader>
 
-            <ModalBody className="py-4 sm:py-5 space-y-4 sm:space-y-5">
-              {/* Total a Pagar */}
-              <Card shadow="none" className="bg-primary/10 border-2 border-primary">
-                <CardBody className="p-3 sm:p-4">
-                  <p className="text-xs sm:text-sm text-foreground/70 mb-1">Total a Pagar</p>
-                  <p className="text-2xl sm:text-3xl font-bold text-primary">
+            <ModalBody className="py-5 space-y-5">
+              {/* Total a Pagar - Card destacado */}
+              <Card shadow="sm" className="bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/30">
+                <CardBody className="p-4">
+                  <p className="text-sm text-foreground/70 mb-1 font-medium">Total a Pagar</p>
+                  <p className="text-3xl font-bold text-primary">
                     {monedaActual?.simbolo}{total.toFixed(2)}
                   </p>
                 </CardBody>
               </Card>
 
               {/* Método de Pago */}
-              <div className="space-y-2 sm:space-y-3">
-                <h3 className="text-xs sm:text-sm font-semibold">Método de Pago</h3>
+              <div className="space-y-3">
+                <h3 className="text-sm font-bold text-foreground/90">Método de Pago</h3>
                 <PaymentMethodSelector
                   selectedMethod={selectedMethod}
                   onSelectMethod={setSelectedMethod}
@@ -120,7 +120,7 @@ export default function PaymentModal({
               <Divider />
 
               {/* Monto Recibido */}
-              <div className="space-y-2 sm:space-y-3">
+              <div className="space-y-3">
                 <Input
                   type="number"
                   label="Monto Recibido"
@@ -132,11 +132,12 @@ export default function PaymentModal({
                   color={hasError ? "danger" : "default"}
                   isInvalid={hasError}
                   startContent={
-                    <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-default-400" />
+                    <DollarSign className="w-5 h-5 text-default-400" />
                   }
                   classNames={{
-                    input: "text-lg sm:text-xl font-semibold",
-                    label: "text-xs sm:text-sm font-semibold"
+                    input: "text-xl font-bold",
+                    label: "text-sm font-semibold",
+                    inputWrapper: "h-14 border-2"
                   }}
                 />
 
@@ -151,13 +152,13 @@ export default function PaymentModal({
                       } border-2
                     `}
                   >
-                    <CardBody className="p-2 sm:p-3 flex flex-row items-center gap-2">
+                    <CardBody className="p-3 flex flex-row items-center gap-2">
                       {isValid ? (
-                        <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-success flex-shrink-0" />
+                        <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
                       ) : (
-                        <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-danger flex-shrink-0" />
+                        <AlertCircle className="w-5 h-5 text-danger flex-shrink-0" />
                       )}
-                      <span className={`text-xs sm:text-sm font-semibold ${isValid ? 'text-success' : 'text-danger'}`}>
+                      <span className={`text-sm font-semibold ${isValid ? 'text-success' : 'text-danger'}`}>
                         {message}
                       </span>
                     </CardBody>
@@ -166,10 +167,10 @@ export default function PaymentModal({
 
                 {/* Cambio */}
                 {isValid && change > 0 && (
-                  <Card shadow="none" className="bg-content2">
-                    <CardBody className="p-3 sm:p-4">
-                      <p className="text-xs sm:text-sm text-foreground/70 mb-1">Cambio a Entregar</p>
-                      <p className="text-xl sm:text-2xl font-bold text-success">
+                  <Card shadow="sm" className="bg-gradient-to-br from-success/10 to-success/5 border-2 border-success/30">
+                    <CardBody className="p-4">
+                      <p className="text-sm text-foreground/70 mb-1 font-medium">Cambio a Entregar</p>
+                      <p className="text-2xl font-bold text-success">
                         {monedaActual?.simbolo}{change.toFixed(2)}
                       </p>
                     </CardBody>
@@ -178,11 +179,12 @@ export default function PaymentModal({
               </div>
             </ModalBody>
 
-            <ModalFooter className="border-t border-divider flex-col sm:flex-row gap-2 pt-3">
+            <ModalFooter className="border-t-2 border-divider flex-col sm:flex-row gap-2 pt-4">
               <Button
-                variant="light"
+                variant="flat"
                 onPress={handleClose}
-                className="w-full sm:w-auto text-xs sm:text-sm"
+                className="w-full sm:w-auto text-sm"
+                size="lg"
               >
                 Cancelar
               </Button>
@@ -191,10 +193,10 @@ export default function PaymentModal({
                 size="lg"
                 onPress={handleConfirm}
                 isDisabled={!isValid}
-                className="font-bold w-full sm:w-auto text-xs sm:text-sm"
-                startContent={<Check className="w-4 h-4 sm:w-5 sm:h-5" />}
+                className="font-bold w-full sm:w-auto text-sm shadow-lg"
+                startContent={<Check className="w-5 h-5" />}
               >
-                Finalizar Compra
+                Confirmar Pago
               </Button>
             </ModalFooter>
           </>

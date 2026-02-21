@@ -13,7 +13,7 @@ import {
   Input,
   Divider
 } from '@heroui/react';
-import { Trash2, ShoppingBag, Check, AlertCircle, CheckCircle2, DollarSign } from 'lucide-react';
+import { Trash2, ShoppingBag, CreditCard } from 'lucide-react';
 import PaymentMethodSelector from './PaymentMethodSelector';
 
 export default function CartDrawer({ 
@@ -24,10 +24,9 @@ export default function CartDrawer({
   monedaActual,
   ivaPercentage,
   onIvaChange,
-  onConfirmPayment
+  onOpenPaymentModal
 }) {
   const [selectedMethod, setSelectedMethod] = useState('efectivo');
-  const [amountReceived, setAmountReceived] = useState('');
 
   // Calcular totales con precisión de 2 decimales
   const { subtotal, iva, total } = useMemo(() => {
@@ -45,52 +44,14 @@ export default function CartDrawer({
     };
   }, [carrito, ivaPercentage]);
 
-  // Calcular cambio con precisión de 2 decimales
-  const { change, isValid, message, hasError } = useMemo(() => {
-    const received = parseFloat(amountReceived) || 0;
-    const totalAmount = Number(total.toFixed(2));
-    const diff = Number((received - totalAmount).toFixed(2));
-
-    if (received === 0) {
-      return {
-        change: 0,
-        isValid: false,
-        message: 'Ingresa el monto recibido',
-        hasError: false
-      };
-    }
-
-    if (diff < 0) {
-      return {
-        change: 0,
-        isValid: false,
-        message: `Faltan ${monedaActual?.simbolo}${Math.abs(diff).toFixed(2)}`,
-        hasError: true
-      };
-    }
-
-    return {
-      change: diff,
-      isValid: true,
-      message: 'Pago válido',
-      hasError: false
-    };
-  }, [amountReceived, total, monedaActual]);
-
   const itemsCarrito = Object.values(carrito);
   const totalItems = itemsCarrito.reduce((sum, item) => sum + item.cantidad, 0);
 
   const handleFinalizarCompra = () => {
-    if (isValid) {
-      onConfirmPayment({
-        method: selectedMethod,
-        amountReceived: Number(parseFloat(amountReceived).toFixed(2)),
-        change: Number(change.toFixed(2))
-      });
-      // Resetear estado de pago
-      setSelectedMethod('efectivo');
-      setAmountReceived('');
-    }
+    onOpenPaymentModal({
+      method: selectedMethod,
+      total
+    });
   };
 
   return (
@@ -128,153 +89,112 @@ export default function CartDrawer({
             </div>
           ) : (
             <div className="flex-1 flex flex-col">
-              {/* Lista de Productos - Sin Cards, solo filas */}
+              {/* Lista de Productos - Cards elegantes */}
               <div className="flex-1 overflow-y-auto px-3 py-3">
-                <div className="space-y-0">
-                  {itemsCarrito.map((item, index) => (
-                    <div 
+                <div className="space-y-2">
+                  {itemsCarrito.map((item) => (
+                    <Card 
                       key={item.producto.id}
-                      className={`
-                        flex items-center justify-between py-2 px-2
-                        ${index !== itemsCarrito.length - 1 ? 'border-b border-divider' : ''}
-                        hover:bg-content2 transition-colors rounded-sm
-                      `}
+                      shadow="sm"
+                      className="border border-divider hover:border-primary/50 transition-all"
                     >
-                      <div className="flex-1 min-w-0 pr-2">
-                        <h3 className="text-xs sm:text-sm font-semibold truncate">
-                          {item.producto.nombre}
-                        </h3>
-                        <p className="text-[10px] sm:text-xs text-foreground/60">
-                          {monedaActual?.simbolo}{item.producto.precio.toFixed(2)} × {item.cantidad}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm sm:text-base font-bold text-primary whitespace-nowrap">
-                          {monedaActual?.simbolo}{(item.producto.precio * item.cantidad).toFixed(2)}
-                        </p>
-                        <Button
-                          isIconOnly
-                          size="sm"
-                          variant="light"
-                          color="danger"
-                          onPress={() => onRemoveItem(item.producto.id)}
-                          className="min-w-6 w-6 h-6"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
-                      </div>
-                    </div>
+                      <CardBody className="p-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-sm font-bold truncate mb-1">
+                              {item.producto.nombre}
+                            </h3>
+                            <div className="flex items-center gap-2 text-xs text-foreground/60">
+                              <span>{monedaActual?.simbolo}{item.producto.precio.toFixed(2)}</span>
+                              <span>×</span>
+                              <span className="font-semibold">{item.cantidad}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="text-right">
+                              <p className="text-base font-bold text-primary">
+                                {monedaActual?.simbolo}{(item.producto.precio * item.cantidad).toFixed(2)}
+                              </p>
+                            </div>
+                            <Button
+                              isIconOnly
+                              size="sm"
+                              variant="flat"
+                              color="danger"
+                              onPress={() => onRemoveItem(item.producto.id)}
+                              className="min-w-8 w-8 h-8"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardBody>
+                    </Card>
                   ))}
                 </div>
               </div>
 
               {/* Sección de Totales y Pago - Siempre al fondo */}
-              <div className="flex-shrink-0 border-t border-divider bg-content1">
-                <div className="px-3 py-3 space-y-3">
-                  {/* IVA Input */}
-                  <Input
-                    type="number"
-                    label={`${monedaActual?.impuesto || 'IVA'} (%)`}
-                    value={ivaPercentage.toString()}
-                    onValueChange={(value) => onIvaChange(parseFloat(value) || 0)}
-                    variant="bordered"
-                    size="sm"
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    classNames={{
-                      input: "text-xs sm:text-sm",
-                      label: "text-[10px] sm:text-xs font-semibold"
-                    }}
-                  />
-
-                  {/* Resumen de Totales */}
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs sm:text-sm">
-                      <span className="text-foreground/70">Subtotal:</span>
-                      <span className="font-semibold">
-                        {monedaActual?.simbolo}{subtotal.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-xs sm:text-sm">
-                      <span className="text-foreground/70">
-                        {monedaActual?.impuesto || 'IVA'} ({ivaPercentage}%):
-                      </span>
-                      <span className="font-semibold">
-                        {monedaActual?.simbolo}{iva.toFixed(2)}
-                      </span>
-                    </div>
-                    <Divider className="my-1" />
-                    <div className="flex justify-between">
-                      <span className="text-base sm:text-lg font-bold">Total:</span>
-                      <span className="text-xl sm:text-2xl font-bold text-primary">
-                        {monedaActual?.simbolo}{total.toFixed(2)}
-                      </span>
-                    </div>
+              <div className="flex-shrink-0 border-t-2 border-divider bg-gradient-to-b from-content1 to-content2/50">
+                <div className="px-4 py-4 space-y-4">
+                  {/* IVA Input - Mejorado */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-semibold text-foreground/80 whitespace-nowrap">
+                      {monedaActual?.impuesto || 'IVA'}:
+                    </span>
+                    <Input
+                      type="number"
+                      value={ivaPercentage.toString()}
+                      onValueChange={(value) => onIvaChange(parseFloat(value) || 0)}
+                      variant="bordered"
+                      size="sm"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      endContent={<span className="text-xs text-foreground/60">%</span>}
+                      classNames={{
+                        base: "flex-1",
+                        input: "text-sm font-semibold text-center",
+                        inputWrapper: "h-9 border-default-300"
+                      }}
+                    />
                   </div>
 
-                  <Divider />
+                  {/* Resumen de Totales - Card elegante */}
+                  <Card shadow="sm" className="bg-content2/50 border border-divider">
+                    <CardBody className="p-3 space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-foreground/70">Subtotal:</span>
+                        <span className="font-semibold">
+                          {monedaActual?.simbolo}{subtotal.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-foreground/70">
+                          {monedaActual?.impuesto || 'IVA'} ({ivaPercentage}%):
+                        </span>
+                        <span className="font-semibold">
+                          {monedaActual?.simbolo}{iva.toFixed(2)}
+                        </span>
+                      </div>
+                      <Divider className="my-1" />
+                      <div className="flex justify-between items-center">
+                        <span className="text-lg font-bold">Total:</span>
+                        <span className="text-2xl font-bold text-primary">
+                          {monedaActual?.simbolo}{total.toFixed(2)}
+                        </span>
+                      </div>
+                    </CardBody>
+                  </Card>
 
                   {/* Método de Pago */}
                   <div className="space-y-2">
-                    <h3 className="text-xs sm:text-sm font-bold">Método de Pago</h3>
+                    <h3 className="text-sm font-bold text-foreground/90">Método de Pago</h3>
                     <PaymentMethodSelector
                       selectedMethod={selectedMethod}
                       onSelectMethod={setSelectedMethod}
                     />
                   </div>
-
-                  {/* Monto Recibido */}
-                  <Input
-                    type="number"
-                    label="Monto Recibido"
-                    placeholder="0.00"
-                    value={amountReceived}
-                    onValueChange={setAmountReceived}
-                    variant="bordered"
-                    size="sm"
-                    color={hasError ? "danger" : "default"}
-                    isInvalid={hasError}
-                    startContent={
-                      <DollarSign className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-default-400" />
-                    }
-                    classNames={{
-                      input: "text-sm sm:text-base font-semibold",
-                      label: "text-[10px] sm:text-xs font-semibold"
-                    }}
-                  />
-
-                  {/* Mensaje de Validación */}
-                  {amountReceived && (
-                    <div 
-                      className={`
-                        flex items-center gap-2 p-2 rounded-lg
-                        ${isValid 
-                          ? 'bg-success/10 border border-success' 
-                          : 'bg-danger/10 border border-danger'
-                        }
-                      `}
-                    >
-                      {isValid ? (
-                        <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" />
-                      ) : (
-                        <AlertCircle className="w-4 h-4 text-danger flex-shrink-0" />
-                      )}
-                      <span className={`text-xs font-semibold ${isValid ? 'text-success' : 'text-danger'}`}>
-                        {message}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Cambio */}
-                  {isValid && change > 0 && (
-                    <div className="bg-content2 p-2 rounded-lg">
-                      <p className="text-[10px] sm:text-xs text-foreground/70 mb-0.5">Cambio a Entregar</p>
-                      <p className="text-lg sm:text-xl font-bold text-success">
-                        {monedaActual?.simbolo}{change.toFixed(2)}
-                      </p>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -283,16 +203,16 @@ export default function CartDrawer({
 
         {/* Footer Sticky - Siempre visible */}
         {itemsCarrito.length > 0 && (
-          <DrawerFooter className="border-t border-divider pt-3 pb-3 flex-shrink-0">
+          <DrawerFooter className="border-t-2 border-divider pt-3 pb-3 flex-shrink-0 bg-content1">
             <Button
-              color={isValid ? "primary" : "default"}
+              color={selectedMethod ? "primary" : "default"}
               size="lg"
-              className="w-full font-bold text-sm"
+              className="w-full font-bold text-sm shadow-lg"
               onPress={handleFinalizarCompra}
-              isDisabled={!isValid}
-              startContent={<Check className="w-5 h-5" />}
+              isDisabled={!selectedMethod}
+              startContent={<CreditCard className="w-5 h-5" />}
             >
-              Finalizar Compra
+              Procesar Pago
             </Button>
           </DrawerFooter>
         )}

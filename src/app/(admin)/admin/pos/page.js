@@ -18,8 +18,10 @@ const PAISES = [
 ];
 
 export default function POSPage() {
-  const [monedaSeleccionada, setMonedaSeleccionada] = useState(new Set(['ve']));
+  const [monedaSeleccionada, setMonedaSeleccionada] = useState(new Set(['us']));
   const [itemsCarrito, setItemsCarrito] = useState(4);
+
+  const monedaActual = PAISES.find(p => p.codigo === Array.from(monedaSeleccionada)[0]);
 
   return (
     <div className="min-h-screen bg-default-100">
@@ -53,26 +55,33 @@ export default function POSPage() {
                 onSelectionChange={setMonedaSeleccionada}
                 variant="bordered"
                 size="sm"
-                className="w-28 sm:w-36 lg:w-40"
+                className="w-24 sm:w-28"
                 classNames={{
                   trigger: "h-8 sm:h-9 min-h-[32px] sm:min-h-[36px]",
-                  value: "text-xs sm:text-sm"
+                  value: "text-xs sm:text-sm font-semibold"
                 }}
                 aria-label="Seleccionar moneda"
+                renderValue={() => (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs sm:text-sm font-semibold">
+                      {monedaActual?.moneda}
+                    </span>
+                  </div>
+                )}
               >
                 {PAISES.map((pais) => (
                   <SelectItem 
                     key={pais.codigo} 
                     value={pais.codigo}
-                    startContent={
-                      <Avatar 
-                        alt={pais.nombre} 
-                        className="w-4 h-4" 
-                        src={`https://flagcdn.com/${pais.codigo}.svg`} 
-                      />
-                    }
+                    textValue={`${pais.moneda} ${pais.nombre}`}
                   >
-                    {pais.moneda} ({pais.simbolo})
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{pais.simbolo}</span>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold">{pais.moneda}</span>
+                        <span className="text-xs text-foreground/60">{pais.nombre}</span>
+                      </div>
+                    </div>
                   </SelectItem>
                 ))}
               </Select>
@@ -90,7 +99,7 @@ export default function POSPage() {
                   className="h-8 sm:h-9 px-2 sm:px-3"
                   startContent={<ShoppingCart className="w-4 h-4" />}
                 >
-                  <span className="hidden sm:inline text-xs">Ver Carrito</span>
+                  <span className="hidden sm:inline text-xs">Carrito</span>
                 </Button>
               </Badge>
             </div>

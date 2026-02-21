@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Select, SelectItem, Button, Badge, Input, Autocomplete, AutocompleteItem, Tabs, Tab, Tooltip } from '@heroui/react';
+import { addToast } from '@heroui/toast';
 import { ShoppingCart, Search, ScanBarcode, Grid3x3, Coffee, Milk, Sparkles, UtensilsCrossed } from 'lucide-react';
 import Image from 'next/image';
 import ProductCard from '@/components/ProductCard';
@@ -59,6 +60,7 @@ const PRODUCTOS = [
   { id: 18, nombre: 'Atún en Aceite 140g', codigo: '7501234567907', precio: 16.00, stock: 31, categoria: 'alimentos' },
   { id: 19, nombre: 'Frijoles Negros 400g', codigo: '7501234567908', precio: 14.00, stock: 4, categoria: 'alimentos' },
   { id: 20, nombre: 'Queso Fresco 400g', codigo: '7501234567909', precio: 32.00, stock: 19, categoria: 'lacteos' },
+  { id: 21, nombre: 'Cubitos Doña Gallina x48', codigo: '7702354949785', precio: 18.00, stock: 30, categoria: 'alimentos' },
 ];
 
 export default function POSPage() {
@@ -133,7 +135,37 @@ export default function POSPage() {
 
   // Manejar el resultado del escáner
   const handleScanSuccess = (decodedText) => {
-    setBusquedaProducto(decodedText);
+    // Buscar el producto por código
+    const productoEncontrado = PRODUCTOS.find(p => p.codigo === decodedText);
+    
+    if (productoEncontrado) {
+      // Producto encontrado - mostrar toast success
+      addToast({
+        title: 'Producto encontrado',
+        description: `${productoEncontrado.nombre} - ${monedaActual?.simbolo}${productoEncontrado.precio.toFixed(2)}`,
+        variant: 'solid',
+        color: 'success',
+      });
+      
+      // Actualizar el campo de búsqueda
+      setBusquedaProducto(decodedText);
+      
+      // Limpiar el campo después de 3 segundos
+      setTimeout(() => {
+        setBusquedaProducto('');
+      }, 3000);
+    } else {
+      // Producto no encontrado - mostrar toast danger
+      addToast({
+        title: 'Producto no encontrado',
+        description: `No se encontró ningún producto con el código: ${decodedText}`,
+        variant: 'solid',
+        color: 'danger',
+      });
+      
+      // Limpiar el campo inmediatamente
+      setBusquedaProducto('');
+    }
   };
 
   return (

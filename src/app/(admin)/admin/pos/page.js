@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Select, SelectItem, Button, Badge, Input, Autocomplete, AutocompleteItem, Tabs, Tab, Card, CardBody, Chip } from '@heroui/react';
+import { Select, SelectItem, Button, Badge, Input, Autocomplete, AutocompleteItem, Tabs, Tab } from '@heroui/react';
 import { ShoppingCart, Search, ScanBarcode, Grid3x3, Coffee, Milk, Sparkles, UtensilsCrossed } from 'lucide-react';
 import Image from 'next/image';
+import ProductCard from '@/components/ProductCard';
 
 const PAISES = [
   { codigo: 've', nombre: 'Venezuela', moneda: 'VES', simbolo: 'Bs.', impuesto: 'IVA', tasa: 16 },
@@ -61,19 +62,63 @@ const PRODUCTOS = [
 
 export default function POSPage() {
   const [monedaSeleccionada, setMonedaSeleccionada] = useState('us');
-  const [itemsCarrito] = useState(4);
   const [busquedaProducto, setBusquedaProducto] = useState('');
   const [clienteSeleccionado, setClienteSeleccionado] = useState('1');
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('todos');
+  
+  // Estado del carrito: { productoId: { producto, cantidad } }
+  const [carrito, setCarrito] = useState({});
+  
+  // Estado de stock actualizado
+  const [stockProductos, setStockProductos] = useState(
+    PRODUCTOS.reduce((acc, prod) => {
+      acc[prod.id] = prod.stock;
+      return acc;
+    }, {})
+  );
 
   const monedaActual = PAISES.find(p => p.codigo === monedaSeleccionada);
+
+  // Calcular total de items en carrito
+  const itemsCarrito = Object.values(carrito).reduce((total, item) => total + item.cantidad, 0);
 
   const productosFiltrados = categoriaSeleccionada === 'todos' 
     ? PRODUCTOS 
     : PRODUCTOS.filter(p => p.categoria === categoriaSeleccionada);
 
   const agregarAlCarrito = (producto) => {
-    console.log('Agregando al carrito:', producto);
+    // Verificar si hay stock disponible
+    if (stockProductos[producto.id] <= 0) {
+      return;
+    }
+
+    // Actualizar carrito
+    setCarrito(prev => {
+      const itemExistente = prev[producto.id];
+      if (itemExistente) {
+        return {
+          ...prev,
+          [producto.id]: {
+            ...itemExistente,
+            cantidad: itemExistente.cantidad + 1
+          }
+        };
+      } else {
+        return {
+          ...prev,
+          [producto.id]: {
+            producto,
+            cantidad: 1
+          }
+        };
+      }
+    });
+
+    // Reducir stock
+    setStockProductos(prev => ({
+      ...prev,
+      [producto.id]: prev[producto.id] - 1
+    }));
   };
 
   return (
@@ -282,45 +327,15 @@ export default function POSPage() {
           {/* Grid de Productos */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-2.5 sm:gap-3 pb-6">
             {productosFiltrados.map((producto) => (
-              <Card 
+              <ProductCard
                 key={producto.id}
-                isPressable
-                onPress={() => agregarAlCarrito(producto)}
-                className="border border-divider hover:border-primary hover:shadow-md transition-all"
-              >
-                <CardBody className="p-3 gap-3">
-                  {/* Nombre del Producto */}
-                  <h3 className="text-xs font-bold text-foreground line-clamp-2 min-h-[32px] leading-tight">
-                    {producto.nombre}
-                  </h3>
-
-                  {/* Código */}
-                  <p className="text-[10px] text-primary font-mono">
-                    + {producto.codigo}
-                  </p>
-
-                  {/* Precio y Stock en la misma línea */}
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <p className="text-[9px] text-foreground font-bold uppercase tracking-wider mb-1">Precio</p>
-                      <p className="text-base font-bold text-foreground">
-                        {monedaActual?.simbolo}{producto.precio.toFixed(2)}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[9px] text-foreground font-bold uppercase tracking-wider mb-1">Stock</p>
-                      <Chip 
-                        size="sm" 
-                        variant="flat"
-                        radius="sm"
-                        className="h-6 bg-default-200 text-foreground"
-                      >
-                        <span className="text-xs font-bold">{producto.stock}</span>
-                      </Chip>
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
+                product={producto}
+                onAddToCart={agregarAlCarrito}
+                setSearchTerm={setBusquedaProducto}
+                monedaActual={monedaActual}
+                stockActual={stockProductos[producto.id]}
+                cantidadEnCarrito={carrito[producto.id]?.cantidad || 0}
+              />
             ))}
           </div>
         </div>

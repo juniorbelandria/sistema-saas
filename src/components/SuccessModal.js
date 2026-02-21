@@ -84,20 +84,20 @@ ${productosLista}
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size="md"
+      size="sm"
       placement="center"
       backdrop="blur"
       hideCloseButton
       scrollBehavior="inside"
       classNames={{
-        base: "w-full mx-2 sm:mx-0 sm:max-w-[400px] max-h-[85vh]",
+        base: "w-full mx-2 sm:mx-0 sm:max-w-[380px]",
         backdrop: "bg-black/80"
       }}
     >
       <ModalContent className="bg-content1">
         {() => (
           <>
-            <ModalHeader className="flex flex-col items-center gap-2 pt-4 sm:pt-6 pb-2 sm:pb-3">
+            <ModalHeader className="flex flex-col items-center gap-2 pt-4 pb-2">
               {/* Icono Animado */}
               <div className={`
                 transition-all duration-500 ease-out
@@ -105,44 +105,44 @@ ${productosLista}
               `}>
                 <div className="relative">
                   <div className="absolute inset-0 bg-success/20 rounded-full animate-ping" />
-                  <div className="relative bg-success rounded-full p-2.5 sm:p-3">
-                    <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                  <div className="relative bg-success rounded-full p-2">
+                    <CheckCircle2 className="w-8 h-8 text-white" />
                   </div>
                 </div>
               </div>
               
               <div className="text-center">
-                <h2 className="text-lg sm:text-xl font-bold text-success">¡Venta Exitosa!</h2>
-                <p className="text-[10px] sm:text-xs text-foreground/60 mt-0.5">
+                <h2 className="text-base sm:text-lg font-bold text-success">¡Venta Exitosa!</h2>
+                <p className="text-[10px] text-foreground/60 mt-0.5">
                   Venta #{numeroVenta} procesada correctamente
                 </p>
               </div>
             </ModalHeader>
 
-            <ModalBody className="px-3 sm:px-4 py-2 sm:py-3 max-h-[50vh] overflow-y-auto">
+            <ModalBody className="px-3 py-2">
               {/* Ticket Digital */}
               <Card shadow="none" className="bg-content2 border border-divider">
-                <CardBody className="p-2 sm:p-3 space-y-1.5 sm:space-y-2">
+                <CardBody className="p-2.5 space-y-1.5">
                   {/* Info de Venta */}
                   <div className="text-center space-y-0.5">
-                    <p className="text-[9px] sm:text-[10px] text-foreground/60">{fecha}</p>
-                    <p className="text-[10px] sm:text-xs font-semibold">
+                    <p className="text-[9px] text-foreground/60">{fecha}</p>
+                    <p className="text-[10px] font-semibold">
                       {cliente?.nombre || 'Cliente General'}
                     </p>
                     {cliente?.email && (
-                      <p className="text-[9px] sm:text-[10px] text-foreground/60">{cliente.email}</p>
+                      <p className="text-[9px] text-foreground/60">{cliente.email}</p>
                     )}
                   </div>
 
-                  <Divider />
+                  <Divider className="my-1" />
 
-                  {/* Lista de Productos */}
-                  <div className="space-y-1 sm:space-y-1.5 max-h-32 sm:max-h-40 overflow-y-auto">
+                  {/* Lista de Productos - Ultra compacta */}
+                  <div className="space-y-0.5 max-h-32 overflow-y-auto">
                     {items.map((item, index) => (
-                      <div key={index} className="flex justify-between text-[10px] sm:text-xs gap-2">
+                      <div key={index} className="flex justify-between text-[10px] gap-2">
                         <div className="flex-1 min-w-0">
                           <p className="font-medium truncate">{item.producto.nombre}</p>
-                          <p className="text-[9px] sm:text-[10px] text-foreground/60">
+                          <p className="text-[9px] text-foreground/60">
                             {monedaActual?.simbolo}{item.producto.precio.toFixed(2)} × {item.cantidad}
                           </p>
                         </div>
@@ -153,17 +153,17 @@ ${productosLista}
                     ))}
                   </div>
 
-                  <Divider />
+                  <Divider className="my-1" />
 
-                  {/* Totales */}
-                  <div className="space-y-0.5 sm:space-y-1">
-                    <div className="flex justify-between text-[10px] sm:text-xs">
+                  {/* Totales - Ultra compactos */}
+                  <div className="space-y-0.5">
+                    <div className="flex justify-between text-[10px]">
                       <span className="text-foreground/70">Subtotal:</span>
                       <span className="font-semibold">
                         {monedaActual?.simbolo}{subtotal.toFixed(2)}
                       </span>
                     </div>
-                    <div className="flex justify-between text-[10px] sm:text-xs">
+                    <div className="flex justify-between text-[10px]">
                       <span className="text-foreground/70">
                         {monedaActual?.impuesto || 'IVA'}:
                       </span>
@@ -173,17 +173,17 @@ ${productosLista}
                     </div>
                     <Divider className="my-0.5" />
                     <div className="flex justify-between">
-                      <span className="text-xs sm:text-sm font-bold">Total:</span>
-                      <span className="text-sm sm:text-base font-bold text-primary">
+                      <span className="text-xs font-bold">Total:</span>
+                      <span className="text-sm font-bold text-primary">
                         {monedaActual?.simbolo}{total.toFixed(2)}
                       </span>
                     </div>
                   </div>
 
-                  <Divider />
+                  <Divider className="my-1" />
 
-                  {/* Info de Pago */}
-                  <div className="space-y-0.5 text-[10px] sm:text-xs">
+                  {/* Info de Pago - Ultra compacta */}
+                  <div className="space-y-0.5 text-[10px]">
                     <div className="flex justify-between">
                       <span className="text-foreground/70">Método:</span>
                       <span className="font-semibold capitalize">{payment.method.replace('_', ' ')}</span>
@@ -206,15 +206,15 @@ ${productosLista}
                 </CardBody>
               </Card>
 
-              {/* Botones de Acción Premium - Responsivos */}
-              <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-2 mt-2 sm:mt-3">
+              {/* Botones de Acción Premium - Compactos */}
+              <div className="flex flex-col sm:flex-row gap-1.5 mt-2">
                 <Button
                   color="secondary"
                   variant="flat"
                   size="sm"
-                  startContent={<Printer className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
+                  startContent={<Printer className="w-3 h-3" />}
                   onPress={() => handlePrint('nota')}
-                  className="font-semibold w-full sm:flex-1 text-[10px] sm:text-xs h-8"
+                  className="font-semibold w-full sm:flex-1 text-[10px] h-7"
                 >
                   Nota
                 </Button>
@@ -222,9 +222,9 @@ ${productosLista}
                   color="primary"
                   variant="flat"
                   size="sm"
-                  startContent={<Receipt className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
+                  startContent={<Receipt className="w-3 h-3" />}
                   onPress={() => handlePrint('ticket')}
-                  className="font-semibold w-full sm:flex-1 text-[10px] sm:text-xs h-8"
+                  className="font-semibold w-full sm:flex-1 text-[10px] h-7"
                 >
                   Ticket
                 </Button>
@@ -232,20 +232,20 @@ ${productosLista}
                   color="success"
                   variant="flat"
                   size="sm"
-                  startContent={<MessageCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
+                  startContent={<MessageCircle className="w-3 h-3" />}
                   onPress={handleWhatsApp}
-                  className="font-semibold w-full sm:flex-1 text-[10px] sm:text-xs h-8"
+                  className="font-semibold w-full sm:flex-1 text-[10px] h-7"
                 >
                   WhatsApp
                 </Button>
               </div>
             </ModalBody>
 
-            <ModalFooter className="border-t border-divider pt-2 pb-3">
+            <ModalFooter className="border-t border-divider pt-2 pb-2">
               <Button
                 color="primary"
-                size="lg"
-                className="w-full font-bold text-xs sm:text-sm h-10"
+                size="md"
+                className="w-full font-bold text-xs h-9"
                 onPress={onNewSale}
                 startContent={<RefreshCw className="w-4 h-4" />}
               >

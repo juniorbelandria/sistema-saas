@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardBody, Badge, Button, Tooltip, addToast } from '@heroui/react';
+import { Card, CardBody, Button, Tooltip, addToast } from '@heroui/react';
 import { Copy } from 'lucide-react';
 
 export default function ProductCard({ 
@@ -14,18 +14,18 @@ export default function ProductCard({
   const isLowStock = stockActual > 0 && stockActual <= 5;
   const isOutOfStock = stockActual === 0;
 
-  // Clases dinámicas según stock
+  // Clases dinámicas según stock para el fondo de la card
   const cardBgClass = isOutOfStock
-    ? 'bg-danger-50 border-danger-200'
+    ? 'bg-danger-50'
     : isLowStock
-    ? 'bg-warning-50 border-warning-200'
+    ? 'bg-warning-50'
     : 'bg-content1';
 
-  // Determinar el color del badge de stock
+  // Color del badge de stock personalizado
   const getStockBadgeColor = () => {
-    if (isOutOfStock) return 'danger';
-    if (isLowStock) return 'warning';
-    return 'success';
+    if (isOutOfStock) return 'bg-danger text-danger-foreground';
+    if (isLowStock) return 'bg-warning text-warning-foreground';
+    return 'bg-success text-success-foreground';
   };
 
   // Manejar el click en agregar al carrito
@@ -44,7 +44,7 @@ export default function ProductCard({
     // Si es la primera vez que se agrega (no existe en carrito)
     if (cantidadEnCarrito === 0) {
       addToast({
-        title: product.nombre,
+        title: 'Producto agregado',
         description: `${product.nombre} agregado al carrito`,
         variant: 'solid',
         color: 'success',
@@ -89,63 +89,63 @@ export default function ProductCard({
   };
 
   return (
-    <Badge
-      content={stockActual}
-      color={getStockBadgeColor()}
-      placement="top-right"
-      size="sm"
-      className="z-20 font-bold w-full"
+    <Card
+      isPressable={!isOutOfStock}
+      onPress={handleAddToCart}
+      shadow="sm"
+      className={`w-full h-full border-1 border-divider ${cardBgClass} transition-all active:scale-95 relative`}
     >
-      <Card
-        isPressable={!isOutOfStock}
-        onPress={handleAddToCart}
-        shadow="sm"
-        className={`w-full h-full border-1 ${cardBgClass} transition-all active:scale-95`}
-      >
-        <CardBody className="relative flex flex-col justify-between gap-1 overflow-hidden p-2 sm:p-3">
-          
-          {/* Overlay de Agotado - Mejorado para que no estorbe */}
-          {isOutOfStock && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-danger-100/40 backdrop-blur-[1px]">
-              <div className="bg-danger-600 text-white text-[10px] font-black px-2 py-1 rounded-full shadow-lg rotate-[-12deg] uppercase">
-                Agotado
-              </div>
-            </div>
-          )}
+      <CardBody className="p-2 flex flex-col justify-between gap-1 overflow-visible relative">
+        
+        {/* Badge de Stock personalizado - Superior central/derecha */}
+        <div className={`absolute -top-0 right-2 z-20 ${getStockBadgeColor()} px-2 py-0.5 rounded-b-xl shadow-sm`}>
+          <span className="text-[10px] font-bold uppercase">
+            Stock: {stockActual}
+          </span>
+        </div>
 
-          {/* Info Producto */}
-          <div className="flex flex-col gap-0.5">
-            <h3 className="text-[11px] sm:text-xs font-bold truncate leading-tight uppercase">
-              {product.nombre}
-            </h3>
-            <p className="text-base sm:text-lg font-black text-primary">
-              {monedaActual?.simbolo}{product.precio.toFixed(2)}
-            </p>
+        {/* Overlay de Agotado - Solo si stock = 0 */}
+        {isOutOfStock && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-danger-100/40 backdrop-blur-[1px] pointer-events-none">
+            <div className="bg-danger-600 text-white text-xs font-black px-3 py-1.5 rounded-md shadow-lg rotate-[-12deg] uppercase opacity-90">
+              Agotado
+            </div>
+          </div>
+        )}
+
+        {/* Info Producto */}
+        <div className="flex flex-col gap-0.5 mt-4">
+          <h3 className="text-[11px] sm:text-xs font-bold truncate leading-tight uppercase text-foreground">
+            {product.nombre}
+          </h3>
+          <p className="text-base sm:text-lg font-black text-primary">
+            {monedaActual?.simbolo}{product.precio.toFixed(2)}
+          </p>
+        </div>
+
+        {/* Footer: Código y Botón de Copiar */}
+        <div className="mt-2 pt-2 border-t border-divider/50 flex items-center justify-between gap-1">
+          <div className="flex flex-col overflow-hidden flex-1">
+            <span className="text-[9px] uppercase text-default-500 font-bold">Código</span>
+            <span className="text-[10px] font-mono truncate text-foreground">{product.codigo}</span>
           </div>
 
-          {/* Footer: Código y Copiar */}
-          <div className="mt-2 pt-2 border-t border-default-200 flex items-center justify-between gap-1">
-            <div className="flex flex-col overflow-hidden">
-              <span className="text-[9px] uppercase text-default-500 font-bold">Código</span>
-              <span className="text-[10px] font-mono truncate">{product.codigo}</span>
-            </div>
-
-            <Tooltip content="Copiar y buscar" size="sm">
-              <Button
-                isIconOnly
-                size="sm"
-                variant="flat"
-                radius="full"
-                className="min-w-8 w-8 h-8"
-                onPress={handleCopyBarcode}
-                aria-label="Copiar código de barras"
-              >
-                <Copy size={14} />
-              </Button>
-            </Tooltip>
-          </div>
-        </CardBody>
-      </Card>
-    </Badge>
+          <Tooltip content="Copiar y buscar" size="sm" placement="top">
+            <Button
+              isIconOnly
+              size="sm"
+              variant="flat"
+              color="secondary"
+              radius="full"
+              className="min-w-8 w-8 h-8"
+              onPress={handleCopyBarcode}
+              aria-label="Copiar código de barras"
+            >
+              <Copy size={14} />
+            </Button>
+          </Tooltip>
+        </div>
+      </CardBody>
+    </Card>
   );
 }

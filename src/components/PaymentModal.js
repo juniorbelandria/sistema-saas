@@ -13,7 +13,7 @@ import {
   CardBody,
   Divider
 } from '@heroui/react';
-import { AlertCircle, CheckCircle2, DollarSign } from 'lucide-react';
+import { AlertCircle, CheckCircle2, DollarSign, Check } from 'lucide-react';
 import PaymentMethodSelector from './PaymentMethodSelector';
 
 export default function PaymentModal({
@@ -26,16 +26,18 @@ export default function PaymentModal({
   const [selectedMethod, setSelectedMethod] = useState('efectivo');
   const [amountReceived, setAmountReceived] = useState('');
 
-  // Calcular cambio
-  const { change, isValid, message } = useMemo(() => {
+  // Calcular cambio con precisión de 2 decimales
+  const { change, isValid, message, hasError } = useMemo(() => {
     const received = parseFloat(amountReceived) || 0;
-    const diff = received - total;
+    const totalAmount = Number(total.toFixed(2));
+    const diff = Number((received - totalAmount).toFixed(2));
 
     if (received === 0) {
       return {
         change: 0,
         isValid: false,
-        message: 'Ingresa el monto recibido'
+        message: 'Ingresa el monto recibido',
+        hasError: false
       };
     }
 
@@ -43,14 +45,16 @@ export default function PaymentModal({
       return {
         change: 0,
         isValid: false,
-        message: `Faltan ${monedaActual?.simbolo}${Math.abs(diff).toFixed(2)}`
+        message: `Faltan ${monedaActual?.simbolo}${Math.abs(diff).toFixed(2)}`,
+        hasError: true
       };
     }
 
     return {
       change: diff,
       isValid: true,
-      message: 'Pago válido'
+      message: 'Pago válido',
+      hasError: false
     };
   }, [amountReceived, total, monedaActual]);
 
@@ -58,8 +62,8 @@ export default function PaymentModal({
     if (isValid) {
       onConfirmPayment({
         method: selectedMethod,
-        amountReceived: parseFloat(amountReceived),
-        change
+        amountReceived: Number(parseFloat(amountReceived).toFixed(2)),
+        change: Number(change.toFixed(2))
       });
     }
   };
@@ -78,6 +82,7 @@ export default function PaymentModal({
       placement="center"
       backdrop="blur"
       classNames={{
+        base: "w-full mx-4 sm:mx-0 sm:max-w-[500px]",
         backdrop: "bg-black/70"
       }}
     >
@@ -123,6 +128,8 @@ export default function PaymentModal({
                   onValueChange={setAmountReceived}
                   variant="bordered"
                   size="lg"
+                  color={hasError ? "danger" : "default"}
+                  isInvalid={hasError}
                   startContent={
                     <DollarSign className="w-5 h-5 text-default-400" />
                   }
@@ -170,10 +177,11 @@ export default function PaymentModal({
               </div>
             </ModalBody>
 
-            <ModalFooter className="border-t border-divider">
+            <ModalFooter className="border-t border-divider flex-col sm:flex-row gap-2">
               <Button
                 variant="light"
                 onPress={handleClose}
+                className="w-full sm:w-auto"
               >
                 Cancelar
               </Button>
@@ -182,7 +190,8 @@ export default function PaymentModal({
                 size="lg"
                 onPress={handleConfirm}
                 isDisabled={!isValid}
-                className="font-bold"
+                className="font-bold w-full sm:w-auto"
+                startContent={<Check className="w-5 h-5" />}
               >
                 Finalizar Compra
               </Button>

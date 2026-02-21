@@ -12,7 +12,7 @@ import {
   CardBody,
   Divider
 } from '@heroui/react';
-import { CheckCircle2, Printer, Receipt, MessageCircle, X } from 'lucide-react';
+import { CheckCircle2, Printer, Receipt, MessageCircle, RefreshCw } from 'lucide-react';
 
 export default function SuccessModal({
   isOpen,
@@ -44,35 +44,37 @@ export default function SuccessModal({
   } = saleData;
 
   const handleWhatsApp = () => {
-    const itemsList = items.map(item => 
-      `• ${item.producto.nombre} x${item.cantidad} - ${monedaActual?.simbolo}${(item.producto.precio * item.cantidad).toFixed(2)}`
+    // Formatear lista de productos
+    const productosTexto = items.map(item => 
+      `- ${item.cantidad} x ${item.producto.nombre} - ${monedaActual?.simbolo}${(item.producto.precio * item.cantidad).toFixed(2)}`
     ).join('%0A');
 
-    const message = `
-*TICKET DE VENTA #${numeroVenta}*%0A
-━━━━━━━━━━━━━━━━━━━━%0A
-📅 ${fecha}%0A
-👤 ${cliente?.nombre || 'Cliente General'}%0A
-━━━━━━━━━━━━━━━━━━━━%0A
-%0A*PRODUCTOS:*%0A
-${itemsList}%0A
-%0A━━━━━━━━━━━━━━━━━━━━%0A
-Subtotal: ${monedaActual?.simbolo}${subtotal.toFixed(2)}%0A
-${monedaActual?.impuesto || 'IVA'}: ${monedaActual?.simbolo}${iva.toFixed(2)}%0A
-%0A*TOTAL: ${monedaActual?.simbolo}${total.toFixed(2)}*%0A
-%0A💳 Método: ${payment.method}%0A
-💵 Recibido: ${monedaActual?.simbolo}${payment.amountReceived.toFixed(2)}%0A
-${payment.change > 0 ? `💰 Cambio: ${monedaActual?.simbolo}${payment.change.toFixed(2)}` : ''}%0A
-%0A¡Gracias por su compra! 🙏
-    `.trim();
+    // Construir mensaje formateado
+    const mensaje = [
+      `*Detalle de Venta #${numeroVenta}*`,
+      `---------------------------`,
+      ``,
+      `*Productos:*`,
+      productosTexto,
+      ``,
+      `---------------------------`,
+      `*Subtotal:* ${monedaActual?.simbolo}${subtotal.toFixed(2)}`,
+      `*${monedaActual?.impuesto || 'IVA'}:* ${monedaActual?.simbolo}${iva.toFixed(2)}`,
+      `*TOTAL:* ${monedaActual?.simbolo}${total.toFixed(2)}`,
+      ``,
+      `---------------------------`,
+      `*Método:* ${payment.method.replace('_', ' ').toUpperCase()}`,
+      `*Recibido:* ${monedaActual?.simbolo}${payment.amountReceived.toFixed(2)}`,
+      payment.change > 0 ? `*Cambio:* ${monedaActual?.simbolo}${payment.change.toFixed(2)}` : '',
+      ``,
+      `*¡Gracias por su compra!* 🙏`
+    ].filter(line => line !== '').join('%0A');
 
-    window.open(`https://wa.me/?text=${message}`, '_blank');
+    window.open(`https://wa.me/?text=${mensaje}`, '_blank');
   };
 
   const handlePrint = (type) => {
-    // Aquí puedes implementar la lógica de impresión
     console.log(`Imprimiendo ${type}...`, saleData);
-    // Por ahora solo mostramos un alert
     alert(`Función de impresión de ${type} en desarrollo`);
   };
 
@@ -85,6 +87,7 @@ ${payment.change > 0 ? `💰 Cambio: ${monedaActual?.simbolo}${payment.change.to
       backdrop="blur"
       hideCloseButton
       classNames={{
+        base: "w-full mx-4 sm:mx-0 sm:max-w-[500px]",
         backdrop: "bg-black/80"
       }}
     >
@@ -200,14 +203,14 @@ ${payment.change > 0 ? `💰 Cambio: ${monedaActual?.simbolo}${payment.change.to
                 </CardBody>
               </Card>
 
-              {/* Botones de Acción Premium */}
-              <div className="grid grid-cols-3 gap-2 mt-4">
+              {/* Botones de Acción Premium - Responsivos */}
+              <div className="flex flex-col sm:flex-row gap-2 mt-4">
                 <Button
                   color="secondary"
                   variant="flat"
                   startContent={<Printer className="w-4 h-4" />}
                   onPress={() => handlePrint('nota')}
-                  className="font-semibold"
+                  className="font-semibold w-full sm:flex-1"
                 >
                   Nota
                 </Button>
@@ -216,7 +219,7 @@ ${payment.change > 0 ? `💰 Cambio: ${monedaActual?.simbolo}${payment.change.to
                   variant="flat"
                   startContent={<Receipt className="w-4 h-4" />}
                   onPress={() => handlePrint('ticket')}
-                  className="font-semibold"
+                  className="font-semibold w-full sm:flex-1"
                 >
                   Ticket
                 </Button>
@@ -225,7 +228,7 @@ ${payment.change > 0 ? `💰 Cambio: ${monedaActual?.simbolo}${payment.change.to
                   variant="flat"
                   startContent={<MessageCircle className="w-4 h-4" />}
                   onPress={handleWhatsApp}
-                  className="font-semibold"
+                  className="font-semibold w-full sm:flex-1"
                 >
                   WhatsApp
                 </Button>
@@ -238,6 +241,7 @@ ${payment.change > 0 ? `💰 Cambio: ${monedaActual?.simbolo}${payment.change.to
                 size="lg"
                 className="w-full font-bold"
                 onPress={onNewSale}
+                startContent={<RefreshCw className="w-5 h-5" />}
               >
                 Nueva Venta
               </Button>

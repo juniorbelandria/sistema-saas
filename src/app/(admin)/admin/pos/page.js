@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Select, SelectItem, Button, Badge, Input, Autocomplete, AutocompleteItem, Tabs, Tab } from '@heroui/react';
+import { Select, SelectItem, Button, Badge, Input, Autocomplete, AutocompleteItem, Tabs, Tab, Tooltip } from '@heroui/react';
 import { ShoppingCart, Search, ScanBarcode, Grid3x3, Coffee, Milk, Sparkles, UtensilsCrossed } from 'lucide-react';
 import Image from 'next/image';
 import ProductCard from '@/components/ProductCard';
@@ -260,17 +260,18 @@ export default function POSPage() {
       {/* Contenido Principal con Scroll */}
       <main className="flex-1 overflow-y-auto">
         <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4">
-          {/* Tabs de Categorías */}
-          <div className="flex justify-center mb-4 overflow-x-auto scrollbar-hide">
+          {/* Tabs de Categorías - Centrado en móvil */}
+          <div className="w-full flex justify-center overflow-x-auto py-2 mb-4">
             <Tabs 
               selectedKey={categoriaSeleccionada}
               onSelectionChange={setCategoriaSeleccionada}
-              variant="solid"
+              variant="bordered"
               color="primary"
               size="sm"
+              aria-label="Categorías"
               classNames={{
                 base: "w-full sm:w-auto",
-                tabList: "gap-1.5 sm:gap-2 bg-background p-1 shadow-sm",
+                tabList: "mx-auto flex-nowrap gap-1.5 sm:gap-2 bg-background p-1 shadow-sm",
                 cursor: "bg-primary shadow-sm",
                 tab: "h-8 sm:h-9 px-3 sm:px-4",
                 tabContent: "group-data-[selected=true]:text-white group-data-[selected=false]:text-foreground font-bold text-[11px] sm:text-xs"
@@ -324,8 +325,8 @@ export default function POSPage() {
             </Tabs>
           </div>
 
-          {/* Grid de Productos */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-2.5 sm:gap-3 pb-6">
+          {/* Grid de Productos - Responsivo y compacto */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-2 sm:gap-2.5 pb-6">
             {productosFiltrados.map((producto) => (
               <ProductCard
                 key={producto.id}

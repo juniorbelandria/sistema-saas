@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { LayoutDashboard, ShoppingCart, Package, Users, CreditCard, Banknote, TrendingDown, Undo2, BarChart2, UserCheck, Settings, Warehouse, Receipt, Menu, X, User, LogOut, Bell, FileText, PackageCheck, Coins } from 'lucide-react';
+import { LayoutDashboard, ShoppingCart, Package, Users, CreditCard, Banknote, TrendingDown, Undo2, BarChart2, UserCheck, Settings, Warehouse, Receipt, Menu, X, User, LogOut, Bell, FileText, PackageCheck, Coins, HandCoins, Wallet, Monitor } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar } from '@heroui/react';
@@ -11,18 +11,18 @@ import Image from 'next/image';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' },
+  { icon: Monitor, label: 'POS Venta', href: '/admin/pos' },
   { icon: ShoppingCart, label: 'Nueva Venta', href: '/admin/ventas/nueva' },
   { icon: FileText, label: 'Historial Ventas', href: '/admin/ventas' },
   { icon: Package, label: 'Productos', href: '/admin/productos' },
   { icon: PackageCheck, label: 'Inventario', href: '/admin/inventario' },
   { icon: Users, label: 'Clientes', href: '/admin/clientes' },
   { icon: Coins, label: 'Monedas', href: '/admin/monedas' },
-  { icon: CreditCard, label: 'Fiados', href: '/admin/fiados' },
-  { icon: Banknote, label: 'Caja', href: '/admin/caja' },
+  { icon: HandCoins, label: 'Fiados', href: '/admin/fiados' },
+  { icon: Wallet, label: 'Caja', href: '/admin/caja' },
   { icon: TrendingDown, label: 'Gastos', href: '/admin/gastos' },
   { icon: Undo2, label: 'Devoluciones', href: '/admin/devoluciones' },
   { icon: BarChart2, label: 'Reportes', href: '/admin/reportes' },
-  { icon: UserCheck, label: 'Equipo', href: '/admin/equipo' },
   { icon: Settings, label: 'Configuración', href: '/admin/configuracion' },
 ];
 

@@ -52,9 +52,7 @@ next-env.d.ts
 *.swo
 *~
 
-# OS
-.DS_Store
-Thumbs.db
+
 
 # Netlify
 .netlify/
@@ -71,4 +69,14 @@ logs
 # Archivos SQL y documentación de desarrollo
 *.sql
 GUIA_*.md
-$null
+DEPLOY.md
+
+# Archivos temporales y de sistema
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

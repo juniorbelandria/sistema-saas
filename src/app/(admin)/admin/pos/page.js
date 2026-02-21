@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Select, SelectItem, Button, Badge, Input, Autocomplete, AutocompleteItem, Tabs, Tab, Card, CardBody, CardFooter, Chip } from '@heroui/react';
-import { ShoppingCart, Search, ScanBarcode, Package } from 'lucide-react';
+import { ShoppingCart, Search, ScanBarcode, Grid3x3, Coffee, Milk, Sparkles, UtensilsCrossed } from 'lucide-react';
 import Image from 'next/image';
 
 const PAISES = [
@@ -101,12 +101,12 @@ export default function POSPage() {
                 classNames={{
                   trigger: "h-8 sm:h-9 min-h-[32px] sm:min-h-[36px] border-default-300",
                   value: "text-xs sm:text-sm font-semibold",
-                  listboxWrapper: "max-h-[300px]",
-                  popoverContent: "p-1"
+                  listboxWrapper: "max-h-[320px]",
+                  popoverContent: "p-0"
                 }}
                 listboxProps={{
                   itemClasses: {
-                    base: "py-2.5 px-3 gap-3"
+                    base: "py-3 px-4 gap-3 data-[hover=true]:bg-default-100 rounded-none first:rounded-t-medium last:rounded-b-medium"
                   }
                 }}
                 aria-label="Seleccionar moneda"
@@ -122,11 +122,11 @@ export default function POSPage() {
                     value={pais.codigo}
                     textValue={`${pais.moneda} ${pais.nombre}`}
                   >
-                    <div className="flex items-center gap-3 py-1">
-                      <span className="text-lg font-semibold min-w-[24px]">{pais.simbolo}</span>
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-sm font-semibold">{pais.moneda}</span>
-                        <span className="text-xs text-foreground/60">{pais.nombre}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl font-bold min-w-[28px] text-center">{pais.simbolo}</span>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-sm font-bold">{pais.moneda}</span>
+                        <span className="text-xs text-foreground/50">{pais.nombre}</span>
                       </div>
                     </div>
                   </SelectItem>
@@ -221,77 +221,116 @@ export default function POSPage() {
       {/* Contenido Principal */}
       <main className="container mx-auto px-3 sm:px-4 lg:px-6 py-4">
         {/* Tabs de Categorías */}
-        <Tabs 
-          selectedKey={categoriaSeleccionada}
-          onSelectionChange={setCategoriaSeleccionada}
-          variant="underlined"
-          color="primary"
-          classNames={{
-            tabList: "gap-4 sm:gap-6 w-full relative rounded-none p-0 border-b border-divider",
-            cursor: "w-full bg-primary",
-            tab: "max-w-fit px-0 h-10 sm:h-12",
-            tabContent: "group-data-[selected=true]:text-primary text-xs sm:text-sm font-semibold"
-          }}
-        >
-          <Tab key="todos" title="Todos" />
-          <Tab key="bebidas" title="Bebidas" />
-          <Tab key="alimentos" title="Alimentos" />
-          <Tab key="lacteos" title="Lácteos" />
-          <Tab key="limpieza" title="Limpieza" />
-        </Tabs>
+        <div className="flex justify-center mb-6">
+          <Tabs 
+            selectedKey={categoriaSeleccionada}
+            onSelectionChange={setCategoriaSeleccionada}
+            variant="solid"
+            color="primary"
+            radius="full"
+            size="sm"
+            classNames={{
+              tabList: "gap-2 bg-default-100 p-1",
+              cursor: "bg-primary shadow-md",
+              tab: "h-9 px-4",
+              tabContent: "group-data-[selected=true]:text-white text-foreground/60 font-semibold text-xs"
+            }}
+          >
+            <Tab 
+              key="todos" 
+              title={
+                <div className="flex items-center gap-2">
+                  <Grid3x3 className="w-4 h-4" />
+                  <span>Todos</span>
+                </div>
+              } 
+            />
+            <Tab 
+              key="bebidas" 
+              title={
+                <div className="flex items-center gap-2">
+                  <Coffee className="w-4 h-4" />
+                  <span>Bebidas</span>
+                </div>
+              } 
+            />
+            <Tab 
+              key="alimentos" 
+              title={
+                <div className="flex items-center gap-2">
+                  <UtensilsCrossed className="w-4 h-4" />
+                  <span>Alimentos</span>
+                </div>
+              } 
+            />
+            <Tab 
+              key="lacteos" 
+              title={
+                <div className="flex items-center gap-2">
+                  <Milk className="w-4 h-4" />
+                  <span>Lácteos</span>
+                </div>
+              } 
+            />
+            <Tab 
+              key="limpieza" 
+              title={
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  <span>Limpieza</span>
+                </div>
+              } 
+            />
+          </Tabs>
+        </div>
 
         {/* Grid de Productos */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 mt-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-2.5 sm:gap-3">
           {productosFiltrados.map((producto) => (
             <Card 
               key={producto.id}
               isPressable
               onPress={() => agregarAlCarrito(producto)}
-              className="border border-divider hover:border-primary transition-colors"
+              className="border border-divider hover:border-primary hover:shadow-md transition-all"
             >
-              <CardBody className="p-3 sm:p-4">
-                {/* Icono de Producto */}
-                <div className="flex items-center justify-center w-full aspect-square bg-default-100 rounded-lg mb-3">
-                  <Package className="w-8 h-8 sm:w-10 sm:h-10 text-default-400" />
-                </div>
-
+              <CardBody className="p-3 gap-2">
                 {/* Nombre del Producto */}
-                <h3 className="text-xs sm:text-sm font-semibold text-foreground line-clamp-2 mb-2 min-h-[32px] sm:min-h-[40px]">
+                <h3 className="text-xs font-bold text-foreground line-clamp-2 min-h-[32px] leading-tight">
                   {producto.nombre}
                 </h3>
 
                 {/* Código */}
-                <p className="text-[10px] sm:text-xs text-primary font-mono mb-2">
+                <p className="text-[10px] text-primary font-mono">
                   + {producto.codigo}
                 </p>
 
-                {/* Precio y Stock */}
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <p className="text-[10px] text-foreground/50 uppercase tracking-wide">Precio</p>
-                    <p className="text-sm sm:text-base font-bold text-foreground">
-                      {monedaActual?.simbolo}{producto.precio.toFixed(2)}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[10px] text-foreground/50 uppercase tracking-wide">Stock</p>
-                    <Chip 
-                      size="sm" 
-                      variant="flat"
-                      color={producto.stock > 20 ? "success" : producto.stock > 10 ? "warning" : "danger"}
-                      className="h-5"
-                    >
-                      <span className="text-xs font-semibold">{producto.stock}</span>
-                    </Chip>
-                  </div>
+                {/* Precio */}
+                <div className="mt-1">
+                  <p className="text-[9px] text-foreground/40 uppercase tracking-wider mb-0.5">Precio</p>
+                  <p className="text-lg font-bold text-foreground">
+                    {monedaActual?.simbolo}{producto.precio.toFixed(2)}
+                  </p>
+                </div>
+
+                {/* Stock */}
+                <div>
+                  <p className="text-[9px] text-foreground/40 uppercase tracking-wider mb-1">Stock</p>
+                  <Chip 
+                    size="sm" 
+                    variant="flat"
+                    radius="sm"
+                    className="h-5 bg-default-200 text-foreground"
+                  >
+                    <span className="text-xs font-bold">{producto.stock}</span>
+                  </Chip>
                 </div>
               </CardBody>
 
-              <CardFooter className="pt-0 px-3 sm:px-4 pb-3 sm:pb-4">
+              <CardFooter className="pt-0 px-3 pb-3">
                 <Button
                   color="primary"
                   size="sm"
-                  className="w-full h-8 text-xs font-semibold"
+                  className="w-full h-7 text-[11px] font-bold"
                   startContent={<ShoppingCart className="w-3 h-3" />}
                 >
                   Agregar

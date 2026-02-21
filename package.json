@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "clean": "rm -rf .next node_modules package-lock.json"
+    "clean": "rm -rf .next node_modules package-lock.json",
+    "vercel-install": "npm install --legacy-peer-deps"
   },
   "dependencies": {
     "next": "15.1.7",

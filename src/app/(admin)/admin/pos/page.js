@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Select, SelectItem, Button, Badge, Input, Autocomplete, AutocompleteItem, Tabs, Tab, Tooltip } from '@heroui/react';
 import { addToast } from '@heroui/toast';
 import { ShoppingCart, Search, ScanBarcode, Grid3x3, Coffee, Milk, Sparkles, UtensilsCrossed } from 'lucide-react';
@@ -8,7 +8,6 @@ import Image from 'next/image';
 import ProductCard from '@/components/ProductCard';
 import BarcodeScannerModal from '@/components/BarcodeScannerModal';
 import CartDrawer from '@/components/CartDrawer';
-import PaymentModal from '@/components/PaymentModal';
 import SuccessModal from '@/components/SuccessModal';
 
 const PAISES = [
@@ -86,10 +85,12 @@ export default function POSPage() {
 
   // Estados para los modales del flujo de pago
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [saleData, setSaleData] = useState(null);
   const [ivaPercentage, setIvaPercentage] = useState(16);
+  
+  // Ref para controlar toasts y evitar spam
+  const lastToastId = useRef(null);
 
   const monedaActual = PAISES.find(p => p.codigo === monedaSeleccionada);
   const clienteActual = CLIENTES.find(c => c.id === parseInt(clienteSeleccionado));
@@ -160,6 +161,17 @@ export default function POSPage() {
       ...prev,
       [producto.id]: prev[producto.id] - 1
     }));
+
+    // Toast optimizado - evitar spam usando ID único
+    const toastId = `product-${producto.id}`;
+    addToast({
+      id: toastId,
+      title: 'Producto agregado',
+      description: `${producto.nombre} - ${monedaActual?.simbolo}${producto.precio.toFixed(2)}`,
+      variant: 'solid',
+      color: 'success',
+      duration: 1500
+    });
   };
 
   // Eliminar producto del carrito
@@ -181,13 +193,7 @@ export default function POSPage() {
     });
   };
 
-  // Proceder al pago
-  const handleProceedToPayment = () => {
-    setIsCartOpen(false);
-    setTimeout(() => setIsPaymentOpen(true), 300);
-  };
-
-  // Confirmar pago
+  // Confirmar pago (ahora se llama directamente desde el Drawer)
   const handleConfirmPayment = (paymentInfo) => {
     const { subtotal, iva, total } = calcularTotales();
     
@@ -215,7 +221,7 @@ export default function POSPage() {
     };
 
     setSaleData(ventaData);
-    setIsPaymentOpen(false);
+    setIsCartOpen(false);
     setTimeout(() => setIsSuccessOpen(true), 300);
   };
 
@@ -224,15 +230,23 @@ export default function POSPage() {
     // Vaciar carrito
     setCarrito({});
     
+    // Resetear IVA al valor por defecto del país
+    const pais = PAISES.find(p => p.codigo === monedaSeleccionada);
+    if (pais) {
+      setIvaPercentage(pais.tasa);
+    }
+    
     // Cerrar modal
     setIsSuccessOpen(false);
     
-    // Mostrar toast
+    // Mostrar toast optimizado
     addToast({
-      title: '¡Venta finalizada con éxito!',
+      id: 'new-sale',
+      title: 'Sistema listo para nueva venta',
       description: `Venta #${saleData?.numeroVenta} completada`,
       variant: 'solid',
       color: 'success',
+      duration: 1500
     });
 
     // Limpiar datos de venta
@@ -252,12 +266,14 @@ export default function POSPage() {
         // Producto encontrado con stock - agregarlo al carrito
         agregarAlCarrito(productoEncontrado);
         
-        // Toast ya se muestra en agregarAlCarrito, pero agregamos uno específico para escaneo
+        // Toast optimizado para escaneo
         addToast({
+          id: `scan-${productoEncontrado.id}`,
           title: 'Producto escaneado',
           description: `${productoEncontrado.nombre} agregado - ${monedaActual?.simbolo}${productoEncontrado.precio.toFixed(2)}`,
           variant: 'solid',
           color: 'success',
+          duration: 1500
         });
         
         // Actualizar el campo de búsqueda temporalmente
@@ -270,10 +286,12 @@ export default function POSPage() {
       } else {
         // Producto sin stock
         addToast({
+          id: 'no-stock',
           title: 'Producto agotado',
           description: `${productoEncontrado.nombre} no tiene stock disponible`,
           variant: 'solid',
           color: 'danger',
+          duration: 1500
         });
         
         // Limpiar el campo inmediatamente
@@ -282,10 +300,12 @@ export default function POSPage() {
     } else {
       // Producto no encontrado en la base de datos
       addToast({
+        id: 'not-found',
         title: 'Producto no registrado',
         description: `No se encontró ningún producto con el código: ${decodedText}`,
         variant: 'solid',
         color: 'danger',
+        duration: 1500
       });
       
       // Limpiar el campo inmediatamente
@@ -530,7 +550,7 @@ export default function POSPage() {
         onScanSuccess={handleScanSuccess}
       />
 
-      {/* Drawer del Carrito */}
+      {/* Drawer del Carrito con Pago Integrado */}
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
@@ -539,15 +559,6 @@ export default function POSPage() {
         monedaActual={monedaActual}
         ivaPercentage={ivaPercentage}
         onIvaChange={setIvaPercentage}
-        onProceedToPayment={handleProceedToPayment}
-      />
-
-      {/* Modal de Pago */}
-      <PaymentModal
-        isOpen={isPaymentOpen}
-        onClose={() => setIsPaymentOpen(false)}
-        total={calcularTotales().total}
-        monedaActual={monedaActual}
         onConfirmPayment={handleConfirmPayment}
       />
 

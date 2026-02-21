@@ -5,7 +5,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from
 import { Html5Qrcode } from 'html5-qrcode';
 import { X, Camera } from 'lucide-react';
 
-export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess }) {
+export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess: onScanSuccessCallback }) {
   const scannerRef = useRef(null);
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState(null);
@@ -22,6 +22,26 @@ export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess }) 
       stopScanner();
     };
   }, [isOpen]);
+
+  const onScanSuccess = (decodedText) => {
+    // Reproducir sonido de éxito (opcional)
+    if (typeof window !== 'undefined' && window.navigator.vibrate) {
+      window.navigator.vibrate(200); // Vibración táctil
+    }
+
+    // Detener el escáner
+    stopScanner();
+
+    // Pasar el código al componente padre
+    onScanSuccessCallback(decodedText);
+
+    // Cerrar el modal
+    onClose();
+  };
+
+  const onScanError = (errorMessage) => {
+    // No hacer nada, es normal que haya errores mientras busca el código
+  };
 
   const startScanner = async () => {
     try {
@@ -63,26 +83,7 @@ export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess }) 
       }
       setIsScanning(false);
     }
-  };
-
-  const onScanSuccess = (decodedText) => {
-    // Reproducir sonido de éxito (opcional)
-    if (typeof window !== 'undefined' && window.navigator.vibrate) {
-      window.navigator.vibrate(200); // Vibración táctil
     }
-
-    // Detener el escáner
-    stopScanner();
-
-    // Pasar el código al componente padre
-    onScanSuccess(decodedText);
-
-    // Cerrar el modal
-    onClose();
-  };
-
-  const onScanError = (errorMessage) => {
-    // No hacer nada, es normal que haya errores mientras busca el código
   };
 
   const handleClose = () => {

@@ -82,10 +82,10 @@ export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess: on
       const config = {
         fps: 10,
         qrbox: { 
-          width: Math.min(250, window.innerWidth - 100), 
-          height: Math.min(150, window.innerHeight / 4) 
+          width: Math.min(280, window.innerWidth - 80), 
+          height: Math.min(200, window.innerHeight / 3) 
         },
-        aspectRatio: 1.777778
+        aspectRatio: 1.4
       };
 
       // Iniciar el escáner (NO se detiene después de cada lectura)
@@ -234,7 +234,7 @@ export default function BarcodeScannerModal({ isOpen, onClose, onScanSuccess: on
                     <div 
                       id="barcode-scanner" 
                       ref={scannerRef}
-                      className={`w-full aspect-video rounded-lg overflow-hidden shadow-lg border-2 transition-all duration-300 ${
+                      className={`w-full min-h-[300px] sm:min-h-[350px] md:min-h-[400px] rounded-lg overflow-hidden shadow-lg border-2 transition-all duration-300 ${
                         scanSuccess 
                           ? 'border-success shadow-success/50 scale-[1.02]' 
                           : canScan 

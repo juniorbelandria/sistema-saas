@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Select, SelectItem, Button, Badge, Input, Autocomplete, AutocompleteItem, Tabs, Tab, Card, CardBody, Chip } from '@heroui/react';
+import { Button, Badge, Input, Autocomplete, AutocompleteItem, Tabs, Tab, Card, CardBody, Chip } from '@heroui/react';
 import { ShoppingCart, Search, ScanBarcode, Grid3x3, Coffee, Milk, Sparkles, UtensilsCrossed } from 'lucide-react';
 import Image from 'next/image';
 
@@ -92,39 +92,43 @@ export default function POSPage() {
             {/* Select de Moneda y Carrito */}
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Select de Moneda */}
-              <Select
-                selectedKeys={monedaSeleccionada}
-                onSelectionChange={setMonedaSeleccionada}
+              <Autocomplete
+                selectedKey={monedaSeleccionada ? Array.from(monedaSeleccionada)[0] : null}
+                onSelectionChange={(key) => setMonedaSeleccionada(new Set([key]))}
+                defaultItems={PAISES}
+                placeholder={monedaActual?.moneda || "USD"}
                 variant="bordered"
                 size="sm"
                 className="w-20 sm:w-24"
                 classNames={{
-                  trigger: "h-8 sm:h-9 min-h-[32px] sm:min-h-[36px] border-default-300",
-                  value: "text-xs sm:text-sm font-semibold"
+                  base: "w-full",
+                  listboxWrapper: "max-h-[200px]",
+                  selectorButton: "text-default-400"
+                }}
+                inputProps={{
+                  classNames: {
+                    input: "text-xs sm:text-sm font-semibold",
+                    inputWrapper: "h-8 sm:h-9 min-h-[32px] sm:min-h-[36px] border-default-300"
+                  }
                 }}
                 aria-label="Seleccionar moneda"
-                renderValue={() => (
-                  <span className="text-xs sm:text-sm font-semibold">
-                    {monedaActual?.moneda}
-                  </span>
-                )}
               >
-                {PAISES.map((pais) => (
-                  <SelectItem 
+                {(pais) => (
+                  <AutocompleteItem 
                     key={pais.codigo} 
                     value={pais.codigo}
                     textValue={`${pais.moneda} ${pais.nombre}`}
-                    startContent={
-                      <span className="text-base font-bold">{pais.simbolo}</span>
-                    }
                   >
-                    <div className="flex flex-col">
-                      <span className="text-xs font-bold">{pais.moneda}</span>
-                      <span className="text-[10px] text-foreground/50">{pais.nombre}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-base font-bold">{pais.simbolo}</span>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold">{pais.moneda}</span>
+                        <span className="text-[10px] text-foreground/50">{pais.nombre}</span>
+                      </div>
                     </div>
-                  </SelectItem>
-                ))}
-              </Select>
+                  </AutocompleteItem>
+                )}
+              </Autocomplete>
 
               {/* Botón Carrito */}
               <Badge 
@@ -221,7 +225,6 @@ export default function POSPage() {
               onSelectionChange={setCategoriaSeleccionada}
               variant="solid"
               color="primary"
-              radius="full"
               size="sm"
               classNames={{
                 base: "w-full sm:w-auto",
@@ -302,13 +305,13 @@ export default function POSPage() {
                   {/* Precio y Stock en la misma línea */}
                   <div className="flex items-end justify-between">
                     <div>
-                      <p className="text-[9px] text-foreground/40 uppercase tracking-wider mb-1">Precio</p>
+                      <p className="text-[9px] text-foreground font-bold uppercase tracking-wider mb-1">Precio</p>
                       <p className="text-base font-bold text-foreground">
                         {monedaActual?.simbolo}{producto.precio.toFixed(2)}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[9px] text-foreground/40 uppercase tracking-wider mb-1">Stock</p>
+                      <p className="text-[9px] text-foreground font-bold uppercase tracking-wider mb-1">Stock</p>
                       <Chip 
                         size="sm" 
                         variant="flat"

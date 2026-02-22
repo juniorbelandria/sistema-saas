@@ -344,6 +344,9 @@ export default function POSPage() {
                 color="danger" 
                 size="sm"
                 placement="top-right"
+                classNames={{
+                  badge: "text-white"
+                }}
               >
                 <Button
                   color="primary"

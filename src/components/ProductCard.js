@@ -94,9 +94,14 @@ export default function ProductCard({
           <h3 className="text-xs font-bold line-clamp-2 leading-tight uppercase text-foreground min-h-[32px]">
             {product.nombre}
           </h3>
-          <p className="text-lg font-black text-primary">
-            {monedaActual?.simbolo}{product.precio.toFixed(2)}
-          </p>
+          <div className="flex items-baseline gap-0.5">
+            <span className="text-base font-black text-primary">
+              {monedaActual?.simbolo}
+            </span>
+            <span className="text-lg font-black text-primary">
+              {product.precio.toFixed(2)}
+            </span>
+          </div>
         </div>
 
         {/* Footer: Código y Botón de Copiar */}

@@ -1,7 +1,7 @@
 'use client'; // OBLIGATORIO
 
 import { Card, CardBody, Button, Tooltip, Chip } from '@heroui/react';
-import { addToast } from '@heroui/toast';
+import { toast } from 'sonner';
 import { Copy } from 'lucide-react';
 
 export default function ProductCard({ 
@@ -33,13 +33,8 @@ export default function ProductCard({
   const handleAddToCart = () => {
     // Validar si hay stock disponible
     if (isOutOfStock) {
-      addToast({
-        id: 'pos-toast',
-        title: 'Sin stock',
+      toast.error('Sin stock', {
         description: 'No disponible',
-        variant: 'solid',
-        color: 'danger',
-        duration: 500
       });
       return;
     }
@@ -56,22 +51,12 @@ export default function ProductCard({
     
     // Luego copiar al portapapeles
     navigator.clipboard.writeText(product.codigo).then(() => {
-      addToast({
-        id: 'pos-toast',
-        title: 'Copiado',
-        description: `${product.codigo}`,
-        variant: 'solid',
-        color: 'secondary',
-        duration: 500
+      toast.success('Copiado', {
+        description: product.codigo,
       });
     }).catch(() => {
-      addToast({
-        id: 'pos-toast',
-        title: 'Error',
+      toast.error('Error', {
         description: 'No se pudo copiar',
-        variant: 'solid',
-        color: 'danger',
-        duration: 500
       });
     });
   };

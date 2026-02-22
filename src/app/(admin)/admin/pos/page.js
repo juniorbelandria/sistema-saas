@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Select, SelectItem, Button, Badge, Input, Autocomplete, AutocompleteItem, Tabs, Tab, Tooltip } from '@heroui/react';
-import { addToast } from '@heroui/toast';
+import { Button, Badge, Input, Autocomplete, AutocompleteItem, Tabs, Tab } from '@heroui/react';
+import { toast } from 'sonner';
 import { ShoppingCart, Search, ScanBarcode, Grid3x3, Coffee, Milk, Sparkles, UtensilsCrossed } from 'lucide-react';
 import Image from 'next/image';
 import ProductCard from '@/components/ProductCard';
 import BarcodeScannerModal from '@/components/BarcodeScannerModal';
-import CartDrawer from '@/components/CartDrawer';
+import CurrencySelector from '@/components/CurrencySelector';
+import CartDrawerNew from '@/components/CartDrawerNew';
 import PaymentModal from '@/components/PaymentModal';
 import SuccessModal from '@/components/SuccessModal';
 
@@ -167,24 +168,14 @@ export default function POSPage() {
       [producto.id]: prev[producto.id] - 1
     }));
 
-    // Toast instantáneo - ID único para reemplazo
+    // Toast instantáneo de Sonner
     if (isNewItem) {
-      addToast({
-        id: 'pos-toast',
-        title: 'Agregado',
-        description: `${producto.nombre}`,
-        variant: 'solid',
-        color: 'success',
-        duration: 500
+      toast.success('Agregado', {
+        description: producto.nombre,
       });
     } else {
-      addToast({
-        id: 'pos-toast',
-        title: 'Actualizado',
+      toast.success('Actualizado', {
         description: `${itemExistente.cantidad + 1} unidades`,
-        variant: 'solid',
-        color: 'primary',
-        duration: 500
       });
     }
   };
@@ -261,14 +252,9 @@ export default function POSPage() {
     // Cerrar modal
     setIsSuccessOpen(false);
     
-    // Toast instantáneo
-    addToast({
-      id: 'pos-toast',
-      title: 'Nueva venta',
+    // Toast instantáneo de Sonner
+    toast.success('Nueva venta', {
       description: `#${saleData?.numeroVenta} completada`,
-      variant: 'solid',
-      color: 'success',
-      duration: 500
     });
 
     // Limpiar datos de venta
@@ -297,13 +283,8 @@ export default function POSPage() {
         }, 2000);
       } else {
         // Producto sin stock
-        addToast({
-          id: 'pos-toast',
-          title: 'Sin stock',
-          description: `${productoEncontrado.nombre}`,
-          variant: 'solid',
-          color: 'danger',
-          duration: 500
+        toast.error('Sin stock', {
+          description: productoEncontrado.nombre,
         });
         
         // Limpiar el campo inmediatamente
@@ -311,13 +292,8 @@ export default function POSPage() {
       }
     } else {
       // Producto no encontrado en la base de datos
-      addToast({
-        id: 'pos-toast',
-        title: 'No registrado',
+      toast.error('No registrado', {
         description: `Código: ${decodedText}`,
-        variant: 'solid',
-        color: 'danger',
-        duration: 500
       });
       
       // Limpiar el campo inmediatamente
@@ -351,61 +327,11 @@ export default function POSPage() {
 
             {/* Select de Moneda y Carrito */}
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* Select de Moneda - Ultra Compacto con w-fit */}
-              <Select
-                selectedKeys={[monedaSeleccionada]}
-                onSelectionChange={(keys) => handleMonedaChange(Array.from(keys)[0])}
-                variant="flat"
-                size="sm"
-                classNames={{
-                  base: "w-fit",
-                  trigger: "h-8 min-h-8 w-fit bg-default-100 hover:bg-default-200 border-none data-[hover=true]:bg-default-200 px-2",
-                  value: "text-[11px] font-bold text-foreground",
-                  popoverContent: "w-[180px] p-0 bg-content1 rounded-lg shadow-lg border border-divider",
-                  listbox: "p-0.5"
-                }}
-                aria-label="Seleccionar moneda"
-                popoverProps={{
-                  classNames: {
-                    content: "p-0 rounded-lg"
-                  }
-                }}
-                renderValue={() => (
-                  <div className="flex items-center gap-1">
-                    <span className="text-[11px] font-bold text-primary">
-                      {monedaActual?.simbolo}
-                    </span>
-                    <span className="text-[11px] font-bold text-foreground">
-                      {monedaActual?.moneda}
-                    </span>
-                  </div>
-                )}
-              >
-                {PAISES.map((pais) => (
-                  <SelectItem 
-                    key={pais.codigo}
-                    textValue={pais.moneda}
-                    classNames={{
-                      base: "rounded-md data-[hover=true]:bg-default-100 data-[selectable=true]:focus:bg-default-100 py-1.5 px-2",
-                      title: "font-bold text-[11px]"
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-primary min-w-[24px]">
-                        {pais.simbolo}
-                      </span>
-                      <div className="flex flex-col gap-0">
-                        <span className="text-[11px] font-bold text-foreground leading-tight">
-                          {pais.moneda}
-                        </span>
-                        <span className="text-[9px] text-foreground/60 leading-tight">
-                          {pais.nombre}
-                        </span>
-                      </div>
-                    </div>
-                  </SelectItem>
-                ))}
-              </Select>
+              {/* Select de Moneda - Shadcn Ultra Compacto */}
+              <CurrencySelector 
+                value={monedaSeleccionada}
+                onChange={handleMonedaChange}
+              />
 
               {/* Botón Carrito */}
               <Badge 
@@ -593,8 +519,8 @@ export default function POSPage() {
         onScanSuccess={handleScanSuccess}
       />
 
-      {/* Drawer del Carrito */}
-      <CartDrawer
+      {/* Drawer del Carrito - Shadcn Sheet */}
+      <CartDrawerNew
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         carrito={carrito}

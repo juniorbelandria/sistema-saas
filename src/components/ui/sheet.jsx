@@ -13,7 +13,7 @@ const SheetPortal = SheetPrimitive.Portal;
 const SheetOverlay = React.forwardRef(({ className, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
-      'fixed inset-0 z-50 backdrop-blur-sm transition-all duration-500 ease-in-out',
+      'fixed inset-0 z-50 backdrop-blur-md transition-all duration-500 ease-in-out',
       'bg-black/40 dark:bg-black/60',
       'data-[state=open]:animate-in data-[state=closed]:animate-out',
       'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',

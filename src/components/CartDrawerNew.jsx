@@ -44,14 +44,20 @@ export default function CartDrawerNew({
   const totalItems = itemsCarrito.reduce((sum, item) => sum + item.cantidad, 0);
 
   const handleFinalizarCompra = () => {
-    onOpenPaymentModal({
-      method: selectedMethod,
-      total
-    });
+    // Cerrar el carrito primero para evitar conflictos de aria-hidden
+    onClose();
+    
+    // Abrir modal de pago después de un pequeño delay
+    setTimeout(() => {
+      onOpenPaymentModal({
+        method: selectedMethod,
+        total
+      });
+    }, 300);
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={onClose} modal={false}>
+    <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col">
         {/* Header */}
         <SheetHeader className="px-4 pt-6 pb-4 border-b border-divider flex-shrink-0">

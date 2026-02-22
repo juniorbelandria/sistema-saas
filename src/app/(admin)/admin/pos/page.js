@@ -338,10 +338,10 @@ export default function POSPage() {
                 onChange={handleMonedaChange}
               />
 
-              {/* Botón Carrito */}
+              {/* Botón Carrito con Badge Rojo */}
               <Badge 
                 content={itemsCarrito} 
-                color="primary" 
+                color="danger" 
                 size="sm"
                 placement="top-right"
               >

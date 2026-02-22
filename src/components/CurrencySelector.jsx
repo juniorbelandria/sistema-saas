@@ -38,32 +38,17 @@ export default function CurrencySelector({ value, onChange }) {
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger className="w-fit h-8 min-h-8 px-2 bg-default-100 hover:bg-default-200 border-none">
         <SelectValue>
-          <div className="flex items-center gap-1">
-            <span className="text-[11px] font-bold text-primary">
-              {monedaActual?.simbolo}
-            </span>
-            <span className="text-[11px] font-bold text-foreground">
-              {monedaActual?.moneda}
-            </span>
-          </div>
+          <span className="text-[11px] font-bold text-foreground">
+            {monedaActual?.simbolo} {monedaActual?.moneda}
+          </span>
         </SelectValue>
       </SelectTrigger>
-      <SelectContent className="w-[180px]">
+      <SelectContent className="w-[220px]">
         {PAISES.map((pais) => (
           <SelectItem key={pais.codigo} value={pais.codigo}>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-primary min-w-[24px]">
-                {pais.simbolo}
-              </span>
-              <div className="flex flex-col gap-0">
-                <span className="text-[11px] font-bold text-foreground leading-tight">
-                  {pais.moneda}
-                </span>
-                <span className="text-[9px] text-foreground/60 leading-tight">
-                  {pais.nombre}
-                </span>
-              </div>
-            </div>
+            <span className="text-xs font-medium text-foreground">
+              {pais.simbolo} {pais.moneda} - {pais.nombre}
+            </span>
           </SelectItem>
         ))}
       </SelectContent>

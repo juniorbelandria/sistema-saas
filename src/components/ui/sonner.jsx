@@ -12,7 +12,7 @@ const Toaster = ({ ...props }) => {
       richColors
       className="toaster group"
       visibleToasts={1}
-      duration={800}
+      duration={2000}
       position="top-right"
       style={{ zIndex: 100 }}
       toastOptions={{

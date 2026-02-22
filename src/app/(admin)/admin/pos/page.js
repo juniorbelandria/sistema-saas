@@ -168,13 +168,13 @@ export default function POSPage() {
       [producto.id]: prev[producto.id] - 1
     }));
 
-    // Toast instantáneo de Sonner
+    // Toast instantáneo de Sonner con colores específicos
     if (isNewItem) {
-      toast.success('Agregado', {
+      toast.success('Producto agregado', {
         description: producto.nombre,
       });
     } else {
-      toast.success('Actualizado', {
+      toast.info('Producto actualizado', {
         description: `${itemExistente.cantidad + 1} unidades`,
       });
     }
@@ -196,6 +196,11 @@ export default function POSPage() {
       const newCarrito = { ...prev };
       delete newCarrito[productoId];
       return newCarrito;
+    });
+
+    // Toast de eliminación con color danger (rojo)
+    toast.error('Producto eliminado', {
+      description: item.producto.nombre,
     });
   };
 

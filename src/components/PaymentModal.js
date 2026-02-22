@@ -8,12 +8,9 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-  Input,
-  Card,
-  CardBody,
-  Divider
+  Input
 } from '@heroui/react';
-import { AlertCircle, CheckCircle2, DollarSign, Check } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Check } from 'lucide-react';
 import PaymentMethodSelector from './PaymentMethodSelector';
 
 export default function PaymentModal({
@@ -83,117 +80,107 @@ export default function PaymentModal({
       backdrop="blur"
       scrollBehavior="inside"
       classNames={{
-        base: "w-full mx-3 max-w-full sm:max-w-[420px] md:max-w-[520px] lg:max-w-[600px]",
+        base: "w-full mx-3 max-w-full sm:max-w-[420px] md:max-w-[480px]",
         backdrop: "bg-black/70 z-[60]",
         wrapper: "z-[60]",
-        body: "max-h-[70vh] sm:max-h-[80vh] overflow-y-auto"
+        body: "overflow-visible"
       }}
     >
       <ModalContent className="bg-content1">
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1 border-b-2 border-divider pb-3 flex-shrink-0">
-              <h2 className="text-base sm:text-lg font-bold">Procesar Pago</h2>
-              <p className="text-xs sm:text-sm text-foreground/60 font-normal">
+            <ModalHeader className="flex flex-col gap-1 border-b border-divider pb-3 flex-shrink-0">
+              <h2 className="text-lg font-bold">Procesar Pago</h2>
+              <p className="text-sm text-foreground/60 font-normal">
                 Ingresa el monto recibido del cliente
               </p>
             </ModalHeader>
 
-            <ModalBody className="py-3 sm:py-5 px-3 sm:px-6 space-y-3 sm:space-y-5">
-              {/* Total a Pagar - Card destacado */}
-              <Card shadow="sm" className="bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/30">
-                <CardBody className="p-3 sm:p-4">
-                  <p className="text-xs sm:text-sm text-foreground/70 mb-1 font-medium">Total a Pagar</p>
-                  <p className="text-2xl sm:text-3xl font-bold text-primary">
-                    {monedaActual?.simbolo}{total.toFixed(2)}
-                  </p>
-                </CardBody>
-              </Card>
+            <ModalBody className="py-4 px-4 sm:px-6 space-y-4">
+              {/* Total a Pagar - Diseño horizontal limpio */}
+              <div className="flex justify-between items-center p-4 rounded-xl bg-content2 border border-divider">
+                <span className="text-sm font-semibold text-foreground/80">Total a Pagar</span>
+                <span className="text-2xl font-extrabold text-primary">
+                  {monedaActual?.simbolo}{total.toFixed(2)}
+                </span>
+              </div>
 
               {/* Método de Pago */}
-              <div className="space-y-2 sm:space-y-3">
-                <h3 className="text-xs sm:text-sm font-bold text-foreground/90">Método de Pago</h3>
+              <div className="space-y-2">
+                <h3 className="text-sm font-bold text-foreground/90">Método de Pago</h3>
                 <PaymentMethodSelector
                   selectedMethod={selectedMethod}
                   onSelectMethod={setSelectedMethod}
                 />
               </div>
 
-              <Divider />
-
-              {/* Monto Recibido - Diseño mejorado con fontSize mínimo 16px para evitar zoom en móvil */}
-              <div className="space-y-2 sm:space-y-3">
-                <label className="text-xs sm:text-sm font-bold text-foreground/90 block">
+              {/* Monto Recibido - Input con startContent */}
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-foreground/90 block">
                   Monto Recibido
                 </label>
-                <div className="relative">
-                  <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 z-10">
-                    <span className="text-xl sm:text-2xl font-bold text-foreground/60">
+                <Input
+                  type="number"
+                  inputMode="decimal"
+                  placeholder="0.00"
+                  value={amountReceived}
+                  onValueChange={setAmountReceived}
+                  variant="bordered"
+                  size="lg"
+                  color={hasError ? "danger" : "default"}
+                  isInvalid={hasError}
+                  autoFocus
+                  startContent={
+                    <span className="text-xl font-bold text-foreground/60">
                       {monedaActual?.simbolo}
                     </span>
-                  </div>
-                  <Input
-                    type="number"
-                    inputMode="decimal"
-                    placeholder="0.00"
-                    value={amountReceived}
-                    onValueChange={setAmountReceived}
-                    variant="bordered"
-                    size="lg"
-                    color={hasError ? "danger" : "default"}
-                    isInvalid={hasError}
-                    autoFocus
-                    classNames={{
-                      input: "text-2xl sm:text-3xl font-bold pl-10 sm:pl-12 text-center",
-                      inputWrapper: "h-14 sm:h-16 border-2"
-                    }}
-                    style={{ fontSize: '16px' }}
-                  />
-                </div>
+                  }
+                  classNames={{
+                    input: "text-2xl font-bold text-right pr-4",
+                    inputWrapper: "h-14 border-2"
+                  }}
+                  style={{ fontSize: '16px' }}
+                />
 
                 {/* Mensaje de Validación */}
                 {amountReceived && (
-                  <Card 
-                    shadow="none" 
+                  <div 
                     className={`
+                      flex items-center gap-2 p-3 rounded-lg border-2
                       ${isValid 
-                        ? 'bg-success/10 border-success' 
-                        : 'bg-danger/10 border-danger'
-                      } border-2
+                        ? 'bg-success/10 border-success/30' 
+                        : 'bg-danger/10 border-danger/30'
+                      }
                     `}
                   >
-                    <CardBody className="p-2 sm:p-3 flex flex-row items-center gap-2">
-                      {isValid ? (
-                        <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-success flex-shrink-0" />
-                      ) : (
-                        <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-danger flex-shrink-0" />
-                      )}
-                      <span className={`text-xs sm:text-sm font-semibold ${isValid ? 'text-success' : 'text-danger'}`}>
-                        {message}
-                      </span>
-                    </CardBody>
-                  </Card>
+                    {isValid ? (
+                      <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
+                    ) : (
+                      <AlertCircle className="w-5 h-5 text-danger flex-shrink-0" />
+                    )}
+                    <span className={`text-sm font-semibold ${isValid ? 'text-success' : 'text-danger'}`}>
+                      {message}
+                    </span>
+                  </div>
                 )}
 
-                {/* Cambio */}
+                {/* Cambio - Diseño horizontal limpio */}
                 {isValid && change > 0 && (
-                  <Card shadow="sm" className="bg-gradient-to-br from-success/10 to-success/5 border-2 border-success/30">
-                    <CardBody className="p-3 sm:p-4">
-                      <p className="text-xs sm:text-sm text-foreground/70 mb-1 font-medium">Cambio a Entregar</p>
-                      <p className="text-xl sm:text-2xl font-bold text-success">
-                        {monedaActual?.simbolo}{change.toFixed(2)}
-                      </p>
-                    </CardBody>
-                  </Card>
+                  <div className="flex justify-between items-center p-4 rounded-xl bg-success/10 border border-success/30">
+                    <span className="text-sm font-semibold text-foreground/80">Cambio a Entregar</span>
+                    <span className="text-2xl font-extrabold text-success">
+                      {monedaActual?.simbolo}{change.toFixed(2)}
+                    </span>
+                  </div>
                 )}
               </div>
             </ModalBody>
 
-            <ModalFooter className="border-t-2 border-divider flex-col sm:flex-row gap-2 pt-3 sm:pt-4 flex-shrink-0">
+            <ModalFooter className="border-t border-divider flex-col sm:flex-row gap-2 pt-3 flex-shrink-0">
               <Button
                 variant="flat"
                 onPress={handleClose}
-                className="w-full sm:w-auto text-xs sm:text-sm"
+                className="w-full sm:w-auto text-sm"
                 size="md"
               >
                 Cancelar
@@ -203,8 +190,8 @@ export default function PaymentModal({
                 size="md"
                 onPress={handleConfirm}
                 isDisabled={!isValid}
-                className="font-bold w-full sm:w-auto text-xs sm:text-sm shadow-lg"
-                startContent={<Check className="w-4 h-4 sm:w-5 sm:h-5" />}
+                className="font-bold w-full sm:w-auto text-sm shadow-lg"
+                startContent={<Check className="w-5 h-5" />}
               >
                 Confirmar Pago
               </Button>

@@ -13,8 +13,8 @@ const SheetPortal = SheetPrimitive.Portal;
 const SheetOverlay = React.forwardRef(({ className, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
-      'fixed inset-0 z-50 backdrop-blur-md transition-all duration-500 ease-in-out',
-      'bg-black/60 dark:bg-black/60',
+      'fixed inset-0 z-50 backdrop-blur-sm transition-all duration-500 ease-in-out',
+      'bg-black/40 dark:bg-black/60',
       'data-[state=open]:animate-in data-[state=closed]:animate-out',
       'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
       'data-[state=closed]:duration-500 data-[state=open]:duration-500',
@@ -39,17 +39,33 @@ const SheetContent = React.forwardRef(({ side = 'right', className, children, ..
     <SheetPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed z-50 gap-4 bg-content1 shadow-2xl transition-all',
+        'fixed z-50 gap-4 bg-content1 transition-all ease-in-out',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
         'data-[state=closed]:duration-500 data-[state=open]:duration-500',
         'flex flex-col',
+        // Sombra premium para modo claro
+        'shadow-[-10px_0_15px_-3px_rgba(0,0,0,0.1)] dark:shadow-2xl',
         sheetVariants[side],
         className
       )}
       {...props}
     >
       {children}
-      <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-all duration-200 hover:opacity-100 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-content2">
+      {/* Botón cerrar premium con efecto flotante */}
+      <SheetPrimitive.Close 
+        className={cn(
+          'absolute right-4 top-4 z-10',
+          'rounded-full p-2',
+          'bg-default-100 dark:bg-content2',
+          'text-default-600 dark:text-foreground/70',
+          'shadow-lg hover:shadow-xl',
+          'transition-all duration-300 ease-in-out',
+          'hover:scale-110 hover:rotate-90',
+          'hover:bg-default-200 dark:hover:bg-content3',
+          'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+          'disabled:pointer-events-none disabled:opacity-50'
+        )}
+      >
         <X className="h-4 w-4" />
         <span className="sr-only">Cerrar</span>
       </SheetPrimitive.Close>

@@ -51,7 +51,7 @@ export default function CartDrawerNew({
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={onClose}>
+    <Sheet open={isOpen} onOpenChange={onClose} modal={false}>
       <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col">
         {/* Header */}
         <SheetHeader className="px-4 pt-6 pb-4 border-b border-divider flex-shrink-0">

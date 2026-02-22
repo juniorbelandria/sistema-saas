@@ -84,8 +84,9 @@ export default function PaymentModal({
       scrollBehavior="inside"
       classNames={{
         base: "w-full mx-3 max-w-full sm:max-w-[420px] md:max-w-[520px] lg:max-w-[600px]",
-        backdrop: "bg-black/70",
-        body: "max-h-[90vh] overflow-y-auto"
+        backdrop: "bg-black/70 z-[60]",
+        wrapper: "z-[60]",
+        body: "max-h-[70vh] sm:max-h-[80vh] overflow-y-auto"
       }}
     >
       <ModalContent className="bg-content1">
@@ -133,6 +134,7 @@ export default function PaymentModal({
                   </div>
                   <Input
                     type="number"
+                    inputMode="decimal"
                     placeholder="0.00"
                     value={amountReceived}
                     onValueChange={setAmountReceived}
@@ -140,6 +142,7 @@ export default function PaymentModal({
                     size="lg"
                     color={hasError ? "danger" : "default"}
                     isInvalid={hasError}
+                    autoFocus
                     classNames={{
                       input: "text-2xl sm:text-3xl font-bold pl-10 sm:pl-12 text-center",
                       inputWrapper: "h-14 sm:h-16 border-2"

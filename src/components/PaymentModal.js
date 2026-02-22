@@ -80,43 +80,43 @@ export default function PaymentModal({
       backdrop="blur"
       scrollBehavior="inside"
       classNames={{
-        base: "w-full mx-3 max-w-full sm:max-w-[420px] md:max-w-[480px]",
+        base: "w-full mx-2 sm:mx-3 max-w-full sm:max-w-[420px] md:max-w-[480px]",
         backdrop: "bg-black/70 z-[60]",
         wrapper: "z-[60]",
-        body: "overflow-visible"
+        body: "max-h-[85vh] overflow-y-auto"
       }}
     >
       <ModalContent className="bg-content1">
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1 border-b border-divider pb-3 flex-shrink-0">
-              <h2 className="text-lg font-bold">Procesar Pago</h2>
-              <p className="text-sm text-foreground/60 font-normal">
-                Ingresa el monto recibido del cliente
+            <ModalHeader className="flex flex-col gap-0.5 border-b border-divider pb-2 flex-shrink-0">
+              <h2 className="text-base sm:text-lg font-bold">Procesar Pago</h2>
+              <p className="text-xs sm:text-sm text-foreground/60 font-normal">
+                Ingresa el monto recibido
               </p>
             </ModalHeader>
 
-            <ModalBody className="py-4 px-4 sm:px-6 space-y-4">
-              {/* Total a Pagar - Diseño horizontal limpio */}
-              <div className="flex justify-between items-center p-4 rounded-xl bg-content2 border border-divider">
-                <span className="text-sm font-semibold text-foreground/80">Total a Pagar</span>
-                <span className="text-2xl font-extrabold text-primary">
+            <ModalBody className="py-3 px-3 sm:px-4 space-y-2 sm:space-y-3">
+              {/* Total a Pagar - Diseño horizontal compacto */}
+              <div className="flex justify-between items-center p-3 sm:p-4 rounded-lg sm:rounded-xl bg-content2 border border-divider">
+                <span className="text-xs sm:text-sm font-semibold text-foreground/80">Total a Pagar</span>
+                <span className="text-xl sm:text-2xl font-extrabold text-primary">
                   {monedaActual?.simbolo}{total.toFixed(2)}
                 </span>
               </div>
 
               {/* Método de Pago */}
-              <div className="space-y-2">
-                <h3 className="text-sm font-bold text-foreground/90">Método de Pago</h3>
+              <div className="space-y-1.5 sm:space-y-2">
+                <h3 className="text-xs sm:text-sm font-bold text-foreground/90">Método de Pago</h3>
                 <PaymentMethodSelector
                   selectedMethod={selectedMethod}
                   onSelectMethod={setSelectedMethod}
                 />
               </div>
 
-              {/* Monto Recibido - Input con startContent */}
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-foreground/90 block">
+              {/* Monto Recibido - Input compacto */}
+              <div className="space-y-1.5 sm:space-y-2">
+                <label className="text-xs sm:text-sm font-bold text-foreground/90 block">
                   Monto Recibido
                 </label>
                 <Input
@@ -126,61 +126,56 @@ export default function PaymentModal({
                   value={amountReceived}
                   onValueChange={setAmountReceived}
                   variant="bordered"
-                  size="lg"
+                  size="md"
                   color={hasError ? "danger" : "default"}
                   isInvalid={hasError}
                   autoFocus
                   startContent={
-                    <span className="text-xl font-bold text-foreground/60">
+                    <span className="text-lg sm:text-xl font-bold text-foreground/60">
                       {monedaActual?.simbolo}
                     </span>
                   }
                   classNames={{
-                    input: "text-2xl font-bold text-right pr-4",
-                    inputWrapper: "h-14 border-2"
+                    input: "text-xl sm:text-2xl font-bold text-right pr-3 sm:pr-4",
+                    inputWrapper: "h-12 sm:h-14 border-2"
                   }}
                   style={{ fontSize: '16px' }}
                 />
 
-                {/* Mensaje de Validación */}
+                {/* Cambio - Diseño horizontal compacto integrado con validación */}
                 {amountReceived && (
-                  <div 
-                    className={`
-                      flex items-center gap-2 p-3 rounded-lg border-2
-                      ${isValid 
-                        ? 'bg-success/10 border-success/30' 
-                        : 'bg-danger/10 border-danger/30'
-                      }
-                    `}
-                  >
-                    {isValid ? (
-                      <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
+                  <>
+                    {isValid && change > 0 ? (
+                      <div className="flex justify-between items-center p-3 sm:p-4 rounded-lg sm:rounded-xl bg-success/10 border border-success/30">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-success flex-shrink-0" />
+                          <span className="text-xs sm:text-sm font-semibold text-foreground/80">Cambio</span>
+                        </div>
+                        <span className="text-xl sm:text-2xl font-extrabold text-success">
+                          {monedaActual?.simbolo}{change.toFixed(2)}
+                        </span>
+                      </div>
+                    ) : isValid && change === 0 ? (
+                      <div className="flex items-center gap-2 p-2 sm:p-2.5 rounded-lg bg-success/10 border border-success/30">
+                        <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" />
+                        <span className="text-xs sm:text-sm font-semibold text-success">Monto exacto</span>
+                      </div>
                     ) : (
-                      <AlertCircle className="w-5 h-5 text-danger flex-shrink-0" />
+                      <div className="flex items-center gap-2 p-2 sm:p-2.5 rounded-lg bg-danger/10 border border-danger/30">
+                        <AlertCircle className="w-4 h-4 text-danger flex-shrink-0" />
+                        <span className="text-xs sm:text-sm font-semibold text-danger">{message}</span>
+                      </div>
                     )}
-                    <span className={`text-sm font-semibold ${isValid ? 'text-success' : 'text-danger'}`}>
-                      {message}
-                    </span>
-                  </div>
-                )}
-
-                {/* Cambio - Diseño horizontal limpio */}
-                {isValid && change > 0 && (
-                  <div className="flex justify-between items-center p-4 rounded-xl bg-success/10 border border-success/30">
-                    <span className="text-sm font-semibold text-foreground/80">Cambio a Entregar</span>
-                    <span className="text-2xl font-extrabold text-success">
-                      {monedaActual?.simbolo}{change.toFixed(2)}
-                    </span>
-                  </div>
+                  </>
                 )}
               </div>
             </ModalBody>
 
-            <ModalFooter className="border-t border-divider flex-col sm:flex-row gap-2 pt-3 flex-shrink-0">
+            <ModalFooter className="border-t border-divider flex-col-reverse sm:flex-row gap-2 pt-2.5 sm:pt-3 flex-shrink-0">
               <Button
                 variant="flat"
                 onPress={handleClose}
-                className="w-full sm:w-auto text-sm"
+                className="w-full sm:w-auto text-sm order-2 sm:order-1"
                 size="md"
               >
                 Cancelar
@@ -190,8 +185,8 @@ export default function PaymentModal({
                 size="md"
                 onPress={handleConfirm}
                 isDisabled={!isValid}
-                className="font-bold w-full sm:w-auto text-sm shadow-lg"
-                startContent={<Check className="w-5 h-5" />}
+                className="font-bold w-full sm:w-auto text-sm shadow-lg order-1 sm:order-2"
+                startContent={<Check className="w-4 h-4 sm:w-5 sm:h-5" />}
               >
                 Confirmar Pago
               </Button>

@@ -86,7 +86,7 @@ export default function RegisterPage() {
     cargarCatalogos();
   }, []);
 
-  const progreso = (paso / 3) * 100;
+  const progreso = (paso / 4) * 100;
 
   // Validar paso actual antes de avanzar
   const validarPasoActual = async () => {
@@ -251,7 +251,7 @@ export default function RegisterPage() {
             </h2>
             
             <p className="text-xs text-foreground/70 leading-relaxed">
-              Completa el proceso de registro en 3 simples pasos y comienza a gestionar 
+              Completa el proceso de registro en 4 simples pasos y comienza a gestionar 
               tu negocio con la plataforma más completa del mercado.
             </p>
           </div>
@@ -261,7 +261,8 @@ export default function RegisterPage() {
             {[
               { num: 1, icon: User, titulo: 'Cuenta del Propietario', desc: 'Información personal y credenciales de acceso' },
               { num: 2, icon: Building2, titulo: 'Información del Negocio', desc: 'Datos comerciales y ubicación' },
-              { num: 3, icon: FileText, titulo: 'Configuración Fiscal', desc: 'Datos tributarios y moneda' }
+              { num: 3, icon: FileText, titulo: 'Configuración Fiscal', desc: 'Datos tributarios y moneda' },
+              { num: 4, icon: CheckCircle2, titulo: 'Confirmación', desc: 'Revisa y confirma tu información' }
             ].map((item) => {
               const Icon = item.icon;
               const isCompleted = paso > item.num;
@@ -342,19 +343,20 @@ export default function RegisterPage() {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Chip color="primary" variant="flat" size="sm">
-                    <span className="font-bold">Paso {paso} de 3</span>
+                    <span className="font-bold">Paso {paso} de 4</span>
                   </Chip>
                   <span className="text-xs text-foreground/60 font-bold">
                     {paso === 1 && 'Cuenta del Propietario'}
                     {paso === 2 && 'Información del Negocio'}
                     {paso === 3 && 'Configuración Fiscal'}
+                    {paso === 4 && 'Confirmación'}
                   </span>
                 </div>
                 <span className="text-xs font-bold text-primary">{Math.round(progreso)}%</span>
               </div>
               
               <div className="flex gap-1.5">
-                {[1, 2, 3].map((num) => (
+                {[1, 2, 3, 4].map((num) => (
                   <div
                     key={num}
                     className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${
@@ -374,11 +376,13 @@ export default function RegisterPage() {
               {paso === 1 && 'Cuenta del Propietario'}
               {paso === 2 && 'Información del Negocio'}
               {paso === 3 && 'Configuración Fiscal'}
+              {paso === 4 && 'Confirmación'}
             </h2>
             <p className="text-sm text-foreground/60 font-semibold">
               {paso === 1 && 'Crea tu cuenta de acceso'}
               {paso === 2 && 'Datos de tu negocio'}
               {paso === 3 && 'Configuración tributaria'}
+              {paso === 4 && 'Revisa y confirma tu registro'}
             </p>
           </div>
 
@@ -797,6 +801,136 @@ export default function RegisterPage() {
               </div>
             )}
 
+            {/* PASO 4: Confirmación */}
+            {paso === 4 && (
+              <div className="space-y-5">
+                {/* Sección: Propietario */}
+                <Card className="border-none shadow-sm bg-content2">
+                  <CardBody className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <User className="w-5 h-5 text-primary" />
+                      <h3 className="text-sm font-bold text-foreground">PROPIETARIO</h3>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-xs text-foreground/60">Nombre Completo:</span>
+                        <span className="text-xs font-semibold text-foreground">{watch('nombreCompleto')}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs text-foreground/60">Correo Electrónico:</span>
+                        <span className="text-xs font-semibold text-foreground">{watch('email')}</span>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+
+                {/* Sección: Negocio */}
+                <Card className="border-none shadow-sm bg-content2">
+                  <CardBody className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Building2 className="w-5 h-5 text-primary" />
+                      <h3 className="text-sm font-bold text-foreground">NEGOCIO</h3>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-xs text-foreground/60">Nombre Comercial:</span>
+                        <span className="text-xs font-semibold text-foreground">{watch('nombreNegocio')}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs text-foreground/60">Tipo de Negocio:</span>
+                        <span className="text-xs font-semibold text-foreground">
+                          {TIPOS_NEGOCIO.find(t => t.value === watch('tipoNegocio'))?.label}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs text-foreground/60">Razón Social:</span>
+                        <span className="text-xs font-semibold text-foreground">{watch('razonSocial')}</span>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+
+                {/* Sección: Contacto */}
+                <Card className="border-none shadow-sm bg-content2">
+                  <CardBody className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Phone className="w-5 h-5 text-primary" />
+                      <h3 className="text-sm font-bold text-foreground">CONTACTO</h3>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-xs text-foreground/60">Teléfono:</span>
+                        <span className="text-xs font-semibold text-foreground">{watch('telefono')}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs text-foreground/60">Dirección:</span>
+                        <span className="text-xs font-semibold text-foreground text-right max-w-[60%]">{watch('direccion')}</span>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+
+                {/* Sección: Configuración Fiscal */}
+                <Card className="border-none shadow-sm bg-content2">
+                  <CardBody className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <FileText className="w-5 h-5 text-primary" />
+                      <h3 className="text-sm font-bold text-foreground">CONFIGURACIÓN FISCAL</h3>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-xs text-foreground/60">País:</span>
+                        <span className="text-xs font-semibold text-foreground">
+                          {catalogoPaises.find(p => p.codigo === watch('codigoPais'))?.nombre}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs text-foreground/60">Moneda:</span>
+                        <span className="text-xs font-semibold text-foreground">
+                          {catalogoMonedas.find(m => m.codigo === watch('codigoMoneda'))?.nombre} ({catalogoMonedas.find(m => m.codigo === watch('codigoMoneda'))?.simbolo})
+                        </span>
+                      </div>
+                      {watch('idFiscal') && (
+                        <div className="flex justify-between">
+                          <span className="text-xs text-foreground/60">ID Fiscal:</span>
+                          <span className="text-xs font-semibold text-foreground">{watch('idFiscal')}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <span className="text-xs text-foreground/60">Factura Electrónica:</span>
+                        <span className="text-xs font-semibold text-foreground">
+                          {watch('usaFacturaElectronica') ? 'Sí' : 'No'}
+                        </span>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+
+                {/* Plan de Prueba */}
+                <Card className="border-none shadow-sm bg-primary/10 border-primary/30">
+                  <CardBody className="p-4">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h3 className="text-sm font-bold text-foreground mb-1">Plan de Prueba Gratis</h3>
+                        <p className="text-xs text-foreground/70 leading-relaxed">
+                          Tu negocio será registrado con 7 días de prueba gratis. Podrás acceder a todas las funcionalidades del sistema sin restricciones.
+                        </p>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+
+                {/* Checkbox de confirmación */}
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-content2">
+                  <Checkbox size="sm" defaultSelected />
+                  <span className="text-xs text-foreground/70 leading-relaxed">
+                    Acepto los términos y condiciones, y confirmo que la información proporcionada es correcta
+                  </span>
+                </div>
+              </div>
+            )}
+
             {/* Botones de navegación */}
             <div className="flex gap-3 pt-4">
               {paso > 1 && (
@@ -813,7 +947,7 @@ export default function RegisterPage() {
                 </Button>
               )}
               
-              {paso < 3 ? (
+              {paso < 4 ? (
                 <Button
                   type="button"
                   size="lg"
@@ -833,7 +967,7 @@ export default function RegisterPage() {
                   endContent={!isLoading && <Check className="w-4 h-4" />}
                   isLoading={isLoading}
                 >
-                  {isLoading ? 'Registrando...' : 'Finalizar Registro'}
+                  {isLoading ? 'Registrando...' : 'Confirmar y Registrar'}
                 </Button>
               )}
             </div>

@@ -1,8 +1,10 @@
 import { Suspense } from 'react';
 import VerifyEmailContent from './VerifyEmailContent';
 
-// Forzar renderizado dinámico
+// Forzar renderizado dinámico - configuración completa
 export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+export const revalidate = 0;
 
 // Componente SERVIDOR que envuelve el componente cliente en Suspense
 export default function VerifyEmailPage() {

@@ -1,0 +1,29 @@
+CONFIGURACION DE VARIABLES DE ENTORNO EN VERCEL
+================================================
+
+1. Ve a tu proyecto en Vercel Dashboard
+2. Click en "Settings" (Configuración)
+3. Click en "Environment Variables" (Variables de Entorno)
+4. Agrega las siguientes variables:
+
+Variable 1:
+-----------
+Name: NEXT_PUBLIC_SUPABASE_URL
+Value: https://zezttrmygmhdpkpvicih.supabase.co
+Environment: Production, Preview, Development
+
+Variable 2:
+-----------
+Name: NEXT_PUBLIC_SUPABASE_ANON_KEY
+Value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InplenR0cm15Z21oZHBrcHZpY2loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMzQ4MDUsImV4cCI6MjA4NjkxMDgwNX0.nMtPLvoV995_MQezRFQciS3ys0AZFFsF8ROTVDlUZvc
+Environment: Production, Preview, Development
+
+5. Click en "Save" (Guardar)
+6. Redeploy el proyecto:
+   - Ve a "Deployments"
+   - Click en los 3 puntos del ultimo deployment
+   - Click en "Redeploy"
+
+IMPORTANTE:
+- Asegurate de seleccionar TODOS los ambientes (Production, Preview, Development)
+- Despues de guardar, DEBES hacer un redeploy para que tome las variables

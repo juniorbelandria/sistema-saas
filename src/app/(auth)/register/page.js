@@ -107,6 +107,7 @@ export default function RegisterPage() {
   const handleSiguiente = async () => {
     const esValido = await validarPasoActual();
     if (esValido) {
+      console.log('Avanzando de paso', paso, 'a paso', paso + 1);
       setPaso(paso + 1);
     } else {
       toast.error('Por favor completa todos los campos requeridos');
@@ -119,12 +120,16 @@ export default function RegisterPage() {
 
   // Función principal de registro
   const onSubmit = async (values, e) => {
+    console.log('onSubmit ejecutado, paso actual:', paso);
+    
     // Prevenir submit si no estamos en paso 4
     if (paso !== 4) {
+      console.log('Prevenido submit porque no es paso 4');
       e?.preventDefault();
       return false;
     }
 
+    console.log('Iniciando registro en paso 4');
     setIsLoading(true);
 
     try {

@@ -136,6 +136,8 @@ export default function RegisterPage() {
         options: {
           data: {
             nombre_completo: values.nombreCompleto,
+            full_name: values.nombreCompleto, // Para compatibilidad
+            display_name: values.nombreCompleto, // Display name para auth.users
             // Guardar datos del negocio en metadata para usarlos después de la verificación
             datos_negocio: {
               nombreNegocio: values.nombreNegocio,
@@ -164,7 +166,7 @@ export default function RegisterPage() {
             authError.message.includes('already been registered') ||
             authError.status === 422 ||
             authError.message.includes('duplicate')) {
-          toast.error('❌ Este correo ya está registrado. Por favor inicia sesión o usa otro correo.');
+          toast.error('Este correo ya está registrado. Por favor inicia sesión o usa otro correo.');
           setIsLoading(false);
           return;
         }
@@ -184,13 +186,13 @@ export default function RegisterPage() {
 
       // Verificar si el usuario ya existía (Supabase a veces devuelve el usuario existente sin error)
       if (authData.user && authData.user.identities && authData.user.identities.length === 0) {
-        toast.error('❌ Este correo ya está registrado. Por favor inicia sesión.');
+        toast.error('Este correo ya está registrado. Por favor inicia sesión.');
         setIsLoading(false);
         return;
       }
 
       // Éxito - Usuario creado, ahora debe verificar su email
-      toast.success('✅ ¡Registro exitoso! Revisa tu correo para verificar el código de 8 dígitos');
+      toast.success('Registro exitoso. Revisa tu correo para verificar el código de 8 dígitos');
       
       // Redirigir a verificación de email
       router.push(`/verify-email?email=${encodeURIComponent(values.email)}&type=signup`);

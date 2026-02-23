@@ -106,10 +106,10 @@ export default function VerifyEmailClient({ searchParamsPromise }) {
           } else if (rpcData && !rpcData.success) {
             toast.error(rpcData.error || 'Error al crear el negocio');
           } else {
-            toast.success('¡Cuenta verificada y negocio creado exitosamente!');
+            toast.success('Cuenta verificada y negocio creado exitosamente');
           }
         } else {
-          toast.success('¡Cuenta verificada exitosamente!');
+          toast.success('Cuenta verificada exitosamente');
         }
         
         router.push('/admin/dashboard');

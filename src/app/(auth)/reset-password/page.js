@@ -11,6 +11,9 @@ import DevNavigation from '@/components/DevNavigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
+// Forzar renderizado dinámico
+export const dynamic = 'force-dynamic';
+
 export default function ResetPasswordPage() {
   const router = useRouter();
   const [password, setPassword] = useState('');

@@ -17,6 +17,9 @@ import { supabase } from '@/lib/supabase';
 import { obtenerCatalogoPaises, obtenerCatalogoMonedas } from '@/lib/catalogos';
 import { registroSchema, TIPOS_NEGOCIO } from '@/lib/validaciones/registro';
 
+// Forzar renderizado dinámico
+export const dynamic = 'force-dynamic';
+
 export default function RegisterPage() {
   const router = useRouter();
   const [paso, setPaso] = useState(1);

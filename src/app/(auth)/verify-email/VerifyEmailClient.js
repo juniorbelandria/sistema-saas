@@ -68,7 +68,7 @@ export default function VerifyEmailClient({ searchParamsPromise }) {
     }
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.verifyOtp({
+      const { data, error } = await supabase.auth.verifyOtp({
         email,
         token: codigoCompleto,
         type: type === 'signup' ? 'signup' : 'recovery'
@@ -76,7 +76,42 @@ export default function VerifyEmailClient({ searchParamsPromise }) {
       if (error) throw error;
       
       if (type === 'signup') {
-        toast.success('¡Cuenta verificada exitosamente!');
+        // Después de verificar el email, crear el negocio
+        const user = data.user;
+        const datosNegocio = user.user_metadata?.datos_negocio;
+        
+        if (datosNegocio) {
+          // Llamar a la función RPC para crear el negocio
+          const { data: rpcData, error: rpcError } = await supabase.rpc('registrar_usuario_con_negocio', {
+            p_user_id: user.id,
+            p_nombre_completo: datosNegocio.nombreCompleto,
+            p_nombre_negocio: datosNegocio.nombreNegocio,
+            p_nombre_completo_negocio: datosNegocio.razonSocial,
+            p_direccion: datosNegocio.direccion,
+            p_telefono: datosNegocio.telefono,
+            p_email_negocio: email,
+            p_pais_codigo: datosNegocio.codigoPais,
+            p_moneda_base: datosNegocio.codigoMoneda,
+            p_id_fiscal: datosNegocio.idFiscal || null,
+            p_nombre_fiscal: datosNegocio.razonSocial,
+            p_tipo_negocio: datosNegocio.tipoNegocio,
+            p_regimen_fiscal: datosNegocio.regimenFiscal || null,
+            p_usa_factura_electronica: datosNegocio.usaFacturaElectronica,
+            p_prefijo_factura: 'FAC-'
+          });
+
+          if (rpcError) {
+            console.error('Error al crear negocio:', rpcError);
+            toast.error('Email verificado, pero hubo un error al crear el negocio. Contacta soporte.');
+          } else if (rpcData && !rpcData.success) {
+            toast.error(rpcData.error || 'Error al crear el negocio');
+          } else {
+            toast.success('¡Cuenta verificada y negocio creado exitosamente!');
+          }
+        } else {
+          toast.success('¡Cuenta verificada exitosamente!');
+        }
+        
         router.push('/admin/dashboard');
       } else {
         toast.success('Código verificado, ahora cambia tu contraseña');

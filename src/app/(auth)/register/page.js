@@ -135,8 +135,23 @@ export default function RegisterPage() {
         password: values.password,
         options: {
           data: {
-            nombre_completo: values.nombreCompleto
-          }
+            nombre_completo: values.nombreCompleto,
+            // Guardar datos del negocio en metadata para usarlos después de la verificación
+            datos_negocio: {
+              nombreNegocio: values.nombreNegocio,
+              nombreCompleto: values.nombreCompleto,
+              razonSocial: values.razonSocial,
+              direccion: values.direccion,
+              telefono: values.telefono,
+              codigoPais: values.codigoPais,
+              codigoMoneda: values.codigoMoneda,
+              idFiscal: values.idFiscal || null,
+              tipoNegocio: values.tipoNegocio,
+              regimenFiscal: values.regimenFiscal || null,
+              usaFacturaElectronica: values.usaFacturaElectronica
+            }
+          },
+          emailRedirectTo: `${window.location.origin}/admin/dashboard`
         }
       });
 
@@ -155,39 +170,8 @@ export default function RegisterPage() {
         throw new Error('No se pudo crear el usuario');
       }
 
-      const userId = authData.user.id;
-
-      // Paso 2: Registrar negocio usando la función RPC
-      const { data: rpcData, error: rpcError } = await supabase.rpc('registrar_usuario_con_negocio', {
-        p_user_id: userId,
-        p_nombre_completo: values.nombreCompleto,
-        p_nombre_negocio: values.nombreNegocio,
-        p_nombre_completo_negocio: values.razonSocial,
-        p_direccion: values.direccion,
-        p_telefono: values.telefono,
-        p_email_negocio: values.email,
-        p_pais_codigo: values.codigoPais,
-        p_moneda_base: values.codigoMoneda,
-        p_id_fiscal: values.idFiscal || null,
-        p_nombre_fiscal: values.razonSocial,
-        p_tipo_negocio: values.tipoNegocio,
-        p_regimen_fiscal: values.regimenFiscal || null,
-        p_usa_factura_electronica: values.usaFacturaElectronica,
-        p_prefijo_factura: 'FAC-'
-      });
-
-      if (rpcError) {
-        console.error('Error RPC:', rpcError);
-        throw new Error(rpcError.message || 'Error al registrar el negocio');
-      }
-
-      // Verificar respuesta de la función RPC
-      if (rpcData && !rpcData.success) {
-        throw new Error(rpcData.error || 'Error al registrar el negocio');
-      }
-
-      // Éxito total
-      toast.success('¡Negocio registrado! Revisa tu correo para verificar el código de 8 dígitos');
+      // Éxito - Usuario creado, ahora debe verificar su email
+      toast.success('¡Registro exitoso! Revisa tu correo para verificar el código de 8 dígitos');
       
       // Redirigir a verificación de email
       router.push(`/verify-email?email=${encodeURIComponent(values.email)}&type=signup`);

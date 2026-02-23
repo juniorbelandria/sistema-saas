@@ -1,13 +1,12 @@
 import { Suspense } from 'react';
+import { connection } from 'next/server';
 import VerifyEmailContent from './VerifyEmailContent';
 
-// Forzar renderizado dinámico - configuración completa
-export const dynamic = 'force-dynamic';
-export const dynamicParams = true;
-export const revalidate = 0;
-
 // Componente SERVIDOR que envuelve el componente cliente en Suspense
-export default function VerifyEmailPage() {
+export default async function VerifyEmailPage() {
+  // Forzar renderizado dinámico usando connection() - Next.js 16
+  await connection();
+  
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center min-h-screen bg-background">

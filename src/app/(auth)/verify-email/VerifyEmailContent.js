@@ -1,23 +1,17 @@
-import { Suspense } from 'react';
-import VerifyEmailContent from './VerifyEmailContent';
+'use client';
 
-// Forzar renderizado dinámico
-export const dynamic = 'force-dynamic';
+import { useState, useRef, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Button, Input, Card, CardBody, Chip } from '@heroui/react';
+import { ArrowLeft, CheckCircle2, Shield, Clock, Mail } from 'lucide-react';
+import Image from 'next/image';
+import { toast } from 'sonner';
+import ThemeToggle from '@/components/ThemeToggle';
+import DevNavigation from '@/components/DevNavigation';
+import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
-export default function VerifyEmailPage() {
-  return (
-    <Suspense fallback={
-      <div className="flex min-h-screen bg-background items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-foreground/60">Cargando...</p>
-        </div>
-      </div>
-    }>
-      <VerifyEmailContent />
-    </Suspense>
-  );
-}
+export default function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get('email');
@@ -346,3 +340,4 @@ export default function VerifyEmailPage() {
       </div>
     </div>
   );
+}

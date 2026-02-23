@@ -13,6 +13,8 @@ import { supabase } from '@/lib/supabase';
 
 // 1. Forzar renderizado dinámico (Esto le dice a Vercel que no pre-renderice)
 export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+export const revalidate = 0;
 
 // 2. Componente de Lógica (Recibe la promesa de los parámetros)
 function VerifyEmailForm({ searchParamsPromise }) {

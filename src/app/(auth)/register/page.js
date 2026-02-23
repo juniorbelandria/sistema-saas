@@ -122,6 +122,13 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
+      // Validación adicional de contraseñas
+      if (values.password !== values.confirmarPassword) {
+        toast.error('Las contraseñas no coinciden');
+        setIsLoading(false);
+        return;
+      }
+
       // Paso 0: Verificar si el correo ya existe
       const { data: existingUsers, error: checkError } = await supabase
         .from('usuarios')
@@ -465,23 +472,45 @@ export default function RegisterPage() {
                   name="confirmarPassword"
                   control={control}
                   render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="password"
-                      label="Confirmar Contraseña"
-                      placeholder="Repite tu contraseña"
-                      startContent={<Lock className="w-5 h-5" />}
-                      variant="bordered"
-                      size="lg"
-                      isRequired
-                      isInvalid={!!errors.confirmarPassword}
-                      errorMessage={errors.confirmarPassword?.message}
-                      classNames={{
-                        label: "text-foreground font-bold",
-                        input: "text-foreground",
-                        inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
-                      }}
-                    />
+                    <div className="space-y-2">
+                      <Input
+                        {...field}
+                        type="password"
+                        label="Confirmar Contraseña"
+                        placeholder="Repite tu contraseña"
+                        startContent={<Lock className="w-5 h-5" />}
+                        variant="bordered"
+                        size="lg"
+                        isRequired
+                        isInvalid={!!errors.confirmarPassword}
+                        errorMessage={errors.confirmarPassword?.message}
+                        classNames={{
+                          label: "text-foreground font-bold",
+                          input: "text-foreground",
+                          inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
+                        }}
+                      />
+                      {/* Indicador visual de coincidencia */}
+                      {confirmarPassword && password && (
+                        <div className={`flex items-center gap-2 text-xs font-semibold ${
+                          password === confirmarPassword 
+                            ? 'text-success' 
+                            : 'text-danger'
+                        }`}>
+                          {password === confirmarPassword ? (
+                            <>
+                              <CheckCircle2 className="w-4 h-4" />
+                              <span>Las contraseñas coinciden</span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="w-4 h-4 flex items-center justify-center">✕</span>
+                              <span>Las contraseñas no coinciden</span>
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   )}
                 />
               </div>

@@ -27,6 +27,7 @@ export default function RegisterPage() {
   const [catalogoPaises, setCatalogoPaises] = useState([]);
   const [catalogoMonedas, setCatalogoMonedas] = useState([]);
   const [loadingCatalogos, setLoadingCatalogos] = useState(true);
+  const [aceptaTerminos, setAceptaTerminos] = useState(false); // Estado para checkbox de términos
 
   const {
     control,
@@ -107,7 +108,6 @@ export default function RegisterPage() {
   const handleSiguiente = async () => {
     const esValido = await validarPasoActual();
     if (esValido) {
-      console.log('Avanzando de paso', paso, 'a paso', paso + 1);
       setPaso(paso + 1);
     } else {
       toast.error('Por favor completa todos los campos requeridos');
@@ -118,18 +118,19 @@ export default function RegisterPage() {
     setPaso(paso - 1);
   };
 
-  // Función principal de registro
-  const onSubmit = async (values, e) => {
-    console.log('onSubmit ejecutado, paso actual:', paso);
-    
-    // Prevenir submit si no estamos en paso 4
+  // Función principal de registro - SOLO se ejecuta en paso 4 con términos aceptados
+  const onSubmit = async (values) => {
+    // Bloqueo de seguridad: Solo ejecutar en paso 4
     if (paso !== 4) {
-      console.log('Prevenido submit porque no es paso 4');
-      e?.preventDefault();
-      return false;
+      return;
     }
 
-    console.log('Iniciando registro en paso 4');
+    // Bloqueo de seguridad: Verificar términos aceptados
+    if (!aceptaTerminos) {
+      toast.error('Debes aceptar los términos y condiciones para continuar');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -140,29 +141,15 @@ export default function RegisterPage() {
         return;
       }
 
-      // Paso 1: Registrar usuario en Supabase Auth
+      // PASO 1: Registrar usuario en Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
         options: {
           data: {
             nombre_completo: values.nombreCompleto,
-            full_name: values.nombreCompleto, // Para compatibilidad
-            display_name: values.nombreCompleto, // Display name para auth.users
-            // Guardar datos del negocio en metadata para usarlos después de la verificación
-            datos_negocio: {
-              nombreNegocio: values.nombreNegocio,
-              nombreCompleto: values.nombreCompleto,
-              razonSocial: values.razonSocial,
-              direccion: values.direccion,
-              telefono: values.telefono,
-              codigoPais: values.codigoPais,
-              codigoMoneda: values.codigoMoneda,
-              idFiscal: values.idFiscal || null,
-              tipoNegocio: values.tipoNegocio,
-              regimenFiscal: values.regimenFiscal || null,
-              usaFacturaElectronica: values.usaFacturaElectronica
-            }
+            full_name: values.nombreCompleto,
+            display_name: values.nombreCompleto
           },
           emailRedirectTo: `${window.location.origin}/admin/dashboard`
         }
@@ -182,27 +169,59 @@ export default function RegisterPage() {
           return;
         }
         
-        // Otros errores
         toast.error(authError.message || 'Error al crear la cuenta');
         setIsLoading(false);
         return;
       }
 
-      // Verificar si realmente se creó el usuario
+      // Verificar que se creó el usuario
       if (!authData.user) {
         toast.error('No se pudo crear el usuario. Intenta con otro correo.');
         setIsLoading(false);
         return;
       }
 
-      // Verificar si el usuario ya existía (Supabase a veces devuelve el usuario existente sin error)
-      if (authData.user && authData.user.identities && authData.user.identities.length === 0) {
+      // Verificar si el usuario ya existía
+      if (authData.user.identities && authData.user.identities.length === 0) {
         toast.error('Este correo ya está registrado. Por favor inicia sesión.');
         setIsLoading(false);
         return;
       }
 
-      // Éxito - Usuario creado, ahora debe verificar su email
+      // PASO 2: Crear el negocio usando la función RPC
+      const { data: rpcData, error: rpcError } = await supabase.rpc('registrar_usuario_con_negocio', {
+        p_user_id: authData.user.id,
+        p_nombre_completo: values.nombreCompleto,
+        p_nombre_negocio: values.nombreNegocio,
+        p_nombre_completo_negocio: values.razonSocial,
+        p_direccion: values.direccion,
+        p_telefono: values.telefono,
+        p_email_negocio: values.email,
+        p_pais_codigo: values.codigoPais,
+        p_moneda_base: values.codigoMoneda,
+        p_id_fiscal: values.idFiscal || null,
+        p_nombre_fiscal: values.razonSocial,
+        p_tipo_negocio: values.tipoNegocio,
+        p_regimen_fiscal: values.regimenFiscal || null,
+        p_usa_factura_electronica: values.usaFacturaElectronica,
+        p_prefijo_factura: 'FAC-'
+      });
+
+      if (rpcError) {
+        console.error('Error al registrar negocio:', rpcError);
+        toast.error('Error al crear el perfil del negocio: ' + rpcError.message);
+        setIsLoading(false);
+        return;
+      }
+
+      // Verificar respuesta de la función RPC
+      if (rpcData && !rpcData.success) {
+        toast.error(rpcData.error || 'Error al registrar el negocio');
+        setIsLoading(false);
+        return;
+      }
+
+      // ÉXITO TOTAL: Usuario y negocio creados
       toast.success('Registro exitoso. Revisa tu correo para verificar el código de 8 dígitos');
       
       // Redirigir a verificación de email
@@ -211,7 +230,6 @@ export default function RegisterPage() {
     } catch (error) {
       console.error('Error en registro:', error);
       toast.error(error.message || 'Error al registrar. Por favor intenta de nuevo.');
-    } finally {
       setIsLoading(false);
     }
   };
@@ -397,17 +415,7 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <form 
-            onSubmit={(e) => {
-              // Solo permitir submit en paso 4
-              if (paso !== 4) {
-                e.preventDefault();
-                return false;
-              }
-              handleSubmit(onSubmit)(e);
-            }} 
-            className="space-y-5"
-          >
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
             {/* PASO 1: Cuenta del Propietario */}
             {paso === 1 && (
@@ -944,7 +952,11 @@ export default function RegisterPage() {
 
                 {/* Checkbox de confirmación */}
                 <div className="flex items-start gap-2 p-3 rounded-lg bg-content2">
-                  <Checkbox size="sm" defaultSelected />
+                  <Checkbox 
+                    size="sm" 
+                    isSelected={aceptaTerminos}
+                    onValueChange={setAceptaTerminos}
+                  />
                   <span className="text-xs text-foreground/70 leading-relaxed">
                     Acepto los términos y condiciones, y confirmo que la información proporcionada es correcta
                   </span>
@@ -987,6 +999,7 @@ export default function RegisterPage() {
                   className="flex-1 font-semibold"
                   endContent={!isLoading && <Check className="w-4 h-4" />}
                   isLoading={isLoading}
+                  isDisabled={!aceptaTerminos || isLoading}
                 >
                   {isLoading ? 'Registrando...' : 'Confirmar y Registrar'}
                 </Button>

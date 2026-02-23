@@ -1,6 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
+# ============================================
+# DEPENDENCIAS
+# ============================================
 /node_modules
 /.pnp
 .pnp.*
@@ -10,73 +12,140 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
+# ============================================
+# TESTING
+# ============================================
 /coverage
+*.test.js.snap
+.nyc_output
 
-# next.js
+# ============================================
+# NEXT.JS
+# ============================================
 /.next/
 /out/
+.next
+next-env.d.ts
 
-# production
+# ============================================
+# PRODUCCIÓN
+# ============================================
 /build
+/dist
 
-# misc
-.DS_Store
-*.pem
+# ============================================
+# VARIABLES DE ENTORNO (CRÍTICO - NO SUBIR)
+# ============================================
+.env
+.env.local
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.backup
 
-# debug
+# ============================================
+# LOGS Y DEBUG
+# ============================================
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+lerna-debug.log*
 
-# local env files (NO subir a git/netlify)
-.env
-.env*.local
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# ============================================
+# CACHE
+# ============================================
+.cache/
+.parcel-cache/
+.eslintcache
+.turbo
+.swc
 
-# vercel
-.vercel
-
-# typescript
+# ============================================
+# TYPESCRIPT
+# ============================================
 *.tsbuildinfo
-next-env.d.ts
 
-# IDEs
+# ============================================
+# IDEs Y EDITORES
+# ============================================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
 
+# ============================================
+# SISTEMAS OPERATIVOS
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
 
-
-# Netlify
+# ============================================
+# DEPLOYMENT
+# ============================================
+.vercel
 .netlify/
+.firebase/
 
-# Logs
-logs
-*.log
-
-# Cache
-.cache/
-.parcel-cache/
-.eslintcache
-
-# Archivos SQL y documentación de desarrollo
-*.sql
-GUIA_*.md
-DEPLOY.md
-
-# Archivos temporales y de sistema
+# ============================================
+# ARCHIVOS TEMPORALES
+# ============================================
 *.tmp
 *.temp
 *.bak
-*.swp
-*.swo
+*.backup
 *~
-.DS_Store
-Thumbs.db
+
+# ============================================
+# CERTIFICADOS Y CLAVES (CRÍTICO - NO SUBIR)
+# ============================================
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+
+# ============================================
+# BASES DE DATOS LOCALES
+# ============================================
+*.db
+*.sqlite
+*.sqlite3
+
+# ============================================
+# DOCUMENTACIÓN DE DESARROLLO (OPCIONAL)
+# ============================================
+# Descomenta si no quieres subir estos archivos
+# GUIA_*.md
+# DEPLOY.md
+# CONFIGURACION_*.md
+
+# ============================================
+# ARCHIVOS SQL (OPCIONAL)
+# ============================================
+# Descomenta si no quieres subir los scripts SQL
+# *.sql
+# /sql/
+# /database/
+
+# ============================================
+# OTROS
+# ============================================
+.tauri/target/
+src-tauri/target/

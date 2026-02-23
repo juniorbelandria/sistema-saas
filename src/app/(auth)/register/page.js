@@ -1,86 +1,201 @@
 'use client';
 
-import { useState } from 'react';
-import { Button, Input, Select, SelectItem, Checkbox, Card, CardBody, Chip, Divider, Avatar } from '@heroui/react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button, Input, Select, SelectItem, Checkbox, Card, CardBody, Chip, Avatar } from '@heroui/react';
 import { 
   ArrowRight, ArrowLeft, Check, User, Building2, FileText, 
-  Mail, Lock, Phone, MapPin, Globe, DollarSign, FileCheck, CheckCircle2 
+  Mail, Lock, Phone, MapPin, Globe, DollarSign, CheckCircle2 
 } from 'lucide-react';
 import Image from 'next/image';
+import { toast } from 'sonner';
 import ThemeToggle from '@/components/ThemeToggle';
 import DevNavigation from '@/components/DevNavigation';
-
-const PAISES = [
-  { codigo: 've', nombre: 'Venezuela', moneda: 'VES', simbolo: 'Bs.', impuesto: 'IVA', tasa: 16 },
-  { codigo: 'mx', nombre: 'México', moneda: 'MXN', simbolo: '$', impuesto: 'IVA', tasa: 16 },
-  { codigo: 'co', nombre: 'Colombia', moneda: 'COP', simbolo: '$', impuesto: 'IVA', tasa: 19 },
-  { codigo: 'us', nombre: 'Estados Unidos', moneda: 'USD', simbolo: '$', impuesto: 'Sales Tax', tasa: 0 },
-  { codigo: 'pe', nombre: 'Perú', moneda: 'PEN', simbolo: 'S/', impuesto: 'IGV', tasa: 18 },
-  { codigo: 'ar', nombre: 'Argentina', moneda: 'ARS', simbolo: '$', impuesto: 'IVA', tasa: 21 },
-  { codigo: 'cl', nombre: 'Chile', moneda: 'CLP', simbolo: '$', impuesto: 'IVA', tasa: 19 },
-  { codigo: 'ec', nombre: 'Ecuador', moneda: 'USD', simbolo: '$', impuesto: 'IVA', tasa: 12 },
-  { codigo: 'es', nombre: 'España', moneda: 'EUR', simbolo: '€', impuesto: 'IVA', tasa: 21 },
-];
-
-const TIPOS_NEGOCIO = [
-  'Bodega', 'Supermercado', 'Farmacia', 'Restaurante', 'Cafetería',
-  'Ferretería', 'Tienda de Ropa', 'Panadería', 'Librería', 'Otro'
-];
+import { supabase } from '@/lib/supabase';
+import { obtenerCatalogoPaises, obtenerCatalogoMonedas } from '@/lib/catalogos';
+import { registroSchema, TIPOS_NEGOCIO } from '@/lib/validaciones/registro';
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [paso, setPaso] = useState(1);
-  const [focusedField, setFocusedField] = useState(null);
-  const [aceptoTerminos, setAceptoTerminos] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [catalogoPaises, setCatalogoPaises] = useState([]);
+  const [catalogoMonedas, setCatalogoMonedas] = useState([]);
+  const [loadingCatalogos, setLoadingCatalogos] = useState(true);
 
-  // Paso 1: Datos del propietario
-  const [nombreCompleto, setNombreCompleto] = useState('');
-  const [emailPropietario, setEmailPropietario] = useState('');
-  const [telefonoPropietario, setTelefonoPropietario] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmarPassword, setConfirmarPassword] = useState('');
+  const {
+    control,
+    handleSubmit,
+    watch,
+    trigger,
+    formState: { errors }
+  } = useForm({
+    resolver: zodResolver(registroSchema),
+    mode: 'onChange',
+    defaultValues: {
+      nombreCompleto: '',
+      email: '',
+      password: '',
+      confirmarPassword: '',
+      nombreNegocio: '',
+      tipoNegocio: '',
+      direccion: '',
+      telefono: '',
+      codigoPais: '',
+      codigoMoneda: '',
+      idFiscal: '',
+      razonSocial: '',
+      regimenFiscal: '',
+      usaFacturaElectronica: false,
+    }
+  });
 
-  // Paso 2: Datos del negocio
-  const [nombreNegocio, setNombreNegocio] = useState('');
-  const [nombreLegal, setNombreLegal] = useState('');
-  const [paisSeleccionado, setPaisSeleccionado] = useState('');
-  const [tipoNegocio, setTipoNegocio] = useState('');
-  const [telefonoNegocio, setTelefonoNegocio] = useState('');
-  const [direccionNegocio, setDireccionNegocio] = useState('');
+  const password = watch('password');
+  const confirmarPassword = watch('confirmarPassword');
+  const codigoPais = watch('codigoPais');
 
-  // Paso 3: Configuración fiscal
-  const [rifNit, setRifNit] = useState('');
-  const [tasaImpuesto, setTasaImpuesto] = useState('');
+  // Cargar catálogos al montar el componente
+  useEffect(() => {
+    async function cargarCatalogos() {
+      setLoadingCatalogos(true);
+      try {
+        const [paises, monedas] = await Promise.all([
+          obtenerCatalogoPaises(),
+          obtenerCatalogoMonedas()
+        ]);
+        
+        setCatalogoPaises(paises);
+        setCatalogoMonedas(monedas);
+        
+        if (paises.length === 0 || monedas.length === 0) {
+          toast.error('Error al cargar los catálogos. Por favor recarga la página.');
+        }
+      } catch (error) {
+        console.error('Error cargando catálogos:', error);
+        toast.error('Error al cargar los catálogos');
+      } finally {
+        setLoadingCatalogos(false);
+      }
+    }
 
-  const paisConfig = PAISES.find(p => p.codigo === paisSeleccionado);
-  const progreso = (paso / 4) * 100;
+    cargarCatalogos();
+  }, []);
 
-  const validarPaso1 = () => {
-    return nombreCompleto && emailPropietario && password && 
-           confirmarPassword && password === confirmarPassword;
+  const progreso = (paso / 3) * 100;
+
+  // Validar paso actual antes de avanzar
+  const validarPasoActual = async () => {
+    let camposAValidar = [];
+    
+    if (paso === 1) {
+      camposAValidar = ['nombreCompleto', 'email', 'password', 'confirmarPassword'];
+    } else if (paso === 2) {
+      camposAValidar = ['nombreNegocio', 'tipoNegocio', 'direccion', 'telefono'];
+    } else if (paso === 3) {
+      camposAValidar = ['codigoPais', 'codigoMoneda', 'razonSocial'];
+    }
+
+    const resultado = await trigger(camposAValidar);
+    return resultado;
   };
 
-  const validarPaso2 = () => {
-    return nombreNegocio && nombreLegal && paisSeleccionado && tipoNegocio;
-  };
-
-  const validarPaso3 = () => {
-    return true; // Campos fiscales opcionales
-  };
-
-  const handleSiguiente = () => {
-    if (paso === 1 && !validarPaso1()) return;
-    if (paso === 2 && !validarPaso2()) return;
-    if (paso === 3 && !validarPaso3()) return;
-    setPaso(paso + 1);
+  const handleSiguiente = async () => {
+    const esValido = await validarPasoActual();
+    if (esValido) {
+      setPaso(paso + 1);
+    } else {
+      toast.error('Por favor completa todos los campos requeridos');
+    }
   };
 
   const handleAnterior = () => {
     setPaso(paso - 1);
   };
 
-  const handleRegistro = () => {
-    console.log('Registrando negocio...');
+  // Función principal de registro
+  const onSubmit = async (values) => {
+    setIsLoading(true);
+
+    try {
+      // Paso 1: Registrar usuario en Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: values.email,
+        password: values.password,
+        options: {
+          data: {
+            nombre_completo: values.nombreCompleto
+          }
+        }
+      });
+
+      if (authError) {
+        if (authError.message.includes('already registered')) {
+          throw new Error('Este correo ya está registrado');
+        }
+        throw authError;
+      }
+
+      if (!authData.user) {
+        throw new Error('No se pudo crear el usuario');
+      }
+
+      const userId = authData.user.id;
+
+      // Paso 2: Registrar negocio usando la función RPC
+      const { data: rpcData, error: rpcError } = await supabase.rpc('registrar_usuario_con_negocio', {
+        p_user_id: userId,
+        p_nombre_completo: values.nombreCompleto,
+        p_nombre_negocio: values.nombreNegocio,
+        p_nombre_completo_negocio: values.razonSocial,
+        p_direccion: values.direccion,
+        p_telefono: values.telefono,
+        p_email_negocio: values.email,
+        p_pais_codigo: values.codigoPais,
+        p_moneda_base: values.codigoMoneda,
+        p_id_fiscal: values.idFiscal || null,
+        p_nombre_fiscal: values.razonSocial,
+        p_tipo_negocio: values.tipoNegocio,
+        p_regimen_fiscal: values.regimenFiscal || null,
+        p_usa_factura_electronica: values.usaFacturaElectronica,
+        p_prefijo_factura: 'FAC-'
+      });
+
+      if (rpcError) {
+        console.error('Error RPC:', rpcError);
+        throw new Error(rpcError.message || 'Error al registrar el negocio');
+      }
+
+      // Verificar respuesta de la función RPC
+      if (rpcData && !rpcData.success) {
+        throw new Error(rpcData.error || 'Error al registrar el negocio');
+      }
+
+      // Éxito total
+      toast.success('¡Negocio registrado! Revisa tu correo para verificar el código de 8 dígitos');
+      
+      // Redirigir a verificación de email
+      router.push(`/verify-email?email=${encodeURIComponent(values.email)}&type=signup`);
+
+    } catch (error) {
+      console.error('Error en registro:', error);
+      toast.error(error.message || 'Error al registrar. Por favor intenta de nuevo.');
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (loadingCatalogos) {
+    return (
+      <div className="flex min-h-screen bg-background items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-foreground/60">Cargando catálogos...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-background relative">
@@ -117,33 +232,24 @@ export default function RegisterPage() {
             </h2>
             
             <p className="text-xs text-foreground/70 leading-relaxed">
-              Completa el proceso de registro en 4 simples pasos y comienza a gestionar 
+              Completa el proceso de registro en 3 simples pasos y comienza a gestionar 
               tu negocio con la plataforma más completa del mercado.
             </p>
           </div>
 
-          {/* Pasos del proceso - Stepper mejorado */}
+          {/* Pasos del proceso */}
           <div className="space-y-3 mb-6">
             {[
-              { num: 1, icon: User, titulo: 'Datos del Propietario', desc: 'Información personal y credenciales de acceso' },
-              { num: 2, icon: Building2, titulo: 'Datos del Negocio', desc: 'Información comercial y ubicación' },
-              { num: 3, icon: FileText, titulo: 'Configuración Fiscal', desc: 'Datos tributarios y moneda' },
-              { num: 4, icon: FileCheck, titulo: 'Confirmación', desc: 'Revisa y confirma tu información' }
+              { num: 1, icon: User, titulo: 'Cuenta del Propietario', desc: 'Información personal y credenciales de acceso' },
+              { num: 2, icon: Building2, titulo: 'Información del Negocio', desc: 'Datos comerciales y ubicación' },
+              { num: 3, icon: FileText, titulo: 'Configuración Fiscal', desc: 'Datos tributarios y moneda' }
             ].map((item) => {
               const Icon = item.icon;
               const isCompleted = paso > item.num;
               const isCurrent = paso === item.num;
-              const isPending = paso < item.num;
 
               return (
-                <div key={item.num} className="flex items-start gap-3 group">
-                  {/* Línea conectora */}
-                  {item.num < 4 && (
-                    <div className="absolute left-[20px] mt-12 w-0.5 h-12 bg-gradient-to-b from-primary/40 to-transparent" 
-                         style={{ opacity: isCompleted ? 1 : 0.2 }} />
-                  )}
-                  
-                  {/* Círculo con número/check */}
+                <div key={item.num} className="flex items-start gap-3">
                   <div className={`relative flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                     isCompleted 
                       ? 'bg-primary shadow-lg shadow-primary/50' 
@@ -160,8 +266,7 @@ export default function RegisterPage() {
                     )}
                   </div>
                   
-                  {/* Contenido */}
-                  <div className={`flex-1 transition-all duration-300 ${isPending ? 'opacity-40' : 'opacity-100'}`}>
+                  <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className={`text-sm font-semibold ${isCurrent ? 'text-primary' : 'text-foreground'}`}>
                         {item.titulo}
@@ -212,27 +317,25 @@ export default function RegisterPage() {
             <h1 className="text-base font-bold text-foreground">Sistema POS</h1>
           </div>
 
-          {/* Progress Bar mejorado */}
+          {/* Progress Bar */}
           <Card className="mb-6 border-none shadow-sm">
             <CardBody className="p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Chip color="primary" variant="flat" size="sm">
-                    <span className="font-bold">Paso {paso} de 4</span>
+                    <span className="font-bold">Paso {paso} de 3</span>
                   </Chip>
                   <span className="text-xs text-foreground/60 font-bold">
-                    {paso === 1 && 'Datos del Propietario'}
-                    {paso === 2 && 'Datos del Negocio'}
+                    {paso === 1 && 'Cuenta del Propietario'}
+                    {paso === 2 && 'Información del Negocio'}
                     {paso === 3 && 'Configuración Fiscal'}
-                    {paso === 4 && 'Confirmación'}
                   </span>
                 </div>
                 <span className="text-xs font-bold text-primary">{Math.round(progreso)}%</span>
               </div>
               
-              {/* Barra de progreso personalizada */}
               <div className="flex gap-1.5">
-                {[1, 2, 3, 4].map((num) => (
+                {[1, 2, 3].map((num) => (
                   <div
                     key={num}
                     className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${
@@ -249,481 +352,456 @@ export default function RegisterPage() {
           {/* Título del paso actual */}
           <div className="text-center space-y-2">
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-              {paso === 1 && 'Datos del Propietario'}
-              {paso === 2 && 'Datos del Negocio'}
+              {paso === 1 && 'Cuenta del Propietario'}
+              {paso === 2 && 'Información del Negocio'}
               {paso === 3 && 'Configuración Fiscal'}
-              {paso === 4 && 'Confirmación'}
             </h2>
             <p className="text-sm text-foreground/60 font-semibold">
-              {paso === 1 && 'Información personal y credenciales'}
-              {paso === 2 && 'Información comercial de tu negocio'}
-              {paso === 3 && 'Configuración tributaria y moneda'}
-              {paso === 4 && 'Revisa y confirma tu registro'}
+              {paso === 1 && 'Crea tu cuenta de acceso'}
+              {paso === 2 && 'Datos de tu negocio'}
+              {paso === 3 && 'Configuración tributaria'}
             </p>
           </div>
 
-          {/* PASO 1: Datos del Propietario */}
-          {paso === 1 && (
-            <form className="space-y-5">
-              <Input
-                type="text"
-                label={<span className="font-bold">Nombre Completo</span>}
-                placeholder="Juan Pérez"
-                value={nombreCompleto}
-                onValueChange={setNombreCompleto}
-                startContent={<User className="w-4 h-4 sm:w-5 sm:h-5" />}
-                variant="bordered"
-                size="lg"
-                isRequired
-                classNames={{
-                  label: "text-foreground",
-                  input: "text-foreground",
-                  inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
-                }}
-              />
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
-              <Input
-                type="email"
-                label={<span className="font-bold">Correo Electrónico</span>}
-                placeholder="tu@email.com"
-                value={emailPropietario}
-                onValueChange={setEmailPropietario}
-                startContent={<Mail className="w-4 h-4 sm:w-5 sm:h-5" />}
-                variant="bordered"
-                size="lg"
-                isRequired
-                classNames={{
-                  label: "text-foreground",
-                  input: "text-foreground",
-                  inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
-                }}
-              />
-
-              <Input
-                type="tel"
-                label={<span className="font-bold">Teléfono (Opcional)</span>}
-                placeholder="+58 412 1234567"
-                value={telefonoPropietario}
-                onValueChange={setTelefonoPropietario}
-                startContent={<Phone className="w-4 h-4 sm:w-5 sm:h-5" />}
-                variant="bordered"
-                size="lg"
-                classNames={{
-                  label: "text-foreground",
-                  input: "text-foreground",
-                  inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
-                }}
-              />
-
-              <Input
-                type="password"
-                label={<span className="font-bold">Contraseña</span>}
-                placeholder="Mínimo 8 caracteres"
-                value={password}
-                onValueChange={setPassword}
-                startContent={<Lock className="w-4 h-4 sm:w-5 sm:h-5" />}
-                variant="bordered"
-                size="lg"
-                isRequired
-                classNames={{
-                  label: "text-foreground",
-                  input: "text-foreground",
-                  inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
-                }}
-              />
-
-              <Input
-                type="password"
-                label={<span className="font-bold">Confirmar Contraseña</span>}
-                placeholder="Repite tu contraseña"
-                value={confirmarPassword}
-                onValueChange={setConfirmarPassword}
-                startContent={<Lock className="w-4 h-4 sm:w-5 sm:h-5" />}
-                variant="bordered"
-                size="lg"
-                isRequired
-                isInvalid={confirmarPassword && password !== confirmarPassword}
-                errorMessage={confirmarPassword && password !== confirmarPassword ? "Las contraseñas no coinciden" : ""}
-                classNames={{
-                  label: "text-foreground",
-                  input: "text-foreground",
-                  inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
-                }}
-              />
-            </form>
-          )}
-
-          {/* PASO 2: Datos del Negocio */}
-          {paso === 2 && (
-            <form className="space-y-5">
-              <Input
-                type="text"
-                label={<span className="font-bold">Nombre del Negocio</span>}
-                placeholder="Mi Bodega"
-                value={nombreNegocio}
-                onValueChange={setNombreNegocio}
-                startContent={<Building2 className="w-4 h-4 sm:w-5 sm:h-5" />}
-                variant="bordered"
-                size="lg"
-                isRequired
-                classNames={{
-                  label: "text-foreground",
-                  input: "text-foreground",
-                  inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
-                }}
-              />
-
-              <Input
-                type="text"
-                label={<span className="font-bold">Nombre Legal / Razón Social</span>}
-                placeholder="Mi Bodega C.A."
-                value={nombreLegal}
-                onValueChange={setNombreLegal}
-                startContent={<FileText className="w-4 h-4 sm:w-5 sm:h-5" />}
-                variant="bordered"
-                size="lg"
-                isRequired
-                classNames={{
-                  label: "text-foreground",
-                  input: "text-foreground",
-                  inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
-                }}
-              />
-
-              <Select
-                label={<span className="font-bold">País</span>}
-                placeholder="Selecciona tu país"
-                selectedKeys={paisSeleccionado ? [paisSeleccionado] : []}
-                onChange={(e) => setPaisSeleccionado(e.target.value)}
-                variant="bordered"
-                size="lg"
-                isRequired
-                classNames={{
-                  label: "text-foreground",
-                  trigger: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
-                }}
-              >
-                {PAISES.map((pais) => (
-                  <SelectItem 
-                    key={pais.codigo} 
-                    value={pais.codigo}
-                    startContent={
-                      <Avatar 
-                        alt={pais.nombre} 
-                        className="w-6 h-6" 
-                        src={`https://flagcdn.com/${pais.codigo}.svg`} 
-                      />
-                    }
-                  >
-                    {pais.nombre}
-                  </SelectItem>
-                ))}
-              </Select>
-
-              <Select
-                label={<span className="font-bold">Tipo de Negocio</span>}
-                placeholder="Selecciona el tipo"
-                selectedKeys={tipoNegocio ? [tipoNegocio] : []}
-                onChange={(e) => setTipoNegocio(e.target.value)}
-                startContent={<Building2 className="w-4 h-4 sm:w-5 sm:h-5" />}
-                variant="bordered"
-                size="lg"
-                isRequired
-                classNames={{
-                  label: "text-foreground",
-                  trigger: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
-                }}
-              >
-                {TIPOS_NEGOCIO.map((tipo) => (
-                  <SelectItem key={tipo} value={tipo}>
-                    {tipo}
-                  </SelectItem>
-                ))}
-              </Select>
-
-              <Input
-                type="tel"
-                label={<span className="font-bold">Teléfono del Negocio (Opcional)</span>}
-                placeholder="+58 212 1234567"
-                value={telefonoNegocio}
-                onValueChange={setTelefonoNegocio}
-                startContent={<Phone className="w-4 h-4 sm:w-5 sm:h-5" />}
-                variant="bordered"
-                size="lg"
-                classNames={{
-                  label: "text-foreground",
-                  input: "text-foreground",
-                  inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
-                }}
-              />
-
-              <Input
-                type="text"
-                label={<span className="font-bold">Dirección (Opcional)</span>}
-                placeholder="Av. Principal, Local 123"
-                value={direccionNegocio}
-                onValueChange={setDireccionNegocio}
-                startContent={<MapPin className="w-4 h-4 sm:w-5 sm:h-5" />}
-                variant="bordered"
-                size="lg"
-                classNames={{
-                  label: "text-foreground",
-                  input: "text-foreground",
-                  inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
-                }}
-              />
-            </form>
-          )}
-
-          {/* PASO 3: Configuración Fiscal */}
-          {paso === 3 && (
-            <form className="space-y-5">
-              {paisConfig && (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-primary" />
-                    <h3 className="text-sm font-bold text-foreground">Configuración para {paisConfig.nombre.split(' ')[0]}</h3>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 pl-6">
-                    <div>
-                      <p className="text-xs text-foreground/50 mb-1">Moneda</p>
-                      <p className="text-sm font-bold text-foreground">{paisConfig.moneda} ({paisConfig.simbolo})</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-foreground/50 mb-1">Impuesto</p>
-                      <p className="text-sm font-bold text-foreground">{paisConfig.impuesto} {paisConfig.tasa}%</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <Input
-                type="text"
-                label={<span className="font-bold">{paisConfig?.codigo === 'VE' ? 'RIF' : paisConfig?.codigo === 'MX' ? 'RFC' : paisConfig?.codigo === 'CO' ? 'NIT' : 'ID Fiscal (Opcional)'}</span>}
-                placeholder={
-                  paisConfig?.codigo === 'VE' ? 'J-12345678-9' : 
-                  paisConfig?.codigo === 'MX' ? 'ABC123456789' : 
-                  paisConfig?.codigo === 'CO' ? '900123456-7' : 
-                  'Número de identificación fiscal'
-                }
-                value={rifNit}
-                onValueChange={setRifNit}
-                startContent={<FileText className="w-4 h-4 sm:w-5 sm:h-5" />}
-                variant="bordered"
-                size="lg"
-                description={paisConfig?.codigo === 'VE' ? 'Registro de Información Fiscal (SENIAT)' : ''}
-                classNames={{
-                  label: "text-foreground",
-                  input: "text-foreground",
-                  inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
-                }}
-              />
-
-              {paisConfig && paisConfig.tasa > 0 && (
-                <Input
-                  type="number"
-                  label={<span className="font-bold">Tasa de {paisConfig.impuesto} (%)</span>}
-                  placeholder={paisConfig.tasa.toString()}
-                  value={tasaImpuesto || paisConfig.tasa.toString()}
-                  onValueChange={setTasaImpuesto}
-                  startContent={<DollarSign className="w-4 h-4 sm:w-5 sm:h-5" />}
-                  variant="bordered"
-                  size="lg"
-                  description={`Tasa predeterminada: ${paisConfig.tasa}%`}
-                  classNames={{
-                    label: "text-foreground",
-                    input: "text-foreground",
-                    inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
-                  }}
+            {/* PASO 1: Cuenta del Propietario */}
+            {paso === 1 && (
+              <div className="space-y-5">
+                <Controller
+                  name="nombreCompleto"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="text"
+                      label="Nombre Completo"
+                      placeholder="Juan Pérez"
+                      startContent={<User className="w-5 h-5" />}
+                      variant="bordered"
+                      size="lg"
+                      isRequired
+                      isInvalid={!!errors.nombreCompleto}
+                      errorMessage={errors.nombreCompleto?.message}
+                      classNames={{
+                        label: "text-foreground font-bold",
+                        input: "text-foreground",
+                        inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
+                      }}
+                    />
+                  )}
                 />
-              )}
 
-              <div className="flex gap-3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/30">
-                <div className="flex-shrink-0">
-                  <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">
-                    <span className="text-blue-600 dark:text-blue-400 text-xs font-bold">!</span>
-                  </div>
-                </div>
-                <p className="text-xs text-foreground font-bold leading-relaxed">
-                  <span className="text-blue-600 dark:text-blue-400">Importante:</span> Eres responsable de cumplir con las obligaciones fiscales de tu país. 
-                  Este sistema genera comprobantes de venta con los datos que proporciones.
-                </p>
+                <Controller
+                  name="email"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="email"
+                      label="Correo Electrónico"
+                      placeholder="tu@email.com"
+                      startContent={<Mail className="w-5 h-5" />}
+                      variant="bordered"
+                      size="lg"
+                      isRequired
+                      isInvalid={!!errors.email}
+                      errorMessage={errors.email?.message}
+                      classNames={{
+                        label: "text-foreground font-bold",
+                        input: "text-foreground",
+                        inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
+                      }}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="password"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="password"
+                      label="Contraseña"
+                      placeholder="Mínimo 8 caracteres"
+                      startContent={<Lock className="w-5 h-5" />}
+                      variant="bordered"
+                      size="lg"
+                      isRequired
+                      isInvalid={!!errors.password}
+                      errorMessage={errors.password?.message}
+                      classNames={{
+                        label: "text-foreground font-bold",
+                        input: "text-foreground",
+                        inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
+                      }}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="confirmarPassword"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="password"
+                      label="Confirmar Contraseña"
+                      placeholder="Repite tu contraseña"
+                      startContent={<Lock className="w-5 h-5" />}
+                      variant="bordered"
+                      size="lg"
+                      isRequired
+                      isInvalid={!!errors.confirmarPassword}
+                      errorMessage={errors.confirmarPassword?.message}
+                      classNames={{
+                        label: "text-foreground font-bold",
+                        input: "text-foreground",
+                        inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
+                      }}
+                    />
+                  )}
+                />
               </div>
-            </form>
-          )}
+            )}
 
-          {/* PASO 4: Confirmación */}
-          {paso === 4 && (
-            <div className="space-y-5">
-              {/* Grid de información - 2 columnas en pantallas grandes */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Propietario */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 mb-3">
-                    <User className="w-4 h-4 text-primary" />
-                    <h3 className="text-xs font-semibold text-foreground/60 uppercase tracking-wide">Propietario</h3>
-                  </div>
-                  <div className="space-y-1.5 pl-6">
-                    <p className="text-sm text-foreground font-semibold">{nombreCompleto}</p>
-                    <div className="flex items-center gap-1.5 text-xs text-foreground/70">
-                      <Mail className="w-3 h-3" />
-                      <span className="truncate">{emailPropietario}</span>
-                    </div>
-                    {telefonoPropietario && (
-                      <div className="flex items-center gap-1.5 text-xs text-foreground/70">
-                        <Phone className="w-3 h-3" />
-                        <span>{telefonoPropietario}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+            {/* PASO 2: Información del Negocio */}
+            {paso === 2 && (
+              <div className="space-y-5">
+                <Controller
+                  name="nombreNegocio"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="text"
+                      label="Nombre Comercial"
+                      placeholder="Mi Bodega"
+                      startContent={<Building2 className="w-5 h-5" />}
+                      variant="bordered"
+                      size="lg"
+                      isRequired
+                      isInvalid={!!errors.nombreNegocio}
+                      errorMessage={errors.nombreNegocio?.message}
+                      classNames={{
+                        label: "text-foreground font-bold",
+                        input: "text-foreground",
+                        inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
+                      }}
+                    />
+                  )}
+                />
 
-                {/* Negocio */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Building2 className="w-4 h-4 text-primary" />
-                    <h3 className="text-xs font-semibold text-foreground/60 uppercase tracking-wide">Negocio</h3>
-                  </div>
-                  <div className="space-y-1.5 pl-6">
-                    <p className="text-sm text-foreground font-semibold">{nombreNegocio}</p>
-                    <p className="text-xs text-foreground/70">Razón Social: {nombreLegal}</p>
-                    <div className="flex flex-wrap gap-1.5 mt-1.5">
-                      <Chip size="sm" variant="flat" color="primary" className="h-5 text-[10px]">{tipoNegocio}</Chip>
-                      <Chip size="sm" variant="flat" className="h-5 text-[10px]">{paisConfig?.nombre}</Chip>
-                    </div>
-                  </div>
-                </div>
+                <Controller
+                  name="tipoNegocio"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      label="Tipo de Negocio"
+                      placeholder="Selecciona el tipo"
+                      variant="bordered"
+                      size="lg"
+                      isRequired
+                      selectedKeys={field.value ? [field.value] : []}
+                      onSelectionChange={(keys) => field.onChange(Array.from(keys)[0])}
+                      isInvalid={!!errors.tipoNegocio}
+                      errorMessage={errors.tipoNegocio?.message}
+                      classNames={{
+                        label: "text-foreground font-bold",
+                        trigger: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
+                      }}
+                    >
+                      {TIPOS_NEGOCIO.map((tipo) => (
+                        <SelectItem key={tipo.value} value={tipo.value}>
+                          {tipo.label}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                  )}
+                />
 
-                {/* Contacto del Negocio */}
-                {(telefonoNegocio || direccionNegocio) && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 mb-3">
-                      <MapPin className="w-4 h-4 text-primary" />
-                      <h3 className="text-xs font-semibold text-foreground/60 uppercase tracking-wide">Contacto</h3>
-                    </div>
-                    <div className="space-y-1.5 pl-6">
-                      {telefonoNegocio && (
-                        <div className="flex items-center gap-1.5 text-xs text-foreground/70">
-                          <Phone className="w-3 h-3" />
-                          <span>{telefonoNegocio}</span>
-                        </div>
-                      )}
-                      {direccionNegocio && (
-                        <div className="flex items-start gap-1.5 text-xs text-foreground/70">
-                          <MapPin className="w-3 h-3 mt-0.5 flex-shrink-0" />
-                          <span className="line-clamp-2">{direccionNegocio}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
+                <Controller
+                  name="direccion"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="text"
+                      label="Dirección Física"
+                      placeholder="Av. Principal, Local 123"
+                      startContent={<MapPin className="w-5 h-5" />}
+                      variant="bordered"
+                      size="lg"
+                      isRequired
+                      isInvalid={!!errors.direccion}
+                      errorMessage={errors.direccion?.message}
+                      classNames={{
+                        label: "text-foreground font-bold",
+                        input: "text-foreground",
+                        inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
+                      }}
+                    />
+                  )}
+                />
 
-                {/* Configuración Fiscal */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 mb-3">
-                    <FileText className="w-4 h-4 text-primary" />
-                    <h3 className="text-xs font-semibold text-foreground/60 uppercase tracking-wide">Configuración Fiscal</h3>
-                  </div>
-                  <div className="space-y-1.5 pl-6">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs text-foreground/70">Moneda:</span>
-                      <Chip size="sm" variant="flat" color="success" className="h-5 text-[10px]">
-                        {paisConfig?.moneda} ({paisConfig?.simbolo})
-                      </Chip>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs text-foreground/70">Impuesto:</span>
-                      <Chip size="sm" variant="flat" color="warning" className="h-5 text-[10px]">
-                        {paisConfig?.impuesto} {tasaImpuesto || paisConfig?.tasa}%
-                      </Chip>
-                    </div>
-                    {rifNit && (
-                      <p className="text-xs text-foreground/70">
-                        ID Fiscal: <span className="font-semibold">{rifNit}</span>
-                      </p>
-                    )}
-                  </div>
-                </div>
+                <Controller
+                  name="telefono"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="tel"
+                      label="Teléfono de Contacto"
+                      placeholder="+58 212 1234567"
+                      startContent={<Phone className="w-5 h-5" />}
+                      variant="bordered"
+                      size="lg"
+                      isRequired
+                      isInvalid={!!errors.telefono}
+                      errorMessage={errors.telefono?.message}
+                      classNames={{
+                        label: "text-foreground font-bold",
+                        input: "text-foreground",
+                        inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
+                      }}
+                    />
+                  )}
+                />
               </div>
+            )}
 
-              <Divider className="my-4" />
+            {/* PASO 3: Configuración Fiscal */}
+            {paso === 3 && (
+              <div className="space-y-5">
+                <Controller
+                  name="codigoPais"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      label="País"
+                      placeholder="Selecciona tu país"
+                      variant="bordered"
+                      size="lg"
+                      isRequired
+                      selectedKeys={field.value ? [field.value] : []}
+                      onSelectionChange={(keys) => field.onChange(Array.from(keys)[0])}
+                      isInvalid={!!errors.codigoPais}
+                      errorMessage={errors.codigoPais?.message}
+                      startContent={<Globe className="w-5 h-5" />}
+                      classNames={{
+                        label: "text-foreground font-bold",
+                        trigger: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
+                      }}
+                    >
+                      {catalogoPaises.map((pais) => (
+                        <SelectItem 
+                          key={pais.codigo} 
+                          value={pais.codigo}
+                          textValue={pais.nombre}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span>{pais.nombre}</span>
+                            <span className="text-xs text-foreground/60">
+                              ({pais.impuesto_principal} {pais.tasa_impuesto_general}%)
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </Select>
+                  )}
+                />
 
-              {/* Plan de Prueba */}
-              <div className="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
-                  <Check className="w-3.5 h-3.5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-primary mb-0.5">Plan de Prueba Gratis</p>
+                <Controller
+                  name="codigoMoneda"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      label="Moneda Base"
+                      placeholder="Selecciona la moneda"
+                      variant="bordered"
+                      size="lg"
+                      isRequired
+                      selectedKeys={field.value ? [field.value] : []}
+                      onSelectionChange={(keys) => field.onChange(Array.from(keys)[0])}
+                      isInvalid={!!errors.codigoMoneda}
+                      errorMessage={errors.codigoMoneda?.message}
+                      startContent={<DollarSign className="w-5 h-5" />}
+                      classNames={{
+                        label: "text-foreground font-bold",
+                        trigger: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
+                      }}
+                    >
+                      {catalogoMonedas.map((moneda) => (
+                        <SelectItem 
+                          key={moneda.codigo} 
+                          value={moneda.codigo}
+                          textValue={`${moneda.nombre} (${moneda.simbolo})`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold">{moneda.simbolo}</span>
+                            <span>{moneda.nombre}</span>
+                            <span className="text-xs text-foreground/60">({moneda.codigo})</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+
+                <Controller
+                  name="razonSocial"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="text"
+                      label="Nombre/Razón Social Fiscal"
+                      placeholder="Mi Bodega C.A."
+                      startContent={<FileText className="w-5 h-5" />}
+                      variant="bordered"
+                      size="lg"
+                      isRequired
+                      isInvalid={!!errors.razonSocial}
+                      errorMessage={errors.razonSocial?.message}
+                      classNames={{
+                        label: "text-foreground font-bold",
+                        input: "text-foreground",
+                        inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
+                      }}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="idFiscal"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="text"
+                      label="ID Fiscal (RIF/NIT/RFC)"
+                      placeholder={
+                        codigoPais === 'VEN' ? 'J-12345678-9' :
+                        codigoPais === 'MEX' ? 'ABC123456789' :
+                        codigoPais === 'COL' ? '900123456-7' :
+                        'Número de identificación fiscal'
+                      }
+                      startContent={<FileText className="w-5 h-5" />}
+                      variant="bordered"
+                      size="lg"
+                      isInvalid={!!errors.idFiscal}
+                      errorMessage={errors.idFiscal?.message}
+                      description="Opcional"
+                      classNames={{
+                        label: "text-foreground font-bold",
+                        input: "text-foreground",
+                        inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
+                      }}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="regimenFiscal"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="text"
+                      label="Régimen Fiscal"
+                      placeholder="Régimen General, Simplificado, etc."
+                      variant="bordered"
+                      size="lg"
+                      description="Opcional"
+                      classNames={{
+                        label: "text-foreground font-bold",
+                        input: "text-foreground",
+                        inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
+                      }}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="usaFacturaElectronica"
+                  control={control}
+                  render={({ field }) => (
+                    <Checkbox
+                      isSelected={field.value}
+                      onValueChange={field.onChange}
+                      size="sm"
+                    >
+                      <span className="text-sm text-foreground">
+                        Usa Factura Electrónica
+                      </span>
+                    </Checkbox>
+                  )}
+                />
+
+                <div className="flex gap-3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/30">
+                  <div className="flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">
+                      <span className="text-blue-600 dark:text-blue-400 text-xs font-bold">!</span>
+                    </div>
+                  </div>
                   <p className="text-xs text-foreground font-bold leading-relaxed">
-                    Tu negocio será registrado con 7 días de prueba gratis. Podrás acceder a todas las 
-                    funcionalidades del sistema sin restricciones.
+                    <span className="text-blue-600 dark:text-blue-400">Importante:</span> Los impuestos y formato de factura 
+                    se configurarán automáticamente según el país seleccionado.
                   </p>
                 </div>
               </div>
+            )}
 
-              {/* Checkbox de términos */}
-              <Checkbox 
-                isSelected={aceptoTerminos}
-                onValueChange={setAceptoTerminos}
-                size="sm"
-                classNames={{
-                  label: "text-xs"
-                }}
-              >
-                <span className="text-xs text-foreground/70">
-                  Acepto los términos y condiciones, y confirmo que la información proporcionada es correcta
-                </span>
-              </Checkbox>
+            {/* Botones de navegación */}
+            <div className="flex gap-3 pt-4">
+              {paso > 1 && (
+                <Button
+                  type="button"
+                  size="lg"
+                  variant="bordered"
+                  className="flex-1 font-semibold"
+                  startContent={<ArrowLeft className="w-4 h-4" />}
+                  onPress={handleAnterior}
+                  isDisabled={isLoading}
+                >
+                  Anterior
+                </Button>
+              )}
+              
+              {paso < 3 ? (
+                <Button
+                  type="button"
+                  size="lg"
+                  color="primary"
+                  className="flex-1 font-semibold"
+                  endContent={<ArrowRight className="w-4 h-4" />}
+                  onPress={handleSiguiente}
+                >
+                  Siguiente
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  size="lg"
+                  color="primary"
+                  className="flex-1 font-semibold"
+                  endContent={!isLoading && <Check className="w-4 h-4" />}
+                  isLoading={isLoading}
+                >
+                  {isLoading ? 'Registrando...' : 'Finalizar Registro'}
+                </Button>
+              )}
             </div>
-          )}
-
-          {/* Botones de navegación */}
-          <div className="flex gap-3">
-            {paso > 1 && (
-              <Button
-                size="lg"
-                variant="bordered"
-                className="flex-1 font-semibold"
-                startContent={<ArrowLeft className="w-4 h-4" />}
-                onPress={handleAnterior}
-              >
-                Anterior
-              </Button>
-            )}
-            
-            {paso < 4 ? (
-              <Button
-                size="lg"
-                color="primary"
-                className="flex-1 font-semibold"
-                endContent={<ArrowRight className="w-4 h-4" />}
-                onPress={handleSiguiente}
-                isDisabled={
-                  (paso === 1 && !validarPaso1()) ||
-                  (paso === 2 && !validarPaso2())
-                }
-              >
-                Siguiente
-              </Button>
-            ) : (
-              <Button
-                size="lg"
-                color="primary"
-                className="flex-1 font-semibold"
-                endContent={<Check className="w-4 h-4" />}
-                onPress={handleRegistro}
-                isDisabled={!aceptoTerminos}
-              >
-                Registrar Negocio
-              </Button>
-            )}
-          </div>
+          </form>
 
           {/* Footer */}
           <div className="text-center text-xs sm:text-sm text-foreground/60">
             ¿Ya tienes una cuenta?{' '}
-            <a href="/" className="text-primary hover:text-primary/80 font-semibold transition-colors">
+            <a href="/login" className="text-primary hover:text-primary/80 font-semibold transition-colors">
               Inicia sesión
             </a>
           </div>

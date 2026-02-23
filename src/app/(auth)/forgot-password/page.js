@@ -1,27 +1,47 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button, Input, Card, CardBody } from '@heroui/react';
 import { Mail, ArrowLeft, Send, CheckCircle2, Shield, Clock, Key } from 'lucide-react';
 import Image from 'next/image';
+import { toast } from 'sonner';
 import ThemeToggle from '@/components/ThemeToggle';
 import DevNavigation from '@/components/DevNavigation';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [enviado, setEnviado] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleEnviar = async (e) => {
     e.preventDefault();
+    
+    if (!email) {
+      toast.error('Por favor ingresa tu correo electrónico');
+      return;
+    }
+
     setIsLoading(true);
     
-    // Simular envío de email
-    setTimeout(() => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`
+      });
+
+      if (error) throw error;
+
+      toast.success('Código de seguridad enviado');
+      router.push(`/verify-email?email=${encodeURIComponent(email)}&type=recovery`);
+    } catch (error) {
+      console.error('Error al enviar código:', error);
+      toast.error(error.message || 'Error al enviar el código de recuperación');
+    } finally {
       setIsLoading(false);
-      setEnviado(true);
-    }, 1500);
+    }
   };
 
   const handleReenviar = () => {

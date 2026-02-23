@@ -1,18 +1,41 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { Button, Input, Card, CardBody } from '@heroui/react';
+import { useState, useRef, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Button, Input, Card, CardBody, Chip } from '@heroui/react';
 import { ArrowLeft, CheckCircle2, Shield, Clock, Mail } from 'lucide-react';
 import Image from 'next/image';
+import { toast } from 'sonner';
 import ThemeToggle from '@/components/ThemeToggle';
 import DevNavigation from '@/components/DevNavigation';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
 export default function VerifyEmailPage() {
-  const [codigo, setCodigo] = useState(['', '', '', '', '', '']);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get('email');
+  const type = searchParams.get('type'); // 'signup' o 'recovery'
+  
+  const [codigo, setCodigo] = useState(['', '', '', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [countdown, setCountdown] = useState(0);
   const inputRefs = useRef([]);
+
+  useEffect(() => {
+    if (!email || !type) {
+      toast.error('Parámetros inválidos');
+      router.push('/login');
+    }
+  }, [email, type, router]);
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
 
   const handleChange = (index, value) => {
     if (value.length > 1) {
@@ -24,7 +47,7 @@ export default function VerifyEmailPage() {
     setCodigo(newCodigo);
 
     // Auto-focus al siguiente input
-    if (value && index < 5) {
+    if (value && index < 7) {
       inputRefs.current[index + 1]?.focus();
     }
   };
@@ -38,12 +61,12 @@ export default function VerifyEmailPage() {
 
   const handlePaste = (e) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData('text').slice(0, 6);
-    const newCodigo = pastedData.split('').concat(Array(6).fill('')).slice(0, 6);
+    const pastedData = e.clipboardData.getData('text').slice(0, 8);
+    const newCodigo = pastedData.split('').concat(Array(8).fill('')).slice(0, 8);
     setCodigo(newCodigo);
     
     // Focus en el último input con valor
-    const lastIndex = Math.min(pastedData.length, 5);
+    const lastIndex = Math.min(pastedData.length, 7);
     inputRefs.current[lastIndex]?.focus();
   };
 
@@ -51,25 +74,67 @@ export default function VerifyEmailPage() {
     e.preventDefault();
     const codigoCompleto = codigo.join('');
     
-    if (codigoCompleto.length !== 6) {
-      setError('Por favor ingresa los 6 dígitos');
+    if (codigoCompleto.length !== 8) {
+      setError('Por favor ingresa los 8 dígitos');
+      toast.error('Por favor ingresa los 8 dígitos');
       return;
     }
 
     setIsLoading(true);
     setError('');
     
-    // TODO: Integrar con Supabase
-    setTimeout(() => {
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token: codigoCompleto,
+        type: type === 'signup' ? 'signup' : 'recovery'
+      });
+
+      if (error) throw error;
+
+      // Éxito en la verificación
+      if (type === 'signup') {
+        toast.success('¡Cuenta verificada exitosamente!');
+        router.push('/admin/dashboard');
+      } else if (type === 'recovery') {
+        toast.success('Código verificado, ahora cambia tu contraseña');
+        router.push('/reset-password');
+      }
+    } catch (error) {
+      console.error('Error al verificar código:', error);
+      setError(error.message || 'Código inválido o expirado');
+      toast.error(error.message || 'Código inválido o expirado');
+    } finally {
       setIsLoading(false);
-      console.log('Código verificado:', codigoCompleto);
-    }, 1500);
+    }
   };
 
   const handleReenviar = async () => {
-    // TODO: Integrar con Supabase resend
-    console.log('Reenviando código...');
+    if (countdown > 0) return;
+
+    setCountdown(60);
+    
+    try {
+      if (type === 'signup') {
+        const { error } = await supabase.auth.resend({
+          type: 'signup',
+          email: email
+        });
+        if (error) throw error;
+      } else if (type === 'recovery') {
+        const { error } = await supabase.auth.resetPasswordForEmail(email);
+        if (error) throw error;
+      }
+      
+      toast.success('Código reenviado exitosamente');
+    } catch (error) {
+      console.error('Error al reenviar código:', error);
+      toast.error(error.message || 'Error al reenviar el código');
+      setCountdown(0);
+    }
   };
+
+  const colorType = type === 'signup' ? 'primary' : 'warning';
 
   return (
     <div className="flex min-h-screen bg-background relative">
@@ -101,20 +166,24 @@ export default function VerifyEmailPage() {
             </div>
             
             <h2 className="text-2xl xl:text-3xl font-bold text-foreground mb-2">
-              Verifica tu{' '}
-              <span className="text-primary">correo electrónico</span>
+              {type === 'signup' ? 'Verifica tu' : 'Recupera tu'}{' '}
+              <span className={`text-${colorType}`}>
+                {type === 'signup' ? 'correo electrónico' : 'contraseña'}
+              </span>
             </h2>
             
             <p className="text-xs text-foreground/70 leading-relaxed">
-              Hemos enviado un código de 6 dígitos a tu correo. Ingrésalo para activar tu cuenta 
-              y comenzar a configurar tu negocio.
+              {type === 'signup' 
+                ? 'Hemos enviado un código de 8 dígitos a tu correo. Ingrésalo para activar tu cuenta y comenzar a configurar tu negocio.'
+                : 'Ingresa el código de 8 dígitos que enviamos a tu correo para verificar tu identidad y poder cambiar tu contraseña.'
+              }
             </p>
           </div>
 
           {/* Pasos */}
           <div className="space-y-3 mb-6">
             <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
+              <div className={`flex-shrink-0 w-9 h-9 rounded-lg bg-${colorType} flex items-center justify-center`}>
                 <Mail className="w-4 h-4 text-white" />
               </div>
               <div>
@@ -129,7 +198,7 @@ export default function VerifyEmailPage() {
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-foreground mb-0.5">2. Ingresa el código</h3>
-                <p className="text-xs text-foreground/60">Copia el código de 6 dígitos</p>
+                <p className="text-xs text-foreground/60">Copia el código de 8 dígitos</p>
               </div>
             </div>
 
@@ -138,15 +207,17 @@ export default function VerifyEmailPage() {
                 <Shield className="w-4 h-4 text-background" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-foreground mb-0.5">3. Activa tu cuenta</h3>
-                <p className="text-xs text-foreground/60">Completa el registro de tu negocio</p>
+                <h3 className="text-sm font-semibold text-foreground mb-0.5">3. {type === 'signup' ? 'Activa tu cuenta' : 'Cambia tu contraseña'}</h3>
+                <p className="text-xs text-foreground/60">
+                  {type === 'signup' ? 'Completa el registro de tu negocio' : 'Crea una nueva contraseña segura'}
+                </p>
               </div>
             </div>
           </div>
 
           <div className="pt-4 border-t border-foreground/10">
             <p className="text-xs text-foreground font-bold leading-relaxed">
-              <span className="text-primary text-sm">Aviso:</span> Usuario responsable de obligaciones fiscales. 
+              <span className={`text-${colorType} text-sm`}>Aviso:</span> Usuario responsable de obligaciones fiscales. 
               Sistema no certifica ante autoridades tributarias.
             </p>
           </div>
@@ -173,17 +244,23 @@ export default function VerifyEmailPage() {
           </div>
 
           <div className="text-center space-y-2">
+            <Chip color={colorType} variant="flat" size="sm">
+              {type === 'signup' ? 'Verificación de Registro' : 'Recuperación de Contraseña'}
+            </Chip>
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-              Verifica tu email
+              Verifica tu código
             </h2>
             <p className="text-sm text-foreground/60">
-              Ingresa el código de 6 dígitos que enviamos a tu correo
+              Ingresa el código de 8 dígitos enviado a
+            </p>
+            <p className="text-sm font-bold text-primary">
+              {email}
             </p>
           </div>
 
           <form onSubmit={handleVerificar} className="space-y-5">
-            {/* Inputs de código separados */}
-            <div className="flex justify-center gap-2">
+            {/* Inputs de código separados - 8 dígitos */}
+            <div className="flex justify-center gap-1.5">
               {codigo.map((digit, index) => (
                 <Input
                   key={index}
@@ -197,8 +274,8 @@ export default function VerifyEmailPage() {
                   variant="bordered"
                   size="lg"
                   classNames={{
-                    input: "text-center text-2xl font-bold",
-                    inputWrapper: "w-12 h-14 sm:w-14 sm:h-16 border-2 data-[focus=true]:border-primary"
+                    input: "text-center text-xl font-bold tracking-widest",
+                    inputWrapper: `w-10 h-12 sm:w-12 sm:h-14 border-2 data-[focus=true]:border-${colorType}`
                   }}
                 />
               ))}
@@ -211,7 +288,7 @@ export default function VerifyEmailPage() {
             <Button
               type="submit"
               size="lg"
-              color="primary"
+              color={colorType}
               className="w-full font-semibold text-sm sm:text-base min-h-[52px]"
               isLoading={isLoading}
               startContent={!isLoading && <CheckCircle2 className="w-5 h-5" />}
@@ -226,16 +303,22 @@ export default function VerifyEmailPage() {
                 <div className="flex-shrink-0">
                   <Clock className="w-5 h-5 text-primary" />
                 </div>
-                <div>
+                <div className="flex-1">
                   <p className="text-xs font-bold text-foreground mb-1">
                     ¿No recibiste el código?
                   </p>
-                  <button
-                    onClick={handleReenviar}
-                    className="text-xs text-primary hover:text-primary/80 font-medium transition-colors underline"
-                  >
-                    Reenviar código
-                  </button>
+                  {countdown > 0 ? (
+                    <p className="text-xs text-foreground/60">
+                      Podrás reenviar en {countdown} segundos
+                    </p>
+                  ) : (
+                    <button
+                      onClick={handleReenviar}
+                      className="text-xs text-primary hover:text-primary/80 font-medium transition-colors underline"
+                    >
+                      Reenviar código
+                    </button>
+                  )}
                 </div>
               </div>
             </CardBody>

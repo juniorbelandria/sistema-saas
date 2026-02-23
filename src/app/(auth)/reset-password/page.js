@@ -1,35 +1,95 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button, Input } from '@heroui/react';
 import { Lock, Eye, EyeOff, CheckCircle2, Shield, Key, Mail } from 'lucide-react';
 import Image from 'next/image';
+import { toast } from 'sonner';
 import ThemeToggle from '@/components/ThemeToggle';
 import DevNavigation from '@/components/DevNavigation';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
 export default function ResetPasswordPage() {
+  const router = useRouter();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isVisible, setIsVisible] = useState(false);
   const [isVisible2, setIsVisible2] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [hasSession, setHasSession] = useState(false);
+
+  useEffect(() => {
+    // Verificar que el usuario tenga una sesión activa (después de verificar OTP)
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Sesión inválida. Por favor solicita un nuevo código de recuperación.');
+        router.push('/forgot-password');
+      } else {
+        setHasSession(true);
+      }
+    };
+    
+    checkSession();
+  }, [router]);
 
   const handleReset = async (e) => {
     e.preventDefault();
+    
+    if (password.length < 8) {
+      toast.error('La contraseña debe tener al menos 8 caracteres');
+      return;
+    }
+    
     if (password !== confirmPassword) {
-      alert('Las contraseñas no coinciden');
+      toast.error('Las contraseñas no coinciden');
       return;
     }
     
     setIsLoading(true);
-    // TODO: Integrar con Supabase
-    setTimeout(() => {
-      setIsLoading(false);
+    
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: password
+      });
+
+      if (error) throw error;
+
       setSuccess(true);
-    }, 1500);
+      toast.success('Contraseña actualizada, ya puedes iniciar sesión');
+      
+      // Cerrar sesión y redirigir al login después de 2 segundos
+      setTimeout(async () => {
+        await supabase.auth.signOut();
+        router.push('/login');
+      }, 2000);
+    } catch (error) {
+      console.error('Error al actualizar contraseña:', error);
+      toast.error(error.message || 'Error al actualizar la contraseña');
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (!hasSession) {
+    return (
+      <div className="flex min-h-screen bg-background items-center justify-center p-4">
+        <div className="text-center space-y-4 max-w-md">
+          <div className="flex justify-center">
+            <div className="w-16 h-16 rounded-full bg-warning/10 flex items-center justify-center">
+              <Shield className="w-8 h-8 text-warning" />
+            </div>
+          </div>
+          <h2 className="text-2xl font-bold text-foreground">
+            Verificando sesión...
+          </h2>
+        </div>
+      </div>
+    );
+  }
 
   if (success) {
     return (
@@ -44,13 +104,8 @@ export default function ResetPasswordPage() {
             ¡Contraseña actualizada!
           </h2>
           <p className="text-sm text-foreground/60">
-            Tu contraseña ha sido cambiada exitosamente
+            Tu contraseña ha sido cambiada exitosamente. Redirigiendo al inicio de sesión...
           </p>
-          <Link href="/login">
-            <Button color="primary" size="lg" className="w-full">
-              Iniciar sesión
-            </Button>
-          </Link>
         </div>
       </div>
     );
@@ -66,7 +121,7 @@ export default function ResetPasswordPage() {
 
       {/* Columna Izquierda - Branding */}
       <div className="hidden xl:flex xl:w-1/2 bg-content2 p-6 xl:p-8 flex-col justify-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-warning/5 via-transparent to-danger/5"></div>
         
         <div className="relative z-10 max-w-xl mx-auto w-full">
           <div className="mb-6">
@@ -87,7 +142,7 @@ export default function ResetPasswordPage() {
             
             <h2 className="text-2xl xl:text-3xl font-bold text-foreground mb-2">
               Crea una{' '}
-              <span className="text-primary">nueva contraseña</span>
+              <span className="text-warning">nueva contraseña</span>
             </h2>
             
             <p className="text-xs text-foreground/70 leading-relaxed">
@@ -99,7 +154,7 @@ export default function ResetPasswordPage() {
           {/* Consejos de seguridad */}
           <div className="space-y-3 mb-6">
             <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
+              <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-warning flex items-center justify-center">
                 <Key className="w-4 h-4 text-white" />
               </div>
               <div>
@@ -131,7 +186,7 @@ export default function ResetPasswordPage() {
 
           <div className="pt-4 border-t border-foreground/10">
             <p className="text-xs text-foreground font-bold leading-relaxed">
-              <span className="text-primary text-sm">Aviso:</span> Usuario responsable de obligaciones fiscales. 
+              <span className="text-warning text-sm">Aviso:</span> Usuario responsable de obligaciones fiscales. 
               Sistema no certifica ante autoridades tributarias.
             </p>
           </div>
@@ -185,7 +240,7 @@ export default function ResetPasswordPage() {
               classNames={{
                 label: "text-foreground font-bold",
                 input: "text-foreground",
-                inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
+                inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-warning min-h-[52px]"
               }}
             />
 
@@ -209,14 +264,14 @@ export default function ResetPasswordPage() {
               classNames={{
                 label: "text-foreground font-bold",
                 input: "text-foreground",
-                inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-primary min-h-[52px]"
+                inputWrapper: "border-default-200 hover:border-default-400 data-[focus=true]:border-warning min-h-[52px]"
               }}
             />
 
             <Button
               type="submit"
               size="lg"
-              color="primary"
+              color="warning"
               className="w-full font-semibold min-h-[52px]"
               isLoading={isLoading}
               startContent={!isLoading && <CheckCircle2 className="w-5 h-5" />}

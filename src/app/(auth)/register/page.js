@@ -129,23 +129,6 @@ export default function RegisterPage() {
         return;
       }
 
-      // Paso 0: Verificar si el correo ya existe
-      const { data: existingUsers, error: checkError } = await supabase
-        .from('usuarios')
-        .select('email')
-        .eq('email', values.email)
-        .limit(1);
-
-      if (checkError && checkError.code !== 'PGRST116') {
-        console.error('Error al verificar correo:', checkError);
-        throw new Error('Error al verificar el correo');
-      }
-
-      if (existingUsers && existingUsers.length > 0) {
-        toast.error('Este correo ya está registrado. Por favor inicia sesión o usa otro correo.');
-        return;
-      }
-
       // Paso 1: Registrar usuario en Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: values.email,
@@ -158,8 +141,11 @@ export default function RegisterPage() {
       });
 
       if (authError) {
-        if (authError.message.includes('already registered') || authError.message.includes('User already registered')) {
+        if (authError.message.includes('already registered') || 
+            authError.message.includes('User already registered') ||
+            authError.message.includes('already been registered')) {
           toast.error('Este correo ya está registrado. Por favor inicia sesión.');
+          setIsLoading(false);
           return;
         }
         throw authError;

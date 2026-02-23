@@ -119,13 +119,11 @@ export default function RegisterPage() {
 
   // Función principal de registro
   const onSubmit = async (values) => {
-    // Si no estamos en el paso 4, solo avanzar al siguiente paso
-    if (paso < 4) {
-      handleSiguiente();
-      return;
+    // Solo registrar cuando estamos en el paso 4
+    if (paso !== 4) {
+      return; // No hacer nada si no estamos en paso 4
     }
 
-    // Solo registrar cuando estamos en el paso 4
     setIsLoading(true);
 
     try {

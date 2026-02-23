@@ -13,6 +13,7 @@ import { supabase } from '@/lib/supabase';
 
 // Forzar renderizado dinámico
 export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
 
 function VerifyEmailContent() {
   const router = useRouter();

@@ -118,10 +118,11 @@ export default function RegisterPage() {
   };
 
   // Función principal de registro
-  const onSubmit = async (values) => {
-    // Solo registrar cuando estamos en el paso 4
+  const onSubmit = async (values, e) => {
+    // Prevenir submit si no estamos en paso 4
     if (paso !== 4) {
-      return; // No hacer nada si no estamos en paso 4
+      e?.preventDefault();
+      return false;
     }
 
     setIsLoading(true);
@@ -391,7 +392,17 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <form 
+            onSubmit={(e) => {
+              // Solo permitir submit en paso 4
+              if (paso !== 4) {
+                e.preventDefault();
+                return false;
+              }
+              handleSubmit(onSubmit)(e);
+            }} 
+            className="space-y-5"
+          >
 
             {/* PASO 1: Cuenta del Propietario */}
             {paso === 1 && (

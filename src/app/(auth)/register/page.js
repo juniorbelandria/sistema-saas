@@ -141,7 +141,9 @@ export default function RegisterPage() {
         return;
       }
 
-      // PASO 1: Registrar usuario en Supabase Auth
+      // ============================================================
+      // PASO 1: VALIDACIÓN PREVENTIVA DE SUPABASE AUTH
+      // ============================================================
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
@@ -155,6 +157,7 @@ export default function RegisterPage() {
         }
       });
 
+      // Manejo de errores de autenticación
       if (authError) {
         console.error('Error de autenticación:', authError);
         
@@ -164,7 +167,7 @@ export default function RegisterPage() {
             authError.message.includes('already been registered') ||
             authError.status === 422 ||
             authError.message.includes('duplicate')) {
-          toast.error('Este correo ya está registrado. Por favor inicia sesión o usa otro correo.');
+          toast.error('Este correo ya está registrado');
           setIsLoading(false);
           return;
         }
@@ -175,20 +178,25 @@ export default function RegisterPage() {
       }
 
       // Verificar que se creó el usuario
-      if (!authData.user) {
+      if (!authData || !authData.user) {
         toast.error('No se pudo crear el usuario. Intenta con otro correo.');
         setIsLoading(false);
         return;
       }
 
-      // Verificar si el usuario ya existía
+      // ============================================================
+      // VALIDACIÓN CRÍTICA: Detectar correo duplicado por identities
+      // Si identities está vacío, el correo ya existe en el sistema
+      // ============================================================
       if (authData.user.identities && authData.user.identities.length === 0) {
-        toast.error('Este correo ya está registrado. Por favor inicia sesión.');
+        toast.error('Este correo ya está registrado');
         setIsLoading(false);
         return;
       }
 
-      // PASO 2: Crear el negocio usando la función RPC
+      // ============================================================
+      // PASO 2: SINCRONIZACIÓN OBLIGATORIA CON RPC (BASE DE DATOS)
+      // ============================================================
       const { data: rpcData, error: rpcError } = await supabase.rpc('registrar_usuario_con_negocio', {
         p_user_id: authData.user.id,
         p_nombre_completo: values.nombreCompleto,
@@ -207,28 +215,35 @@ export default function RegisterPage() {
         p_prefijo_factura: 'FAC-'
       });
 
+      // ============================================================
+      // BLOQUEO FINAL: Validar respuesta del RPC
+      // ============================================================
       if (rpcError) {
         console.error('Error al registrar negocio:', rpcError);
-        toast.error('Error al crear el perfil del negocio: ' + rpcError.message);
+        toast.error(rpcError.message || 'Error al crear el perfil del negocio');
         setIsLoading(false);
         return;
       }
 
-      // Verificar respuesta de la función RPC
-      if (rpcData && !rpcData.success) {
-        toast.error(rpcData.error || 'Error al registrar el negocio');
+      // Verificar que el RPC devolvió success: true
+      if (!rpcData || !rpcData.success) {
+        const errorMessage = rpcData?.error || 'Error al registrar el negocio';
+        toast.error(errorMessage);
         setIsLoading(false);
         return;
       }
 
-      // ÉXITO TOTAL: Usuario y negocio creados
+      // ============================================================
+      // ÉXITO CONFIRMADO: Redirección solo después de validación completa
+      // ============================================================
       toast.success('Registro exitoso. Revisa tu correo para verificar el código de 8 dígitos');
-      
-      // Redirigir a verificación de email
       router.push(`/verify-email?email=${encodeURIComponent(values.email)}&type=signup`);
 
     } catch (error) {
-      console.error('Error en registro:', error);
+      // ============================================================
+      // MANEJO ROBUSTO DE ERRORES DE RED Y BASE DE DATOS
+      // ============================================================
+      console.error('Error crítico en registro:', error);
       toast.error(error.message || 'Error al registrar. Por favor intenta de nuevo.');
       setIsLoading(false);
     }
